@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import {
   calculatePathFromLevel,
   drawBackground,
@@ -13,6 +13,7 @@ import { standardMap } from "./Definitions/Maps";
 import { Player } from "./GameObjects/Player";
 import { NormalProjectile } from "./GameObjects/Projectiles/NormalProjectile";
 import { BasicEnemy } from "./GameObjects/Enemies/BasicEnemy";
+import { NumberAnimation } from "./GameObjects/NumberAnimation";
 
 const keysDownMap = new Set<string>();
 
@@ -25,6 +26,7 @@ export const enemies: Enemy[] = [
   new BasicEnemy({ x: 100, y: 100 }, 50, 1, 60, 100),
   new BasicEnemy({ x: 100, y: 150 }, 150, 1, 60, 100),
 ];
+export const numberAnimations: NumberAnimation[] = [];
 export const projectiles: ActualProjectile[] = [];
 let mousePos: Point = { x: 0, y: 0 };
 export let gameStats = {
@@ -40,6 +42,8 @@ export let gameStats = {
 interface TowerDefenseProps {}
 
 export function Shooter(props: TowerDefenseProps) {
+  const [nums, setNums] = useState<NumberAnimation[]>([]);
+
   useEffect(() => {
     const canvas2 = document.getElementById("background-layer") as HTMLCanvasElement;
     const bg = canvas2.getContext("2d");
@@ -51,6 +55,7 @@ export function Shooter(props: TowerDefenseProps) {
     }
 
     const canvas = document.getElementById("game-layer") as HTMLCanvasElement;
+    const numbersDiv = document.getElementById("numbers") as HTMLCanvasElement;
     const game = canvas.getContext("2d");
 
     window.onkeydown = (keyEvent) => {
@@ -61,11 +66,11 @@ export function Shooter(props: TowerDefenseProps) {
       keysDownMap.delete(keyEvent.key);
     };
 
-    canvas.onmousemove = (mouseEvent) => {
+    numbersDiv.onmousemove = (mouseEvent) => {
       mousePos = getMousePos(canvas, mouseEvent);
     };
 
-    canvas.onmousedown = (mouseEvent) => {
+    numbersDiv.onmousedown = (mouseEvent) => {
       projectiles.push(
         new NormalProjectile(
           player.getPosition(),
@@ -92,15 +97,20 @@ export function Shooter(props: TowerDefenseProps) {
         drawAndCleanupObjects(game, [player]);
         drawAndCleanupObjects(game, projectiles);
         drawAndCleanupObjects(game, enemies);
+        drawAndCleanupObjects(game, numberAnimations);
 
         projectiles.forEach((obj) => obj.tick());
         enemies.forEach((obj) => obj.tick());
+        numberAnimations.forEach((obj) => obj.tick());
 
         game.beginPath();
         const playerPos = player.getPosition();
         game.moveTo(playerPos.x, playerPos.y);
         game.lineTo(mousePos.x, mousePos.y);
         game.stroke();
+
+        setNums(numberAnimations);
+        console.log(nums);
 
         tick++;
       }, TICK_DURATION);
@@ -138,6 +148,15 @@ export function Shooter(props: TowerDefenseProps) {
           >
             <canvas id="background-layer" height={CANVAS_HEIGHT} width={CANVAS_WIDTH} style={{ zIndex: 1 }} />
             <canvas id="game-layer" height={CANVAS_HEIGHT} width={CANVAS_WIDTH} style={{ zIndex: 2 }} />
+            <div id="numbers" style={{ height: CANVAS_HEIGHT, width: CANVAS_WIDTH, zIndex: 3 }}>
+              <div style={{ height: CANVAS_HEIGHT, width: CANVAS_WIDTH, background: "rgba(255,0,0,0.5)" }}>
+                {nums.map((na) => (
+                  <div style={{ left: na.getX().toFixed(0), top: na.getY().toFixed(0), position: "absolute" }}>
+                    {na.getNumber()}
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
           <ControlPanel />
         </div>

@@ -1,7 +1,8 @@
-import { gameStats, player } from "../../Shooter";
+import { gameStats, numberAnimations, player } from "../../Shooter";
 import { Point } from "../../lib/definitions";
 import { MovingObject } from "../MovingObject";
 import { calculateDirection } from "../../lib/canvasFunctions";
+import { NumberAnimation } from "../NumberAnimation";
 
 export abstract class Enemy extends MovingObject {
   private maxHp: number;
@@ -95,6 +96,8 @@ export abstract class Enemy extends MovingObject {
   inflictDamage(damage: number) {
     gameStats.waveHealth -= Math.min(this.currentHp, damage);
     this.currentHp = Math.max(0, this.currentHp - damage);
+
+    numberAnimations.push(new NumberAnimation({ x: this.position.x, y: this.position.y + this.getSize() }, damage));
 
     if (this.currentHp <= 0) {
       this.shouldDraw = false;
