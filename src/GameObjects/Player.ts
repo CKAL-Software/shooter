@@ -1,13 +1,15 @@
 import { GameObject } from "./GameObject";
 
 export class Player extends GameObject {
-  protected drawPositionX = 50;
-  protected drawPositionY = 50;
+  protected drawPositionX = 400;
+  protected drawPositionY = 400;
   protected moveSpeed = 2.5;
+  protected size = 30;
+  protected health = 100;
 
   draw(ctx: CanvasRenderingContext2D): void {
     ctx.beginPath();
-    ctx.arc(this.drawPositionX, this.drawPositionY, 30, 0, Math.PI * 2);
+    ctx.arc(this.drawPositionX, this.drawPositionY, this.size, 0, Math.PI * 2);
     ctx.fillStyle = "black";
     ctx.fill();
     ctx.closePath();
@@ -29,5 +31,17 @@ export class Player extends GameObject {
 
   getPosition() {
     return { x: this.drawPositionX, y: this.drawPositionY };
+  }
+
+  getSize() {
+    return this.size;
+  }
+
+  getHealth() {
+    return this.health;
+  }
+
+  inflictDamage(damage: number) {
+    this.health -= damage;
   }
 }

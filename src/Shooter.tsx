@@ -1,22 +1,31 @@
-import { useCallback, useEffect, useState } from "react";
-import { calculatePathFromLevel, drawBackground, drawAndCleanupObjects, getMousePos } from "./lib/canvasFunctions";
+import { useEffect } from "react";
+import {
+  calculatePathFromLevel,
+  drawBackground,
+  drawAndCleanupObjects,
+  getMousePos,
+  calculateDirection,
+} from "./lib/canvasFunctions";
 import { ControlPanel } from "./components/controlPanel";
-import { Point, ActualTower, ActualProjectile, CANVAS_HEIGHT, CANVAS_WIDTH, TICK_DURATION } from "./lib/definitions";
+import { Point, CANVAS_HEIGHT, CANVAS_WIDTH, TICK_DURATION, ActualProjectile } from "./lib/definitions";
 import { Enemy } from "./GameObjects/Enemies/Enemy";
-import { waves } from "./Definitions/Waves";
-import { Tower } from "./GameObjects/Towers/Tower";
 import { standardMap } from "./Definitions/Maps";
 import { Player } from "./GameObjects/Player";
+import { NormalProjectile } from "./GameObjects/Projectiles/NormalProjectile";
+import { BasicEnemy } from "./GameObjects/Enemies/BasicEnemy";
 
 const keysDownMap = new Set<string>();
 
 let tick = 0;
 export let map = standardMap;
 export const path = calculatePathFromLevel(map);
-export const enemiesManagers: { enemies: Enemy[]; waveNumber: number }[] = [];
-export const projectiles: ActualProjectile[] = [];
-export const towers: ActualTower[] = [];
 export const player = new Player();
+export const enemies: Enemy[] = [
+  new BasicEnemy({ x: 200, y: 200 }, 50, 1, 60, 100),
+  new BasicEnemy({ x: 100, y: 100 }, 50, 1, 60, 100),
+  new BasicEnemy({ x: 100, y: 150 }, 150, 1, 60, 100),
+];
+export const projectiles: ActualProjectile[] = [];
 let mousePos: Point = { x: 0, y: 0 };
 export let gameStats = {
   money: 10,
@@ -25,30 +34,12 @@ export let gameStats = {
   isPaused: true,
   requestForPause: false,
   isFast: false,
-  waveHealth: waves[0].amount * waves[0].hp,
+  waveHealth: 10,
 };
-
-export function allEnemies() {
-  return enemiesManagers.reduce<Enemy[]>((prev, curr) => prev.concat(...curr.enemies), []);
-}
 
 interface TowerDefenseProps {}
 
 export function Shooter(props: TowerDefenseProps) {
-  const [towerToPlace, setTowerToPlace] = useState<ActualTower>();
-  const [selectedTower, setSelectedTower] = useState<Tower>();
-
-  const clearTowers = useCallback(() => {
-    if (towerToPlace) {
-      towerToPlace.shouldDraw = false;
-    }
-    if (selectedTower) {
-      selectedTower.setDrawRange(false);
-    }
-    setTowerToPlace(undefined);
-    setSelectedTower(undefined);
-  }, [towerToPlace, selectedTower]);
-
   useEffect(() => {
     const canvas2 = document.getElementById("background-layer") as HTMLCanvasElement;
     const bg = canvas2.getContext("2d");
@@ -74,7 +65,18 @@ export function Shooter(props: TowerDefenseProps) {
       mousePos = getMousePos(canvas, mouseEvent);
     };
 
-    canvas.onmousedown = (mouseEvent) => {};
+    canvas.onmousedown = (mouseEvent) => {
+      projectiles.push(
+        new NormalProjectile(
+          player.getPosition(),
+          3,
+          10,
+          10,
+          "black",
+          calculateDirection(player.getPosition(), mousePos)
+        )
+      );
+    };
 
     if (game) {
       id = setInterval(() => {
@@ -88,6 +90,11 @@ export function Shooter(props: TowerDefenseProps) {
         keysDownMap.forEach((d) => player.move(d));
 
         drawAndCleanupObjects(game, [player]);
+        drawAndCleanupObjects(game, projectiles);
+        drawAndCleanupObjects(game, enemies);
+
+        projectiles.forEach((obj) => obj.tick());
+        enemies.forEach((obj) => obj.tick());
 
         game.beginPath();
         const playerPos = player.getPosition();
@@ -104,7 +111,7 @@ export function Shooter(props: TowerDefenseProps) {
         clearInterval(id);
       }
     };
-  }, [towerToPlace, selectedTower, clearTowers]);
+  }, []);
 
   return (
     <div style={{ position: "relative" }}>
@@ -115,30 +122,9 @@ export function Shooter(props: TowerDefenseProps) {
           marginTop: "48px",
           outline: "none",
         }}
-        onKeyDown={(e) => {
-          if (e.key === "Escape") {
-            if (towerToPlace) {
-              towers.splice(towers.indexOf(towerToPlace), 1);
-              setTowerToPlace(undefined);
-            }
-
-            if (selectedTower) {
-              selectedTower.setDrawRange(false);
-              setSelectedTower(undefined);
-            }
-          }
-        }}
+        onKeyDown={(e) => {}}
         onContextMenu={(e) => {
           e.preventDefault();
-          if (towerToPlace) {
-            towers.splice(towers.indexOf(towerToPlace), 1);
-            setTowerToPlace(undefined);
-          }
-
-          if (selectedTower) {
-            selectedTower.setDrawRange(false);
-            setSelectedTower(undefined);
-          }
         }}
         tabIndex={0}
       >

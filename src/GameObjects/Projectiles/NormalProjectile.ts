@@ -1,14 +1,13 @@
-import { allEnemies } from "../../Shooter";
+import { enemies } from "../../Shooter";
 import { calculateDistance } from "../../lib/canvasFunctions";
 import { CANVAS_HEIGHT, CANVAS_WIDTH, Point } from "../../lib/definitions";
-import { Tower } from "../Towers/Tower";
 import { Projectile } from "./Projectile";
 
 export class NormalProjectile extends Projectile {
   private direction: Point;
 
-  constructor(ownerTower: Tower, velocity: number, damage: number, size: number, color: string, direction: Point) {
-    super(ownerTower, velocity, damage, size, color);
+  constructor(startPosition: Point, velocity: number, damage: number, size: number, color: string, direction: Point) {
+    super(startPosition, velocity, damage, size, color);
 
     this.direction = direction;
   }
@@ -25,7 +24,7 @@ export class NormalProjectile extends Projectile {
   }
 
   hitEnemyIfCollision() {
-    const enemyHit = allEnemies().find(
+    const enemyHit = enemies.find(
       (enemy) => calculateDistance(this.position, enemy.getPosition()) <= enemy.getSize() + this.size
     );
 

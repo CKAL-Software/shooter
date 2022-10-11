@@ -1,7 +1,6 @@
 import { BsFillSkipForwardFill, BsPauseFill, BsPlayFill } from "react-icons/bs";
 import { HiFastForward, HiOutlineFastForward } from "react-icons/hi";
 import { gameStats } from "../Shooter";
-import { waves } from "../Definitions/Waves";
 import { Button } from "./button";
 import { GrRefresh } from "react-icons/gr";
 
@@ -57,7 +56,7 @@ export function WaveSection(props: WaveSectionProps) {
         <Button
           style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "30px", width: "100%" }}
           onClick={props.startNextWave}
-          disabled={props.nextWaveDisabled || props.waveNumber === waves.length - 1}
+          disabled={props.nextWaveDisabled}
         >
           <BsFillSkipForwardFill />
         </Button>

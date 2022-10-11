@@ -1,17 +1,14 @@
+import { Point } from "../../lib/definitions";
 import { Enemy } from "../Enemies/Enemy";
 import { MovingObject } from "../MovingObject";
-import { Tower } from "../Towers/Tower";
 
 export abstract class Projectile extends MovingObject {
-  protected ownerTower: Tower;
   protected size: number;
   protected color: string;
   protected damage: number;
 
-  constructor(ownerTower: Tower, velocity: number, damage: number, size: number, color: string) {
-    super(ownerTower.getPosition(), velocity);
-
-    this.ownerTower = ownerTower;
+  constructor(startPosition: Point, velocity: number, damage: number, size: number, color: string) {
+    super(startPosition, velocity);
     this.size = size;
     this.color = color;
     this.damage = damage;
@@ -29,7 +26,6 @@ export abstract class Projectile extends MovingObject {
 
   hitEnemy(enemyHit: Enemy) {
     enemyHit.inflictDamage(this.damage);
-    this.ownerTower.addDamageDealt(this.damage);
     this.shouldDraw = false;
   }
 }

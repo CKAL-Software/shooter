@@ -1,13 +1,13 @@
-import { gameStats } from "../../Shooter";
+import { gameStats, player } from "../../Shooter";
 import { Point } from "../../lib/definitions";
 import { MovingObject } from "../MovingObject";
+import { calculateDirection } from "../../lib/canvasFunctions";
 
 export abstract class Enemy extends MovingObject {
   private maxHp: number;
   private currentHp: number;
   private size: number;
   private color: string;
-  private path: Point[];
   private pathIndex: number = 0;
   private damage: number;
   private reward: number;
@@ -15,7 +15,7 @@ export abstract class Enemy extends MovingObject {
   protected slowCounter: number = 0;
 
   constructor(
-    path: Point[],
+    startPosition: Point,
     hp: number,
     size: number,
     color: string,
@@ -23,9 +23,8 @@ export abstract class Enemy extends MovingObject {
     damage: number,
     reward: number
   ) {
-    super(path[0], velocity);
+    super(startPosition, velocity);
     this.actualVelocity = velocity;
-    this.path = path;
     this.maxHp = hp;
     this.currentHp = hp;
     this.size = size;
@@ -35,13 +34,11 @@ export abstract class Enemy extends MovingObject {
   }
 
   move() {
-    this.setPosition(this.path[Math.round(this.pathIndex)]);
-    this.pathIndex = this.pathIndex + this.actualVelocity;
+    const direction = calculateDirection(this.position, player.getPosition());
+    const changeX = direction.x * this.velocity;
+    const changeY = direction.y * this.velocity;
 
-    if (this.pathIndex > this.path.length - 1) {
-      this.pathIndex = this.pathIndex - (this.path.length - 1);
-      gameStats.health = Math.max(0, gameStats.health - this.damage);
-    }
+    this.shiftPosition(changeX, changeY);
   }
 
   tick() {

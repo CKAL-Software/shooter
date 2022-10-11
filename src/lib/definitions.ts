@@ -1,11 +1,5 @@
 import { BasicEnemy } from "../GameObjects/Enemies/BasicEnemy";
-import { ToughEnemy } from "../GameObjects/Enemies/ToughEnemy";
-import { HeatSeekingProjectile } from "../GameObjects/Projectiles/HeatSeekingProjectile";
 import { NormalProjectile } from "../GameObjects/Projectiles/NormalProjectile";
-import { SlowingProjectile } from "../GameObjects/Projectiles/SlowingProjectile";
-import { BasicTower } from "../GameObjects/Towers/BasicTowers";
-import { MachineGunTower } from "../GameObjects/Towers/MachineGunTower";
-import { SniperTower } from "../GameObjects/Towers/ScoutTower";
 
 export const DOMAIN = "ckal.dk";
 export const BACKEND_URL = `https://api.${DOMAIN}/tower-defense/`;
@@ -32,12 +26,9 @@ export enum APIResources {
   Score = "score",
 }
 
-export type ProjectileContructor = typeof NormalProjectile | typeof HeatSeekingProjectile | typeof SlowingProjectile;
-export type TowerConstructor = typeof BasicTower | typeof SniperTower | typeof MachineGunTower;
-export type EnemyConstructor = typeof BasicEnemy | typeof ToughEnemy;
+export type EnemyConstructor = typeof BasicEnemy;
 
-export type ActualTower = BasicTower | SniperTower | MachineGunTower;
-export type ActualProjectile = NormalProjectile | HeatSeekingProjectile | SlowingProjectile;
+export type ActualProjectile = NormalProjectile;
 
 export type TargetingMode = "First" | "Last" | "Closest" | "Random" | "Farthest" | "Weakest" | "Toughest";
 export const TargetingModes: TargetingMode[] = [
