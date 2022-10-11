@@ -1,0 +1,7 @@
+stages:
+  - notify
+
+notify:
+  stage: notify
+  script:
+    - curl --request POST "http://ckal.dk:10001/update/tower-defense" --header "Authorization:$update_token"

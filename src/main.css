@@ -1,0 +1,23 @@
+body {
+  margin: 0;
+  font-family: "Cairo", sans-serif;
+  font-weight: 300;
+  color: #3e3e3e;
+  background: #011821;
+}
+
+canvas {
+  position: absolute;
+}
+
+input {
+  background: none;
+  color: lightgrey;
+  font-size: 18px;
+  border: 1px solid gray;
+  border-radius: 4px;
+  outline: none;
+  background: none;
+  padding: 16px 24px;
+  width: 240px;
+}

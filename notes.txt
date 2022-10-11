@@ -1,0 +1,30 @@
+Tower balance idea
+	Basic
+		Good early, falls off late
+
+	Scout
+		Long range
+		Piercing
+
+	Machine Gun
+		High DPS close range
+
+	Freezer
+		Slows
+
+	Hashtag
+		Medium range
+		Scales well
+
+	Boat
+		Very high dps
+
+
+Wave balance
+	30 waves
+
+	10, 20, 30	boss levels
+	5,15,25 		fast bois
+	9, 19, 29 	flying
+	4, 14, 24		dense, normal
+	rest				normal scaling

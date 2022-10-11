@@ -1,0 +1,1 @@
+export const version = "3.0.0"; // DONT TOUCH THIS LINE. BEING USED BY UPLOAD SCRIPT
