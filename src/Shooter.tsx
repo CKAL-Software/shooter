@@ -109,8 +109,7 @@ export function Shooter(props: TowerDefenseProps) {
         game.lineTo(mousePos.x, mousePos.y);
         game.stroke();
 
-        setNums(numberAnimations);
-        console.log(nums);
+        setNums([...numberAnimations]);
 
         tick++;
       }, TICK_DURATION);
@@ -121,7 +120,7 @@ export function Shooter(props: TowerDefenseProps) {
         clearInterval(id);
       }
     };
-  }, []);
+  }, [nums]);
 
   return (
     <div style={{ position: "relative" }}>
@@ -149,9 +148,9 @@ export function Shooter(props: TowerDefenseProps) {
             <canvas id="background-layer" height={CANVAS_HEIGHT} width={CANVAS_WIDTH} style={{ zIndex: 1 }} />
             <canvas id="game-layer" height={CANVAS_HEIGHT} width={CANVAS_WIDTH} style={{ zIndex: 2 }} />
             <div id="numbers" style={{ height: CANVAS_HEIGHT, width: CANVAS_WIDTH, zIndex: 3 }}>
-              <div style={{ height: CANVAS_HEIGHT, width: CANVAS_WIDTH, background: "rgba(255,0,0,0.5)" }}>
+              <div style={{ height: CANVAS_HEIGHT, width: CANVAS_WIDTH }}>
                 {nums.map((na) => (
-                  <div style={{ left: na.getX().toFixed(0), top: na.getY().toFixed(0), position: "absolute" }}>
+                  <div key={Math.random()} style={{ left: na.getX(), top: na.getY(), position: "absolute" }}>
                     {na.getNumber()}
                   </div>
                 ))}
