@@ -1,11 +1,11 @@
 import { GameObject } from "../GameObjects/GameObject";
-import { CANVAS_COLUMNS, Point, TILE_SIZE, TOWER_SIZE } from "./definitions";
+import { Point, TILE_SIZE, TOWER_SIZE } from "./definitions";
 
 export function drawBackground(ctx: CanvasRenderingContext2D, map: string[]) {
   ctx.beginPath();
 
   ctx.rect(0, 0, ctx.canvas.width, ctx.canvas.height);
-  ctx.fillStyle = "#00AA00";
+  ctx.fillStyle = "lightgray";
   ctx.fill();
 
   drawMap(ctx, map);
@@ -59,7 +59,7 @@ export function drawMap(ctx: CanvasRenderingContext2D, map: string[]) {
   for (let x = 0; x < map[0].length; x++) {
     for (let y = 0; y < map.length; y++) {
       if (map[y][x] === "x") {
-        drawTile(ctx, x, y, "yellow");
+        drawTile(ctx, x, y, "#444444");
       } else if (map[y][x] === "~") {
         drawTile(ctx, x, y, "#006fff");
       } else if (map[y][x] === "^") {
@@ -69,80 +69,48 @@ export function drawMap(ctx: CanvasRenderingContext2D, map: string[]) {
   }
 }
 
-export function calculatePathFromLevel(map: string[]) {
-  const nodes: Point[] = [];
-  const directions: [number, number][] = [[1, 0]];
+export function getObstacles(map: string[]) {
+  const obstacles: { topLeftPoint: Point }[] = [];
 
-  for (let y = 0; nodes.length === 0; y++) {
-    if (map[y][0] === "x") {
-      nodes.push({ x: 0, y: y });
-    }
-  }
-
-  let currPos = nodes[0];
-
-  const tries: [number, number][] = [
-    [1, 0],
-    [-1, 0],
-    [0, 1],
-    [0, -1],
-  ];
-
-  while (currPos.x !== CANVAS_COLUMNS - 1) {
-    for (const trial of tries) {
-      const previousNode = nodes[nodes.length - 2];
-      if (
-        map[currPos.y + trial[1]][currPos.x + trial[0]] === "x" &&
-        (nodes.length === 1 || previousNode.x !== currPos.x + trial[0] || previousNode.y !== currPos.y + trial[1])
-      ) {
-        const newPos = {
-          x: currPos.x + trial[0],
-          y: currPos.y + trial[1],
-        };
-        nodes.push(newPos);
-        directions.push(trial);
-        currPos = newPos;
-        break;
+  for (let row = 0; row < map.length; row++) {
+    for (let col = 0; col < map[row].length; col++) {
+      if (map[row][col] === "x") {
+        obstacles.push({ topLeftPoint: { x: TILE_SIZE * col, y: TILE_SIZE * row } });
       }
     }
   }
-
-  nodes.unshift({ x: nodes[0].x - 1, y: nodes[0].y });
-  directions.push([1, 0], [1, 0]);
-
-  const coordinates = nodes.map(tileToPixels);
-
-  const allCoordinates: Point[] = [];
-
-  coordinates.forEach((coord, step) => {
-    for (let i = 0; i < TILE_SIZE; i++) {
-      allCoordinates.push({
-        x: coord.x + directions[step][0] * i,
-        y: coord.y + directions[step][1] * i,
-      });
-    }
-  });
-
-  return allCoordinates;
 }
 
-export function calculateSraightPath(path: Point[]) {
-  const start = path[0];
-  const end = path[path.length - 1];
+export function getSurroundingObstacles(map: String[], pixelPos: Point) {
+  const tilePos = pixelsToTile(pixelPos);
 
-  const direction = calculateDirection(start, end);
+  const surroundingIndexDeltas = [
+    [-1, -1],
+    [0, -1],
+    [1, -1],
+    [-1, 0],
+    [1, 0],
+    [-1, 1],
+    [0, 1],
+    [1, 1],
+  ];
 
-  const newPath: Point[] = [start];
-  let currentPos = start;
+  const obstacles: { topLeftPoint: Point }[] = [];
 
-  while (currentPos.x < end.x) {
-    currentPos = { x: currentPos.x + direction.x, y: currentPos.y + direction.y };
-    newPath.push(currentPos);
+  for (const [deltaX, deltaY] of surroundingIndexDeltas) {
+    const col = tilePos.x + deltaX;
+    const row = tilePos.y + deltaY;
+
+    if (col < 0 || col > map[0].length - 1 || row < 0 || row > map.length - 1) {
+      continue;
+    }
+
+    if (map[row][col] === "x") {
+      obstacles.push({ topLeftPoint: { x: TILE_SIZE * col, y: TILE_SIZE * row } });
+    }
   }
 
-  const roundedPath = newPath.map((pos) => ({ x: Math.round(pos.x), y: Math.round(pos.y) }));
-
-  return roundedPath;
+  return obstacles;
 }
 
 export function getMousePos(canvas: HTMLCanvasElement, mouseEvent: MouseEvent) {

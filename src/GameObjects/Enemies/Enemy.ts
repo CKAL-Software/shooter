@@ -97,7 +97,7 @@ export abstract class Enemy extends MovingObject {
     gameStats.waveHealth -= Math.min(this.currentHp, damage);
     this.currentHp = Math.max(0, this.currentHp - damage);
 
-    numberAnimations.push(new NumberAnimation({ x: this.position.x, y: this.position.y + this.getSize() }, damage));
+    numberAnimations.push(new NumberAnimation({ x: this.position.x, y: this.position.y - this.size }, damage));
 
     if (this.currentHp <= 0) {
       this.shouldDraw = false;

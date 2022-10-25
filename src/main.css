@@ -25,3 +25,17 @@ input {
   padding: 16px 24px;
   width: 240px;
 }
+
+@keyframes MoveUp {
+  0% {
+    transform: translateY(0);
+  }
+  100% {
+    transform: translateY(-80px);
+  }
+}
+
+.number-flow {
+  animation: MoveUp 2s linear;
+  transform: translateX(-50%);
+}
