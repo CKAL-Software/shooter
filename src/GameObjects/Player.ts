@@ -1,21 +1,17 @@
-import { getSurroundingObstacles, pixelsToTile } from "../lib/canvasFunctions";
-import { Point, TILE_SIZE } from "../lib/definitions";
-import { map } from "../Shooter";
 import { GameObject } from "./GameObject";
 
 export class Player extends GameObject {
-  protected drawPositionX = 500;
-  protected drawPositionY = 400;
   protected moveSpeed = 2.5;
-  protected size = 20;
   protected health = 100;
   protected color = "#c67c16";
-  protected tile = { x: 0, y: 0 };
-  protected surroundingObstacles: { topLeftPoint: Point }[] = [];
+
+  constructor() {
+    super(20, { x: 500, y: 400 });
+  }
 
   draw(ctx: CanvasRenderingContext2D): void {
     ctx.beginPath();
-    ctx.arc(this.drawPositionX, this.drawPositionY, this.size, 0, Math.PI * 2);
+    ctx.arc(this.drawPosition.x, this.drawPosition.y, this.size, 0, Math.PI * 2);
     ctx.fillStyle = this.color;
     ctx.fill();
     ctx.closePath();
@@ -24,8 +20,8 @@ export class Player extends GameObject {
   tick(): void {}
 
   move(direction: string) {
-    let newX = this.drawPositionX;
-    let newY = this.drawPositionY;
+    let newX = this.drawPosition.x;
+    let newY = this.drawPosition.y;
 
     if (direction === "w") {
       newY -= this.moveSpeed;
@@ -66,40 +62,14 @@ export class Player extends GameObject {
       }
     }
 
-    this.drawPositionX = newX;
-    this.drawPositionY = newY;
+    this.drawPosition.x = newX;
+    this.drawPosition.y = newY;
 
-    const currentTile = pixelsToTile({ x: this.drawPositionX, y: this.drawPositionY });
-
-    if (currentTile.x !== this.tile.x || currentTile.y !== this.tile.y) {
-      this.tile = currentTile;
-      this.surroundingObstacles = getSurroundingObstacles(map, { x: this.drawPositionX, y: this.drawPositionY });
-    }
-  }
-
-  checkCollision(newPosition: Point): [boolean, boolean | undefined] {
-    for (const { topLeftPoint } of this.surroundingObstacles) {
-      const circleDistanceX = Math.abs(newPosition.x - (topLeftPoint.x + TILE_SIZE / 2));
-      const circleDistanceY = Math.abs(newPosition.y - (topLeftPoint.y + TILE_SIZE / 2));
-
-      if (circleDistanceX >= TILE_SIZE / 2 + this.size) continue;
-      if (circleDistanceY >= TILE_SIZE / 2 + this.size) continue;
-
-      if (circleDistanceX <= TILE_SIZE / 2) return [true, undefined];
-      if (circleDistanceY <= TILE_SIZE / 2) return [true, undefined];
-
-      const cornerDistance_sq =
-        Math.pow(circleDistanceX - TILE_SIZE / 2, 2) + Math.pow(circleDistanceY - TILE_SIZE / 2, 2);
-
-      if (cornerDistance_sq <= this.size * this.size) {
-        return [true, circleDistanceY > circleDistanceX];
-      }
-    }
-    return [false, undefined];
+    this.updateSurroundingObstacles();
   }
 
   getPosition() {
-    return { x: this.drawPositionX, y: this.drawPositionY };
+    return { x: this.drawPosition.x, y: this.drawPosition.y };
   }
 
   getSize() {

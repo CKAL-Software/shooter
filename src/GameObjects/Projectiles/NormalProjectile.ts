@@ -44,5 +44,6 @@ export class NormalProjectile extends Projectile {
     this.move();
     this.hitEnemyIfCollision();
     this.checkIfVisible();
+    this.clearIfCollision();
   }
 }

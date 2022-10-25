@@ -3,18 +3,24 @@ import { Enemy } from "../Enemies/Enemy";
 import { MovingObject } from "../MovingObject";
 
 export abstract class Projectile extends MovingObject {
-  protected size: number;
   protected color: string;
   protected damage: number;
 
   constructor(startPosition: Point, velocity: number, damage: number, size: number, color: string) {
-    super(startPosition, velocity);
-    this.size = size;
+    super(startPosition, velocity, size);
     this.color = color;
     this.damage = damage;
   }
 
   abstract hitEnemyIfCollision(): void;
+
+  clearIfCollision() {
+    this.updateSurroundingObstacles();
+    const [isColliding] = this.checkCollision(this.drawPosition);
+    if (isColliding) {
+      this.shouldDraw = false;
+    }
+  }
 
   draw(ctx: CanvasRenderingContext2D) {
     ctx.beginPath();

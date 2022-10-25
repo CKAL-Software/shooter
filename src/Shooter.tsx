@@ -5,6 +5,7 @@ import {
   getMousePos,
   calculateDirection,
   getObstacles,
+  pathToPoint,
 } from "./lib/canvasFunctions";
 import { Point, CANVAS_HEIGHT, CANVAS_WIDTH, TICK_DURATION, ActualProjectile } from "./lib/definitions";
 import { Enemy } from "./GameObjects/Enemies/Enemy";
@@ -12,6 +13,7 @@ import { standardMap } from "./Definitions/Maps";
 import { Player } from "./GameObjects/Player";
 import { NormalProjectile } from "./GameObjects/Projectiles/NormalProjectile";
 import { NumberAnimation } from "./GameObjects/NumberAnimation";
+import { BasicEnemy } from "./GameObjects/Enemies/BasicEnemy";
 
 const keysDownMap = new Set<string>();
 
@@ -20,9 +22,9 @@ export let map = standardMap;
 export let obstacles = getObstacles(map);
 export const player = new Player();
 export const enemies: Enemy[] = [
-  // new BasicEnemy({ x: 200, y: 200 }, 50, 1, 60, 100),
-  // new BasicEnemy({ x: 100, y: 100 }, 50, 1, 60, 100),
-  // new BasicEnemy({ x: 100, y: 150 }, 150, 1, 60, 100),
+  new BasicEnemy({ x: 200, y: 200 }, 50, 1, 60, 100),
+  new BasicEnemy({ x: 100, y: 100 }, 50, 1, 60, 100),
+  new BasicEnemy({ x: 100, y: 150 }, 150, 1, 60, 100),
 ];
 export const numberAnimations: NumberAnimation[] = [];
 export const projectiles: ActualProjectile[] = [];
@@ -43,6 +45,8 @@ export function Shooter(props: TowerDefenseProps) {
   const [nums, setNums] = useState<NumberAnimation[]>([]);
 
   useEffect(() => {
+    // pathToPoint()
+
     const canvas2 = document.getElementById("background-layer") as HTMLCanvasElement;
     const bg = canvas2.getContext("2d");
 
@@ -99,7 +103,7 @@ export function Shooter(props: TowerDefenseProps) {
         drawAndCleanupObjects(game, [player]);
         drawAndCleanupObjects(game, projectiles);
         drawAndCleanupObjects(game, enemies);
-        drawAndCleanupObjects(game, numberAnimations);
+        // drawAndCleanupObjects(game, numberAnimations);
 
         projectiles.forEach((obj) => obj.tick());
         enemies.forEach((obj) => obj.tick());

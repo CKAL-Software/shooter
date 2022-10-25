@@ -7,7 +7,6 @@ import { NumberAnimation } from "../NumberAnimation";
 export abstract class Enemy extends MovingObject {
   private maxHp: number;
   private currentHp: number;
-  private size: number;
   private color: string;
   private pathIndex: number = 0;
   private damage: number;
@@ -24,7 +23,7 @@ export abstract class Enemy extends MovingObject {
     damage: number,
     reward: number
   ) {
-    super(startPosition, velocity);
+    super(startPosition, velocity, size);
     this.actualVelocity = velocity;
     this.maxHp = hp;
     this.currentHp = hp;

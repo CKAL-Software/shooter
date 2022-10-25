@@ -8,7 +8,7 @@ export class NumberAnimation extends GameObject {
   protected number = 0;
 
   constructor(startPosition: Point, number: number) {
-    super();
+    super(0);
 
     this.position = startPosition;
     this.number = number;

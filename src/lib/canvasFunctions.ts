@@ -161,3 +161,7 @@ export function drawAndCleanupObjects(ctx: CanvasRenderingContext2D, objects: Ga
     }
   }
 }
+
+export function pathToPoint(map: string[], fromPosition: Point, toPosition: Point): Point[] {
+  return [];
+}
