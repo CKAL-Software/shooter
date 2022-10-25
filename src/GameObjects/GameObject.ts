@@ -1,5 +1,5 @@
 import { getSurroundingObstacles, pixelsToTile } from "../lib/canvasFunctions";
-import { Point, TILE_SIZE } from "../lib/definitions";
+import { CANVAS_COLUMNS, CANVAS_ROWS, Point, TILE_SIZE } from "../lib/definitions";
 import { map } from "../Shooter";
 
 export abstract class GameObject {
@@ -29,7 +29,18 @@ export abstract class GameObject {
     }
   }
 
-  protected checkCollision(newPosition: Point): [boolean, boolean | undefined] {
+  protected checkCollision(newPosition: Point): [boolean, boolean] {
+    // check if out of map
+    if (
+      newPosition.x - this.size < 0 ||
+      newPosition.y - this.size < 0 ||
+      newPosition.x + this.size > TILE_SIZE * CANVAS_COLUMNS ||
+      newPosition.y + this.size > TILE_SIZE * CANVAS_ROWS
+    ) {
+      return [true, false];
+    }
+
+    // check collision with obstacles
     for (const { topLeftPoint } of this.surroundingObstacles) {
       const circleDistanceX = Math.abs(newPosition.x - (topLeftPoint.x + TILE_SIZE / 2));
       const circleDistanceY = Math.abs(newPosition.y - (topLeftPoint.y + TILE_SIZE / 2));
@@ -37,16 +48,16 @@ export abstract class GameObject {
       if (circleDistanceX >= TILE_SIZE / 2 + this.size) continue;
       if (circleDistanceY >= TILE_SIZE / 2 + this.size) continue;
 
-      if (circleDistanceX <= TILE_SIZE / 2) return [true, undefined];
-      if (circleDistanceY <= TILE_SIZE / 2) return [true, undefined];
+      if (circleDistanceX <= TILE_SIZE / 2) return [true, false];
+      if (circleDistanceY <= TILE_SIZE / 2) return [true, false];
 
       const cornerDistance_sq =
         Math.pow(circleDistanceX - TILE_SIZE / 2, 2) + Math.pow(circleDistanceY - TILE_SIZE / 2, 2);
 
       if (cornerDistance_sq <= this.size * this.size) {
-        return [true, circleDistanceY > circleDistanceX];
+        return [true, true];
       }
     }
-    return [false, undefined];
+    return [false, false];
   }
 }

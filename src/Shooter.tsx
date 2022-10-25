@@ -22,9 +22,9 @@ export let map = standardMap;
 export let obstacles = getObstacles(map);
 export const player = new Player();
 export const enemies: Enemy[] = [
-  new BasicEnemy({ x: 200, y: 200 }, 50, 1, 60, 100),
-  new BasicEnemy({ x: 100, y: 100 }, 50, 1, 60, 100),
-  new BasicEnemy({ x: 100, y: 150 }, 150, 1, 60, 100),
+  //new BasicEnemy({ x: 200, y: 200 }, 50, 1, 60, 100),
+  //new BasicEnemy({ x: 100, y: 100 }, 50, 1, 60, 100),
+  //new BasicEnemy({ x: 100, y: 150 }, 150, 1, 60, 100),
 ];
 export const numberAnimations: NumberAnimation[] = [];
 export const projectiles: ActualProjectile[] = [];
@@ -45,7 +45,7 @@ export function Shooter(props: TowerDefenseProps) {
   const [nums, setNums] = useState<NumberAnimation[]>([]);
 
   useEffect(() => {
-    // pathToPoint()
+    console.log(pathToPoint(map, { x: 70, y: 70 }, { x: 500, y: 400 }));
 
     const canvas2 = document.getElementById("background-layer") as HTMLCanvasElement;
     const bg = canvas2.getContext("2d");
@@ -103,7 +103,7 @@ export function Shooter(props: TowerDefenseProps) {
         drawAndCleanupObjects(game, [player]);
         drawAndCleanupObjects(game, projectiles);
         drawAndCleanupObjects(game, enemies);
-        // drawAndCleanupObjects(game, numberAnimations);
+        drawAndCleanupObjects(game, numberAnimations);
 
         projectiles.forEach((obj) => obj.tick());
         enemies.forEach((obj) => obj.tick());

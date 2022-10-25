@@ -33,16 +33,15 @@ export class Player extends GameObject {
       newX += this.moveSpeed;
     }
 
-    const [isColliding, forceUpOrDown] = this.checkCollision({ x: newX, y: newY });
+    const [isColliding, mayForce] = this.checkCollision({ x: newX, y: newY });
 
     if (isColliding) {
-      if (forceUpOrDown === undefined) {
+      if (!mayForce) {
         // we are not stuck on a corner
         return;
       }
 
-      if (forceUpOrDown) {
-        // we are stuck on a corner and will try to force up or down
+      if (direction === "a" || direction === "d") {
         if (!this.checkCollision({ x: newX, y: newY - this.moveSpeed })[0]) {
           newY -= this.moveSpeed;
         } else if (!this.checkCollision({ x: newX, y: newY + this.moveSpeed })[0]) {
@@ -50,8 +49,9 @@ export class Player extends GameObject {
         } else {
           return;
         }
-      } else {
-        // we are stuck on a corner and will try to force sideways
+      }
+
+      if (direction === "w" || direction === "s") {
         if (!this.checkCollision({ x: newX - this.moveSpeed, y: newY })[0]) {
           newX -= this.moveSpeed;
         } else if (!this.checkCollision({ x: newX + this.moveSpeed, y: newY })[0]) {

@@ -1,5 +1,5 @@
 import { GameObject } from "../GameObjects/GameObject";
-import { Point, TILE_SIZE, TOWER_SIZE } from "./definitions";
+import { Point, TILE_SIZE } from "./definitions";
 
 export function drawBackground(ctx: CanvasRenderingContext2D, map: string[]) {
   ctx.beginPath();
@@ -18,38 +18,6 @@ export function drawTile(ctx: CanvasRenderingContext2D, x: number, y: number, co
 
   ctx.rect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
   ctx.fillStyle = color;
-  ctx.fill();
-
-  ctx.closePath();
-}
-
-export function drawTowerTile(ctx: CanvasRenderingContext2D, x: number, y: number, color: string, border?: boolean) {
-  if (border) {
-    ctx.beginPath();
-
-    ctx.rect(
-      x * TILE_SIZE + (TILE_SIZE - TOWER_SIZE) / 2,
-      y * TILE_SIZE + (TILE_SIZE - TOWER_SIZE) / 2,
-      TOWER_SIZE,
-      TOWER_SIZE
-    );
-    ctx.fillStyle = "black";
-
-    ctx.fill();
-
-    ctx.closePath();
-  }
-
-  ctx.beginPath();
-
-  ctx.rect(
-    x * TILE_SIZE + (TILE_SIZE - TOWER_SIZE) / 2 + (border ? 1 : 0),
-    y * TILE_SIZE + (TILE_SIZE - TOWER_SIZE) / 2 + (border ? 1 : 0),
-    TOWER_SIZE + (border ? -2 : 0),
-    TOWER_SIZE + (border ? -2 : 0)
-  );
-  ctx.fillStyle = color;
-
   ctx.fill();
 
   ctx.closePath();
@@ -162,6 +130,83 @@ export function drawAndCleanupObjects(ctx: CanvasRenderingContext2D, objects: Ga
   }
 }
 
-export function pathToPoint(map: string[], fromPosition: Point, toPosition: Point): Point[] {
+interface SNode {
+  key: string;
+  pos: Point;
+  tilePos: Point;
+}
+
+export function pathToPoint(map: string[], fromPosition: Point, toPosition: Point): SNode[] {
+  function h(node: SNode) {
+    return calculateDistance(node.pos, toPosition);
+  }
+
+  function createNode(tilePos: Point): SNode {
+    const { x, y } = tileToPixels(tilePos);
+    return { key: tilePos.x + ";" + tilePos.y, pos: { x: x + TILE_SIZE / 2, y: y + TILE_SIZE / 2 }, tilePos: tilePos };
+  }
+
+  function reconstructPath(cameFrom: { [key in string]: SNode }, current: SNode, startKey: string) {
+    const totalPath = [current];
+    while (cameFrom[current.key]) {
+      current = cameFrom[current.key];
+      totalPath.push(current);
+      if (current.key === startKey) {
+        break;
+      }
+    }
+
+    totalPath.reverse();
+    return totalPath;
+  }
+
+  const goalNode = createNode(pixelsToTile(toPosition));
+
+  const openSet: { [key in string]: SNode } = {};
+  const startNode = createNode(pixelsToTile(fromPosition));
+  openSet[startNode.key] = startNode;
+
+  const cameFrom: { [key in string]: SNode } = {};
+
+  const gScore: { [key in string]: number } = {};
+  gScore[startNode.key] = 0;
+
+  const fScore: { [key in string]: number } = {};
+  fScore[startNode.key] = h(startNode);
+
+  while (Object.keys(openSet).length > 0) {
+    const current = Object.values(openSet).reduce((prev, curr) =>
+      !prev ? curr : fScore[prev.key] <= fScore[curr.key] ? prev : curr
+    );
+    if (current.key === goalNode.key) {
+      return reconstructPath(cameFrom, current, startNode.key);
+    }
+
+    delete openSet[current.key];
+    const indexDeltas = [
+      [0, -1],
+      [1, 0],
+      [0, 1],
+      [-1, 0],
+    ];
+    for (const [deltaX, deltaY] of indexDeltas) {
+      const neighborX = current.tilePos.x + deltaX;
+      const neighborY = current.tilePos.y + deltaY;
+
+      if (map[neighborY] && map[neighborY][neighborX] === " ") {
+        const tentativeGScore = gScore[current.key] + TILE_SIZE;
+        const neighbor = createNode({ x: neighborX, y: neighborY });
+        if (tentativeGScore < (gScore[neighbor.key] || Number.MAX_SAFE_INTEGER)) {
+          cameFrom[neighbor.key] = current;
+          gScore[neighbor.key] = tentativeGScore;
+          fScore[neighbor.key] = tentativeGScore + h(neighbor);
+          if (!openSet[neighbor.key]) {
+            openSet[neighbor.key] = neighbor;
+          }
+        }
+      }
+    }
+  }
+
   return [];
 }
