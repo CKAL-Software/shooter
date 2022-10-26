@@ -1,5 +1,5 @@
 import { getAccessToken } from "./credentialsHandler";
-import { BACKEND_URL, TICK_DURATION } from "./definitions";
+import { BACKEND_URL, Point, TICK_DURATION } from "./definitions";
 import { LeaderboardEntry } from "./models";
 
 export async function doFetch(
@@ -109,4 +109,16 @@ export function ticksToPrettyTime(ticks: number, onlySeconds?: boolean) {
       .padStart(2, "0") +
     (onlySeconds ? "" : "." + (hundreths % 100).toString().padStart(2, "0"))
   );
+}
+
+export function intersects(a: Point, b: Point, c: Point, d: Point) {
+  var det, gamma, lambda;
+  det = (b.x - a.x) * (d.y - c.y) - (d.x - c.x) * (b.y - a.y);
+  if (det === 0) {
+    return false;
+  } else {
+    lambda = ((d.y - c.y) * (d.x - a.x) + (c.x - d.x) * (d.y - a.y)) / det;
+    gamma = ((a.y - b.y) * (d.x - a.x) + (b.x - a.x) * (d.y - a.y)) / det;
+    return 0 < lambda && lambda < 1 && 0 < gamma && gamma < 1;
+  }
 }

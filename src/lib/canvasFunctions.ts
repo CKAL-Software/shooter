@@ -49,6 +49,8 @@ export function getObstacles(map: string[]) {
       }
     }
   }
+
+  return obstacles;
 }
 
 export function getSurroundingObstacles(map: String[], pixelPos: Point) {

@@ -1,9 +1,10 @@
-import { gameStats, map, numberAnimations, player } from "../../Shooter";
+import { enemies, gameStats, map, numberAnimations, player } from "../../Shooter";
 import { Point } from "../../lib/definitions";
 import { MovingObject } from "../MovingObject";
-import { calculateDirection, calculateDistance, pathToPoint } from "../../lib/canvasFunctions";
+import { calculateDirection, calculateDistance, getObstacles, pathToPoint } from "../../lib/canvasFunctions";
 import { NumberAnimation } from "../NumberAnimation";
 import { SNode } from "../../lib/models";
+import { intersects } from "../../lib/functions";
 
 export abstract class Enemy extends MovingObject {
   private maxHp: number;
@@ -47,6 +48,19 @@ export abstract class Enemy extends MovingObject {
       return;
     }
 
+    // check collision with units
+    const distanceToPlayer = calculateDistance(this.position, player.getPosition());
+    if (
+      enemies.find(
+        (e) =>
+          calculateDistance(e.position, this.position) < e.size + this.size &&
+          calculateDistance(e.position, player.getPosition()) < distanceToPlayer
+      )
+    ) {
+      return;
+    }
+
+    // follow path
     const direction = calculateDirection(this.position, this.path[0].pos);
     let changeX = direction.x * this.velocity;
     let changeY = direction.y * this.velocity;
@@ -123,13 +137,49 @@ export abstract class Enemy extends MovingObject {
     this.drawBody(ctx);
     this.drawHealthBar(ctx);
 
-    this.path.forEach((node) => {
-      ctx.beginPath();
-      ctx.arc(node.pos.x, node.pos.y, 5, 0, Math.PI * 2);
-      ctx.fillStyle = "red";
-      ctx.fill();
-      ctx.closePath();
-    });
+    // this.path.forEach((node) => {
+    //   ctx.beginPath();
+    //   ctx.arc(node.pos.x, node.pos.y, 5, 0, Math.PI * 2);
+    //   ctx.fillStyle = "red";
+    //   ctx.fill();
+    //   ctx.closePath();
+    // });
+
+    const canSeePlayer = this.canSeePlayer();
+
+    ctx.beginPath();
+    ctx.moveTo(this.position.x, this.position.y);
+    const { x, y } = player.getPosition();
+    ctx.lineTo(x, y);
+    ctx.strokeStyle = canSeePlayer ? "green" : "red";
+    ctx.stroke();
+  }
+
+  canSeePlayer() {
+    for (let obstacle of getObstacles(map)) {
+      const { x, y } = obstacle.topLeftPoint;
+      const vertexDeltas = [
+        [0, 0, 50, 0],
+        [0, 0, 0, 50],
+        [50, 0, 0, 50],
+        [0, 50, 50, 0],
+      ];
+
+      for (const [startDeltaX, startDeltaY, endDeltaX, endDeltaY] of vertexDeltas) {
+        if (
+          intersects(
+            this.position,
+            player.getPosition(),
+            { x: x + startDeltaX, y: y + startDeltaY },
+            { x: x + endDeltaX, y: y + endDeltaY }
+          )
+        ) {
+          return false;
+        }
+      }
+    }
+
+    return true;
   }
 
   slow(slowAmount: number, slowDuration: number) {
