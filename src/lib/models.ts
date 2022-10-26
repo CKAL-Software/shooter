@@ -1,3 +1,5 @@
+import { Point } from "./definitions";
+
 export interface UserInfo {
   email: string;
   firstname: string;
@@ -25,4 +27,10 @@ export interface LeaderboardEntry {
   wave: number;
   won: boolean;
   timestamp: number;
+}
+
+export interface SNode {
+  key: string;
+  pos: Point;
+  tilePos: Point;
 }

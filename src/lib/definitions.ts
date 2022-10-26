@@ -7,7 +7,7 @@ export const BACKEND_URL = `https://api.${DOMAIN}/tower-defense/`;
 export const LF_CREDENTIALS = "tower-defense_creds";
 export const AWS_CLIENT_ID = "6nki0f24aj9hrvluekbmkea631";
 
-export const CANVAS_ROWS = 30;
+export const CANVAS_ROWS = 20;
 export const CANVAS_COLUMNS = 30;
 export const TILE_SIZE = 40;
 export const CANVAS_WIDTH = CANVAS_COLUMNS * TILE_SIZE;

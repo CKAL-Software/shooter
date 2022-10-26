@@ -15,10 +15,6 @@ export abstract class MovingObject extends GameObject {
   protected setPosition(pos: Point) {
     this.position = { x: pos.x, y: pos.y };
     this.drawPosition = { x: Math.round(pos.x), y: Math.round(pos.y) };
-    const [isColliding] = this.checkCollision(this.drawPosition);
-    if (isColliding) {
-      this.shouldDraw = false;
-    }
   }
 
   protected shiftPosition(changeX: number, changeY: number) {
