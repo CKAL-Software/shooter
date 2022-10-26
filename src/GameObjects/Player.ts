@@ -1,4 +1,8 @@
+import { calculateDirection } from "../lib/canvasFunctions";
+import { Point } from "../lib/definitions";
+import { projectiles } from "../Shooter";
 import { GameObject } from "./GameObject";
+import { NormalProjectile } from "./Projectiles/NormalProjectile";
 
 export class Player extends GameObject {
   protected moveSpeed = 0.5;
@@ -69,6 +73,19 @@ export class Player extends GameObject {
     this.drawPosition.y = newY;
 
     this.updateSurroundingObstacles();
+  }
+
+  shoot(target: Point) {
+    const direction = calculateDirection(this.getPosition(), { x: target.x, y: target.y });
+
+    const ang = (Math.random() * 30 - 15) * (Math.PI / 180);
+
+    const angledDirection = {
+      x: direction.x * Math.cos(ang) - direction.y * Math.sin(ang),
+      y: direction.x * Math.sin(ang) + direction.y * Math.cos(ang),
+    };
+
+    projectiles.push(new NormalProjectile(this.getPosition(), 3, 10, 4, "black", angledDirection, true));
   }
 
   getVelocity() {

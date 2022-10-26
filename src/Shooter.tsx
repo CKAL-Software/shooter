@@ -1,16 +1,9 @@
 import { useEffect, useState } from "react";
-import {
-  drawBackground,
-  drawAndCleanupObjects,
-  getMousePos,
-  calculateDirection,
-  getObstacles,
-} from "./lib/canvasFunctions";
+import { drawBackground, drawAndCleanupObjects, getMousePos, getObstacles } from "./lib/canvasFunctions";
 import { Point, CANVAS_HEIGHT, CANVAS_WIDTH, TICK_DURATION, ActualProjectile } from "./lib/definitions";
 import { Enemy } from "./GameObjects/Enemies/Enemy";
 import { standardMap } from "./Definitions/Maps";
 import { Player } from "./GameObjects/Player";
-import { NormalProjectile } from "./GameObjects/Projectiles/NormalProjectile";
 import { NumberAnimation } from "./GameObjects/NumberAnimation";
 import { ControlPanel } from "./components/controlPanel";
 import { BasicEnemy } from "./GameObjects/Enemies/BasicEnemy";
@@ -70,21 +63,8 @@ export function Shooter(props: TowerDefenseProps) {
       mousePos = getMousePos(canvas, mouseEvent);
     };
 
-    numbersDiv.onmousedown = (mouseEvent) => {
-      // const angle = Math.random() * Math.PI * 2;
-      // const x = Math.cos(angle) * 50;
-      // const y = Math.sin(angle) * 50;
-
-      const direction = calculateDirection(player.getPosition(), { x: mousePos.x, y: mousePos.y });
-
-      const ang = (Math.random() * 30 - 15) * (Math.PI / 180);
-
-      const angledDirection = {
-        x: direction.x * Math.cos(ang) - direction.y * Math.sin(ang),
-        y: direction.x * Math.sin(ang) + direction.y * Math.cos(ang),
-      };
-
-      projectiles.push(new NormalProjectile(player.getPosition(), 3, 10, 10, "black", angledDirection, true));
+    numbersDiv.onmousedown = () => {
+      player.shoot(mousePos);
     };
 
     if (game) {
