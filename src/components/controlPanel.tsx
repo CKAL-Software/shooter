@@ -10,7 +10,7 @@ export function ControlPanel(props: ControlPanelProps) {
         background: "lightgray",
         height: CANVAS_HEIGHT,
         fontSize: "24px",
-        width: "256px",
+        width: 300,
         overflow: "hidden",
         userSelect: "none",
       }}

@@ -1,6 +1,7 @@
 import { Point } from "../../lib/definitions";
 import { Enemy } from "../Enemies/Enemy";
 import { MovingObject } from "../MovingObject";
+import { Player } from "../Player";
 
 export abstract class Projectile extends MovingObject {
   protected color: string;
@@ -30,7 +31,7 @@ export abstract class Projectile extends MovingObject {
     ctx.closePath();
   }
 
-  hitEnemy(enemyHit: Enemy) {
+  hitEnemy(enemyHit: Enemy | Player) {
     enemyHit.inflictDamage(this.damage);
     this.shouldDraw = false;
   }

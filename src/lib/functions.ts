@@ -122,3 +122,76 @@ export function intersects(a: Point, b: Point, c: Point, d: Point) {
     return 0 < lambda && lambda < 1 && 0 < gamma && gamma < 1;
   }
 }
+
+/**
+ * Return the firing solution for a projectile starting at 'src' with
+ * velocity 'v', to hit a target, 'dst'.
+ *
+ * @param ({x, y}) src position of shooter
+ * @param ({x, y, vx, vy}) dst position & velocity of target
+ * @param (Number) v   speed of projectile
+ *
+ * @return ({x, y}) Coordinate at which to fire (and where intercept occurs). Or `null` if target cannot be hit.
+ */
+export function intercept(src: Point, dst: { x: number; y: number; vx: number; vy: number }, v: number) {
+  const tx = dst.x - src.x;
+  const ty = dst.y - src.y;
+  const tvx = dst.vx;
+  const tvy = dst.vy;
+
+  // Get quadratic equation components
+  const a = tvx * tvx + tvy * tvy - v * v;
+  const b = 2 * (tvx * tx + tvy * ty);
+  const c = tx * tx + ty * ty;
+
+  // Solve quadratic
+  const ts = quad(a, b, c); // See quad(), below
+
+  // Find smallest positive solution
+  let sol = null;
+  if (ts) {
+    const t0 = ts[0];
+    const t1 = ts[1];
+    let t = Math.min(t0, t1);
+    if (t < 0) t = Math.max(t0, t1);
+    if (t > 0) {
+      sol = {
+        x: dst.x + dst.vx * t,
+        y: dst.y + dst.vy * t,
+      };
+    }
+  }
+
+  return sol;
+}
+
+/**
+ * Return solutions for quadratic
+ */
+function quad(a: number, b: number, c: number) {
+  let sol = null;
+  if (Math.abs(a) < 1e-6) {
+    if (Math.abs(b) < 1e-6) {
+      sol = Math.abs(c) < 1e-6 ? [0, 0] : null;
+    } else {
+      sol = [-c / b, -c / b];
+    }
+  } else {
+    let disc = b * b - 4 * a * c;
+    if (disc >= 0) {
+      disc = Math.sqrt(disc);
+      a = 2 * a;
+      sol = [(-b - disc) / a, (-b + disc) / a];
+    }
+  }
+  return sol;
+}
+
+// // For example ...
+// const sol = intercept(
+//   {x:2, y:4},              // Starting coord
+//   {x:5, y:7, vx: 2, vy:1}, // Target coord and velocity
+//   5                        // Projectile velocity
+// )
+
+// console.log('Fire at', sol)

@@ -1,12 +1,13 @@
 import { GameObject } from "./GameObject";
 
 export class Player extends GameObject {
-  protected moveSpeed = 2.5;
+  protected moveSpeed = 0.5;
   protected health = 100;
   protected color = "#c67c16";
+  private velocity = { x: 0, y: 0 };
 
   constructor() {
-    super(20, { x: 500, y: 400 });
+    super(15, { x: 200, y: 280 });
   }
 
   draw(ctx: CanvasRenderingContext2D): void {
@@ -62,10 +63,16 @@ export class Player extends GameObject {
       }
     }
 
+    this.velocity = { x: newX - this.drawPosition.x, y: newY - this.drawPosition.y };
+
     this.drawPosition.x = newX;
     this.drawPosition.y = newY;
 
     this.updateSurroundingObstacles();
+  }
+
+  getVelocity() {
+    return this.velocity;
   }
 
   getPosition() {

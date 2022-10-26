@@ -12,6 +12,7 @@ import { standardMap } from "./Definitions/Maps";
 import { Player } from "./GameObjects/Player";
 import { NormalProjectile } from "./GameObjects/Projectiles/NormalProjectile";
 import { NumberAnimation } from "./GameObjects/NumberAnimation";
+import { ControlPanel } from "./components/controlPanel";
 import { BasicEnemy } from "./GameObjects/Enemies/BasicEnemy";
 
 const keysDownMap = new Set<string>();
@@ -21,9 +22,9 @@ export let map = standardMap;
 export let obstacles = getObstacles(map);
 export const player = new Player();
 export const enemies: Enemy[] = [
-  new BasicEnemy({ x: 200, y: 400 }, 50, 1, 60, 100),
-  new BasicEnemy({ x: 100, y: 100 }, 50, 1, 60, 100),
-  new BasicEnemy({ x: 100, y: 150 }, 150, 1, 60, 100),
+  // new BasicEnemy({ x: 200, y: 400 }, 50, 1, 60, 100),
+  new BasicEnemy({ x: 100, y: 100 }, 50, 0.2, 60, 100),
+  // new BasicEnemy({ x: 100, y: 150 }, 150, 1, 60, 100),
 ];
 export const numberAnimations: NumberAnimation[] = [];
 export const projectiles: ActualProjectile[] = [];
@@ -70,20 +71,20 @@ export function Shooter(props: TowerDefenseProps) {
     };
 
     numbersDiv.onmousedown = (mouseEvent) => {
-      const angle = Math.random() * Math.PI * 2;
-      const x = Math.cos(angle) * 50;
-      const y = Math.sin(angle) * 50;
+      // const angle = Math.random() * Math.PI * 2;
+      // const x = Math.cos(angle) * 50;
+      // const y = Math.sin(angle) * 50;
 
-      projectiles.push(
-        new NormalProjectile(
-          player.getPosition(),
-          3,
-          10,
-          10,
-          "black",
-          calculateDirection(player.getPosition(), { x: mousePos.x + x, y: mousePos.y + y })
-        )
-      );
+      const direction = calculateDirection(player.getPosition(), { x: mousePos.x, y: mousePos.y });
+
+      const ang = (Math.random() * 30 - 15) * (Math.PI / 180);
+
+      const angledDirection = {
+        x: direction.x * Math.cos(ang) - direction.y * Math.sin(ang),
+        y: direction.x * Math.sin(ang) + direction.y * Math.cos(ang),
+      };
+
+      projectiles.push(new NormalProjectile(player.getPosition(), 3, 10, 10, "black", angledDirection, true));
     };
 
     if (game) {
@@ -98,8 +99,8 @@ export function Shooter(props: TowerDefenseProps) {
         keysDownMap.forEach((d) => player.move(d));
 
         drawAndCleanupObjects(game, [player]);
-        drawAndCleanupObjects(game, projectiles);
         drawAndCleanupObjects(game, enemies);
+        drawAndCleanupObjects(game, projectiles);
         drawAndCleanupObjects(game, numberAnimations);
 
         projectiles.forEach((obj) => obj.tick());
@@ -134,7 +135,9 @@ export function Shooter(props: TowerDefenseProps) {
         }}
         tabIndex={0}
       >
-        <div style={{ display: "flex" }}>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr auto 1fr" }}>
+          {/* <div style={{ display: "flex" }}> */}
+          <div />
           <div
             style={{
               position: "relative",
@@ -158,7 +161,7 @@ export function Shooter(props: TowerDefenseProps) {
               </div>
             </div>
           </div>
-          {/* <ControlPanel /> */}
+          <ControlPanel />
         </div>
       </div>
     </div>

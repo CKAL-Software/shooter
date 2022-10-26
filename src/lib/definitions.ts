@@ -1,3 +1,4 @@
+import { CANVAS_COLUMNS, CANVAS_ROWS } from "../Definitions/Maps";
 import { BasicEnemy } from "../GameObjects/Enemies/BasicEnemy";
 import { NormalProjectile } from "../GameObjects/Projectiles/NormalProjectile";
 
@@ -7,8 +8,6 @@ export const BACKEND_URL = `https://api.${DOMAIN}/tower-defense/`;
 export const LF_CREDENTIALS = "tower-defense_creds";
 export const AWS_CLIENT_ID = "6nki0f24aj9hrvluekbmkea631";
 
-export const CANVAS_ROWS = 20;
-export const CANVAS_COLUMNS = 30;
 export const TILE_SIZE = 40;
 export const CANVAS_WIDTH = CANVAS_COLUMNS * TILE_SIZE;
 export const CANVAS_HEIGHT = CANVAS_ROWS * TILE_SIZE;

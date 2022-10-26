@@ -1,10 +1,11 @@
-import { enemies, gameStats, map, numberAnimations, player } from "../../Shooter";
+import { enemies, gameStats, map, numberAnimations, player, projectiles } from "../../Shooter";
 import { Point } from "../../lib/definitions";
 import { MovingObject } from "../MovingObject";
 import { calculateDirection, calculateDistance, getObstacles, pathToPoint } from "../../lib/canvasFunctions";
 import { NumberAnimation } from "../NumberAnimation";
 import { SNode } from "../../lib/models";
-import { intersects } from "../../lib/functions";
+import { intercept, intersects } from "../../lib/functions";
+import { NormalProjectile } from "../Projectiles/NormalProjectile";
 
 export abstract class Enemy extends MovingObject {
   private maxHp: number;
@@ -15,6 +16,8 @@ export abstract class Enemy extends MovingObject {
   private reward: number;
   private path: SNode[] = [];
   private ticksUntilPathRecalculated = 0;
+  private shootCounter = 0;
+  private canSeePlayer = false;
   protected actualVelocity: number;
   protected slowCounter = 0;
 
@@ -29,6 +32,7 @@ export abstract class Enemy extends MovingObject {
   ) {
     super(startPosition, velocity, size);
     this.actualVelocity = velocity;
+    this.velocity = velocity;
     this.maxHp = hp;
     this.currentHp = hp;
     this.size = size;
@@ -44,10 +48,6 @@ export abstract class Enemy extends MovingObject {
 
     // this.shiftPosition(changeX, changeY);
 
-    if (this.path.length === 0) {
-      return;
-    }
-
     // check collision with units
     const distanceToPlayer = calculateDistance(this.position, player.getPosition());
     if (
@@ -57,6 +57,18 @@ export abstract class Enemy extends MovingObject {
           calculateDistance(e.position, player.getPosition()) < distanceToPlayer
       )
     ) {
+      return;
+    }
+
+    if (this.canSeePlayer) {
+      const direction = calculateDirection(this.position, player.getPosition());
+      const changeX = direction.x * this.velocity;
+      const changeY = direction.y * this.velocity;
+      this.shiftPosition(changeX, changeY);
+      return;
+    }
+
+    if (this.path.length === 0) {
       return;
     }
 
@@ -80,7 +92,49 @@ export abstract class Enemy extends MovingObject {
   }
 
   tick() {
+    this.updateCanSeePlayer();
+    this.updateSurroundingObstacles();
+    this.updatePath();
+
+    if (this.canSeePlayer) {
+      this.shootCounter--;
+
+      if (this.shootCounter <= 0) {
+        this.shootCounter = Math.round(Math.random() * 200) + 100;
+
+        const playerPos = player.getPosition();
+        const playerVel = player.getVelocity();
+
+        // console.log(playerVel.x, playerVel.y, 1.5);
+
+        const leadShotDirection = intercept(
+          this.position,
+          {
+            x: playerPos.x,
+            y: playerPos.y,
+            vx: playerVel.x,
+            vy: playerVel.y,
+          },
+          1.5
+        );
+
+        projectiles.push(
+          new NormalProjectile(
+            this.position,
+            1.5,
+            5,
+            5,
+            "red",
+            calculateDirection(this.position, leadShotDirection || player.getPosition())
+          )
+        );
+      }
+    }
+
     this.move();
+  }
+
+  updatePath() {
     this.ticksUntilPathRecalculated--;
 
     if (this.ticksUntilPathRecalculated <= 0) {
@@ -88,17 +142,9 @@ export abstract class Enemy extends MovingObject {
       this.path = pathToPoint(map, this.position, player.getPosition()).slice(1);
     }
 
-    if (this.slowCounter > 0) {
-      this.slowCounter--;
-    } else {
-      this.actualVelocity = this.velocity;
-    }
-
     if (this.path.length > 0 && calculateDistance(this.position, this.path[0].pos) <= 1) {
       this.path = this.path.slice(1);
     }
-
-    this.updateSurroundingObstacles();
   }
 
   drawBody(ctx: CanvasRenderingContext2D) {
@@ -145,17 +191,15 @@ export abstract class Enemy extends MovingObject {
     //   ctx.closePath();
     // });
 
-    const canSeePlayer = this.canSeePlayer();
-
-    ctx.beginPath();
-    ctx.moveTo(this.position.x, this.position.y);
-    const { x, y } = player.getPosition();
-    ctx.lineTo(x, y);
-    ctx.strokeStyle = canSeePlayer ? "green" : "red";
-    ctx.stroke();
+    // ctx.beginPath();
+    // ctx.moveTo(this.position.x, this.position.y);
+    // const { x, y } = player.getPosition();
+    // ctx.lineTo(x, y);
+    // ctx.strokeStyle = this.canSeePlayer ? "green" : "red";
+    // ctx.stroke();
   }
 
-  canSeePlayer() {
+  updateCanSeePlayer() {
     for (let obstacle of getObstacles(map)) {
       const { x, y } = obstacle.topLeftPoint;
       const vertexDeltas = [
@@ -174,12 +218,13 @@ export abstract class Enemy extends MovingObject {
             { x: x + endDeltaX, y: y + endDeltaY }
           )
         ) {
-          return false;
+          this.canSeePlayer = false;
+          return;
         }
       }
     }
 
-    return true;
+    this.canSeePlayer = true;
   }
 
   slow(slowAmount: number, slowDuration: number) {
