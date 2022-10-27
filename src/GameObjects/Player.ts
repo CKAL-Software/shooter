@@ -1,14 +1,17 @@
 import { calculateDirection } from "../lib/canvasFunctions";
 import { Point } from "../lib/definitions";
 import { projectiles } from "../Shooter";
+import { Gun } from "../Weapons/Gun";
+import { Pistol } from "../Weapons/Pistol";
 import { GameObject } from "./GameObject";
 import { NormalProjectile } from "./Projectiles/NormalProjectile";
 
 export class Player extends GameObject {
-  protected moveSpeed = 0.5;
-  protected health = 100;
-  protected color = "#c67c16";
+  private moveSpeed = 2.5;
+  private health = 100;
+  private color = "#c67c16";
   private velocity = { x: 0, y: 0 };
+  private currentWeapon = new Pistol(6, 1.2, 3, 4, "black", 100);
 
   constructor() {
     super(15, { x: 200, y: 280 });
@@ -85,7 +88,8 @@ export class Player extends GameObject {
       y: direction.x * Math.sin(ang) + direction.y * Math.cos(ang),
     };
 
-    projectiles.push(new NormalProjectile(this.getPosition(), 3, 10, 4, "black", angledDirection, true));
+    this.currentWeapon.fire(angledDirection);
+    // projectiles.push(new NormalProjectile(this.getPosition(), 3, 10, 4, "black", angledDirection, true));
   }
 
   getVelocity() {

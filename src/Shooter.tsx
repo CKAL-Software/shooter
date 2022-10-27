@@ -15,9 +15,9 @@ export let map = standardMap;
 export let obstacles = getObstacles(map);
 export const player = new Player();
 export const enemies: Enemy[] = [
-  // new BasicEnemy({ x: 200, y: 400 }, 50, 1, 60, 100),
-  new BasicEnemy({ x: 100, y: 100 }, 50, 0.2, 60, 100),
-  // new BasicEnemy({ x: 100, y: 150 }, 150, 1, 60, 100),
+  new BasicEnemy({ x: 200, y: 400 }, 50, 1, 60, 100),
+  new BasicEnemy({ x: 100, y: 100 }, 50, 1, 60, 100),
+  new BasicEnemy({ x: 100, y: 150 }, 150, 0.5, 60, 100),
 ];
 export const numberAnimations: NumberAnimation[] = [];
 export const projectiles: ActualProjectile[] = [];
@@ -69,11 +69,6 @@ export function Shooter(props: TowerDefenseProps) {
 
     if (game) {
       id = setInterval(() => {
-        if (!gameStats.isFast && tick % 2 === 0) {
-          tick++;
-          return;
-        }
-
         game.clearRect(0, 0, canvas.width, canvas.height);
 
         keysDownMap.forEach((d) => player.move(d));
