@@ -4,14 +4,28 @@ import { Enemy } from "../Enemies/Enemy";
 import { MovingObject } from "../MovingObject";
 import { Player } from "../Player";
 
+export interface ProjectileConfiguration {
+  startPosition: Point;
+  direction: Point;
+  velocity: number;
+  damage: number;
+  size: number;
+  color: string;
+  shotByPlayer: boolean;
+}
+
 export abstract class Projectile extends MovingObject {
   protected color: string;
   protected damage: number;
+  protected direction: Point;
+  protected shotByPlayer = false;
 
-  constructor(startPosition: Point, velocity: number, damage: number, size: number, color: string) {
-    super(startPosition, velocity, size);
-    this.color = color;
-    this.damage = damage;
+  constructor(config: ProjectileConfiguration) {
+    super(config.startPosition, config.velocity, config.size);
+    this.color = config.color;
+    this.damage = config.damage;
+    this.shotByPlayer = config.shotByPlayer;
+    this.direction = config.direction;
   }
 
   abstract hitEnemyIfCollision(): void;

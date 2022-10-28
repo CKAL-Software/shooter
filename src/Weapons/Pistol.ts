@@ -14,6 +14,6 @@ export class Pistol extends Gun {
   }
 
   calculateNextProjectilesDamage(): number {
-    return Math.round(Math.random() * 2) + 30;
+    return Math.round(Math.random() * 3) + 7;
   }
 }

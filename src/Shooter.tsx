@@ -1,6 +1,19 @@
 import { useEffect, useState } from "react";
-import { drawBackground, drawAndCleanupObjects, getMousePos, getObstacles } from "./lib/canvasFunctions";
-import { Point, CANVAS_HEIGHT, CANVAS_WIDTH, TICK_DURATION, ActualProjectile } from "./lib/definitions";
+import {
+  drawBackground,
+  drawAndCleanupObjects,
+  getMousePos,
+  getObstacles,
+  findRandomLocation,
+} from "./lib/canvasFunctions";
+import {
+  Point,
+  CANVAS_HEIGHT,
+  CANVAS_WIDTH,
+  TICK_DURATION,
+  ActualProjectile,
+  TICK_DURATION_S,
+} from "./lib/definitions";
 import { Enemy } from "./GameObjects/Enemies/Enemy";
 import { standardMap } from "./Definitions/Maps";
 import { Player } from "./GameObjects/Player";
@@ -21,6 +34,7 @@ export const enemies: Enemy[] = [
   // new BasicEnemy({ startPosition: { x: 200, y: 400 }, hp: 50, velocity: 2, damage: 60, reward: 50 }),
   // new BasicEnemy({ startPosition: { x: 200, y: 400 }, hp: 50, velocity: 2, damage: 60, reward: 50 }),
 ];
+export let timeUntilNextSpawn = 3;
 export const miscellaneous: GameObject[] = [];
 export const numberAnimations: NumberAnimation[] = [];
 export const projectiles: ActualProjectile[] = [];
@@ -97,6 +111,15 @@ export function Shooter() {
         numberAnimations.forEach((obj) => obj.tick());
         miscellaneous.forEach((obj) => obj.tick());
         player.tick();
+
+        timeUntilNextSpawn -= TICK_DURATION_S;
+
+        if (timeUntilNextSpawn < 0) {
+          timeUntilNextSpawn = 3;
+          enemies.push(
+            new BasicEnemy({ startPosition: findRandomLocation(), hp: 50, velocity: 1, damage: 60, reward: 50 })
+          );
+        }
 
         setNums([...numberAnimations]);
 

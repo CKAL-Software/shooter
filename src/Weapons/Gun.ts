@@ -1,5 +1,7 @@
 import { NormalProjectile } from "../GameObjects/Projectiles/NormalProjectile";
+import { calculateDirection } from "../lib/canvasFunctions";
 import { experienceThresholdsNormal, Point, TICK_DURATION_S } from "../lib/definitions";
+import { changeDirection } from "../lib/functions";
 import { player, projectiles } from "../Shooter";
 
 export interface GunConfigutation {
@@ -50,16 +52,21 @@ export abstract class Gun {
     this.ammo--;
     this.magazineAmmo--;
     this.fireTimeRemaining = 60 / this.fireRate;
+
+    const direction = calculateDirection(player.getPosition(), target);
+    const newAngle = Math.random() * 30 - 15;
+    const newDirection = changeDirection(direction, newAngle);
+
     projectiles.push(
-      new NormalProjectile(
-        player.getPosition(),
-        this.velocity,
-        this.calculateNextProjectilesDamage(),
-        this.projectileSize,
-        this.projectileColor,
-        target,
-        true
-      )
+      new NormalProjectile({
+        startPosition: player.getPosition(),
+        direction: newDirection,
+        velocity: this.velocity,
+        damage: this.calculateNextProjectilesDamage(),
+        size: this.projectileSize,
+        color: this.projectileColor,
+        shotByPlayer: true,
+      })
     );
   }
 

@@ -8,6 +8,7 @@ export abstract class MovingObject extends GameObject {
   constructor(position: Point, velocity: number, size: number) {
     super(size);
     this.position = position;
+    this.drawPosition = position;
     this.velocity = velocity;
     this.size = size;
   }

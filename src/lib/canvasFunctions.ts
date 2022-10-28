@@ -1,4 +1,6 @@
+import { CANVAS_COLUMNS, CANVAS_ROWS } from "../Definitions/Maps";
 import { GameObject } from "../GameObjects/GameObject";
+import { map } from "../Shooter";
 import { Point, TILE_SIZE } from "./definitions";
 import { MinHeap } from "./minHeap";
 import { SNode } from "./models";
@@ -223,4 +225,16 @@ export function pathToPoint(map: string[], fromPosition: Point, toPosition: Poin
   }
 
   return [];
+}
+
+export function findRandomLocation() {
+  let randomRow = Math.floor(Math.random() * CANVAS_ROWS);
+  let randomColumn = Math.floor(Math.random() * CANVAS_COLUMNS);
+
+  while (map[randomRow][randomColumn] !== " ") {
+    randomRow = Math.floor(Math.random() * CANVAS_ROWS);
+    randomColumn = Math.floor(Math.random() * CANVAS_COLUMNS);
+  }
+
+  return { x: randomColumn * TILE_SIZE + TILE_SIZE / 2, y: randomRow * TILE_SIZE + TILE_SIZE / 2 };
 }

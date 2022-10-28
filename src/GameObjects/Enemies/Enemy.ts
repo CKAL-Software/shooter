@@ -1,5 +1,5 @@
 import { enemies, gameStats, map, miscellaneous, numberAnimations, player, projectiles } from "../../Shooter";
-import { Point } from "../../lib/definitions";
+import { Point, TICK_DURATION_S } from "../../lib/definitions";
 import { MovingObject } from "../MovingObject";
 import { calculateDirection, calculateDistance, drawBall, getObstacles, pathToPoint } from "../../lib/canvasFunctions";
 import { NumberAnimation } from "../NumberAnimation";
@@ -29,12 +29,10 @@ export abstract class Enemy extends MovingObject {
   private ticksUntilPathRecalculated = 0;
   private shootCounter = 0;
   private canSeePlayer = false;
-  protected actualVelocity: number;
-  protected slowCounter = 0;
+  private spawnTimeLeft = 4;
 
   constructor(configuration: EnemyConfiguration) {
     super(configuration.startPosition, configuration.velocity, configuration.size);
-    this.actualVelocity = configuration.velocity;
     this.velocity = configuration.velocity;
     this.maxHp = configuration.hp;
     this.currentHp = configuration.hp;
@@ -45,17 +43,15 @@ export abstract class Enemy extends MovingObject {
   }
 
   move() {
-    // const direction = calculateDirection(this.position, player.getPosition());
-    // const changeX = direction.x * this.velocity;
-    // const changeY = direction.y * this.velocity;
+    if (this.spawnTimeLeft > 0) {
+      return;
+    }
 
-    // this.shiftPosition(changeX, changeY);
-
-    // check collision with units
     const distanceToPlayer = calculateDistance(this.position, player.getPosition());
     if (
       enemies.find(
         (e) =>
+          e.spawnTimeLeft <= 0 &&
           calculateDistance(e.position, this.position) < e.size + this.size &&
           calculateDistance(e.position, player.getPosition()) < distanceToPlayer
       )
@@ -95,6 +91,11 @@ export abstract class Enemy extends MovingObject {
   }
 
   tick() {
+    if (this.spawnTimeLeft > 0) {
+      this.spawnTimeLeft -= TICK_DURATION_S;
+      return;
+    }
+
     this.updateCanSeePlayer();
     this.updateSurroundingObstacles();
     this.updatePath();
@@ -108,8 +109,6 @@ export abstract class Enemy extends MovingObject {
         const playerPos = player.getPosition();
         const playerVel = player.getVelocity();
 
-        // console.log(playerVel.x, playerVel.y, 1.5);
-
         const leadShotDirection = intercept(
           this.position,
           {
@@ -122,14 +121,15 @@ export abstract class Enemy extends MovingObject {
         );
 
         projectiles.push(
-          new NormalProjectile(
-            this.position,
-            1.5,
-            5,
-            5,
-            "red",
-            calculateDirection(this.position, leadShotDirection || player.getPosition())
-          )
+          new NormalProjectile({
+            startPosition: this.position,
+            direction: calculateDirection(this.position, leadShotDirection || player.getPosition()),
+            velocity: 1.5,
+            damage: 5,
+            size: 5,
+            color: "red",
+            shotByPlayer: false,
+          })
         );
       }
     }
@@ -151,12 +151,15 @@ export abstract class Enemy extends MovingObject {
   }
 
   drawHealthBar(ctx: CanvasRenderingContext2D, doubleLength?: boolean) {
+    const width = 40;
+    const height = 8;
+
     ctx.beginPath();
     ctx.rect(
-      this.drawPosition.x - 15 * (doubleLength ? 2 : 1),
-      this.drawPosition.y - (this.size + 10),
-      30 * (doubleLength ? 2 : 1),
-      6
+      this.drawPosition.x - (width / 2) * (doubleLength ? 2 : 1),
+      this.drawPosition.y - (this.size + height + 4),
+      width * (doubleLength ? 2 : 1),
+      height
     );
     ctx.fillStyle = "red";
     ctx.fill();
@@ -164,10 +167,10 @@ export abstract class Enemy extends MovingObject {
 
     ctx.beginPath();
     ctx.rect(
-      this.drawPosition.x - 15 * (doubleLength ? 2 : 1),
-      this.drawPosition.y - (this.size + 10),
-      Math.round(30 * (doubleLength ? 2 : 1) * (this.currentHp / this.maxHp)),
-      6
+      this.drawPosition.x - (width / 2) * (doubleLength ? 2 : 1),
+      this.drawPosition.y - (this.size + height + 4),
+      Math.round(width * (doubleLength ? 2 : 1) * (this.currentHp / this.maxHp)),
+      height
     );
     ctx.fillStyle = "#3cff00";
     ctx.fill();
@@ -175,6 +178,11 @@ export abstract class Enemy extends MovingObject {
   }
 
   draw(ctx: CanvasRenderingContext2D) {
+    if (this.spawnTimeLeft > 0) {
+      drawBall(ctx, this.drawPosition, this.size * (1 - this.spawnTimeLeft / 4), this.color);
+      return;
+    }
+
     drawBall(ctx, this.drawPosition, this.size, this.color);
     this.drawHealthBar(ctx);
 
@@ -220,11 +228,6 @@ export abstract class Enemy extends MovingObject {
     }
 
     this.canSeePlayer = true;
-  }
-
-  slow(slowAmount: number, slowDuration: number) {
-    this.actualVelocity = Math.max(0.1, this.actualVelocity - slowAmount);
-    this.slowCounter = slowDuration;
   }
 
   inflictDamage(damage: number) {

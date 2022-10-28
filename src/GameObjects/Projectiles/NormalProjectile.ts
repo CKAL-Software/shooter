@@ -1,27 +1,9 @@
 import { enemies, player } from "../../Shooter";
 import { calculateDistance } from "../../lib/canvasFunctions";
-import { CANVAS_HEIGHT, CANVAS_WIDTH, Point } from "../../lib/definitions";
+import { CANVAS_HEIGHT, CANVAS_WIDTH } from "../../lib/definitions";
 import { Projectile } from "./Projectile";
 
 export class NormalProjectile extends Projectile {
-  private direction: Point;
-  private shotByPlayer = false;
-
-  constructor(
-    startPosition: Point,
-    velocity: number,
-    damage: number,
-    size: number,
-    color: string,
-    direction: Point,
-    shotByPlayer?: boolean
-  ) {
-    super(startPosition, velocity, damage, size, color);
-
-    this.direction = direction;
-    this.shotByPlayer = !!shotByPlayer;
-  }
-
   private checkIfVisible() {
     if (
       this.position.x < 0 ||
