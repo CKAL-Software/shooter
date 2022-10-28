@@ -255,6 +255,10 @@ export abstract class Enemy extends MovingObject {
     }
   }
 
+  hasSpawned() {
+    return this.spawnTimeLeft <= 0;
+  }
+
   getSize() {
     return this.size;
   }

@@ -17,7 +17,8 @@ export class NormalProjectile extends Projectile {
 
   hitEnemyIfCollision() {
     const enemyHit = enemies.find(
-      (enemy) => calculateDistance(this.position, enemy.getPosition()) <= enemy.getSize() + this.size
+      (enemy) =>
+        enemy.hasSpawned() && calculateDistance(this.position, enemy.getPosition()) <= enemy.getSize() + this.size
     );
 
     if (enemyHit) {
