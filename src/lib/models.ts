@@ -34,3 +34,5 @@ export interface SNode {
   pos: Point;
   tilePos: Point;
 }
+
+export type Direction = "a" | "s" | "d" | "w";

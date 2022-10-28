@@ -118,6 +118,10 @@ export function calculateDirection(fromPos: Point, toPos: Point) {
 
   const distance = Math.sqrt(difX * difX + difY * difY);
 
+  if (distance === 0) {
+    return { x: 0, y: 0 };
+  }
+
   const changeX = difX / distance;
   const changeY = difY / distance;
 

@@ -2,6 +2,16 @@ import { NormalProjectile } from "../GameObjects/Projectiles/NormalProjectile";
 import { experienceThresholdsNormal, Point, TICK_DURATION_S } from "../lib/definitions";
 import { player, projectiles } from "../Shooter";
 
+export interface GunConfigutation {
+  magazineSize: number;
+  reloadTime: number;
+  fireRate: number;
+  velocity: number;
+  projectileSize: number;
+  projectileColor: string;
+  ammo: number;
+}
+
 export abstract class Gun {
   protected level = 1;
   protected experience = 0;
@@ -15,23 +25,16 @@ export abstract class Gun {
   protected velocity: number;
   protected projectileSize: number;
   protected projectileColor: string;
+  protected shouldReload = false;
 
-  constructor(
-    magazineSize: number,
-    reloadTime: number,
-    fireRate: number,
-    velocity: number,
-    projectileSize: number,
-    projectileColor: string,
-    ammo: number
-  ) {
-    this.ammo = ammo;
-    this.reloadTime = reloadTime;
-    this.magazineSize = magazineSize;
-    this.fireRate = fireRate;
-    this.velocity = velocity;
-    this.projectileSize = projectileSize;
-    this.projectileColor = projectileColor;
+  constructor(configuration: GunConfigutation) {
+    this.ammo = configuration.ammo;
+    this.reloadTime = configuration.reloadTime;
+    this.magazineSize = configuration.magazineSize;
+    this.fireRate = configuration.fireRate;
+    this.velocity = configuration.velocity;
+    this.projectileSize = configuration.projectileSize;
+    this.projectileColor = configuration.projectileColor;
     this.reload();
   }
 
@@ -58,27 +61,29 @@ export abstract class Gun {
         true
       )
     );
-
-    if (this.magazineAmmo === 0) {
-      this.initiateReload();
-    }
   }
 
   initiateReload() {
     if (this.reloadTimeRemaining <= 0 && this.ammo > 0) {
       this.reloadTimeRemaining = this.reloadTime;
+      this.shouldReload = true;
     }
   }
 
   reload() {
-    this.magazineAmmo = this.ammo >= this.magazineSize ? this.magazineSize : this.ammo;
+    this.magazineAmmo = Math.min(this.magazineSize, this.ammo);
+    this.shouldReload = false;
   }
 
   tick() {
     this.reloadTimeRemaining -= TICK_DURATION_S;
     this.fireTimeRemaining -= TICK_DURATION_S;
 
-    if (this.reloadTimeRemaining <= 0) {
+    if (this.magazineAmmo === 0 && !this.shouldReload) {
+      this.initiateReload();
+    }
+
+    if (this.shouldReload && this.reloadTimeRemaining <= 0) {
       this.reload();
     }
   }
@@ -92,8 +97,24 @@ export abstract class Gun {
     }
   }
 
+  getExperience() {
+    return this.experience;
+  }
+
   getLevel() {
     return this.level;
+  }
+
+  getAmmo() {
+    return this.ammo;
+  }
+
+  getMagazineSize() {
+    return this.magazineSize;
+  }
+
+  getMagazineAmmo() {
+    return this.magazineAmmo;
   }
 
   abstract calculateNextProjectilesDamage(): number;

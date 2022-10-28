@@ -186,12 +186,3 @@ function quad(a: number, b: number, c: number) {
   }
   return sol;
 }
-
-// // For example ...
-// const sol = intercept(
-//   {x:2, y:4},              // Starting coord
-//   {x:5, y:7, vx: 2, vy:1}, // Target coord and velocity
-//   5                        // Projectile velocity
-// )
-
-// console.log('Fire at', sol)

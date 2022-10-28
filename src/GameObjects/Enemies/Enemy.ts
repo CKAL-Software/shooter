@@ -7,6 +7,16 @@ import { SNode } from "../../lib/models";
 import { intercept, intersects } from "../../lib/functions";
 import { NormalProjectile } from "../Projectiles/NormalProjectile";
 
+export interface EnemyConfiguration {
+  startPosition: Point;
+  hp: number;
+  size: number;
+  color: string;
+  velocity: number;
+  damage: number;
+  reward: number;
+}
+
 export abstract class Enemy extends MovingObject {
   private maxHp: number;
   private currentHp: number;
@@ -21,24 +31,16 @@ export abstract class Enemy extends MovingObject {
   protected actualVelocity: number;
   protected slowCounter = 0;
 
-  constructor(
-    startPosition: Point,
-    hp: number,
-    size: number,
-    color: string,
-    velocity: number,
-    damage: number,
-    reward: number
-  ) {
-    super(startPosition, velocity, size);
-    this.actualVelocity = velocity;
-    this.velocity = velocity;
-    this.maxHp = hp;
-    this.currentHp = hp;
-    this.size = size;
-    this.color = color;
-    this.damage = damage;
-    this.reward = reward;
+  constructor(configuration: EnemyConfiguration) {
+    super(configuration.startPosition, configuration.velocity, configuration.size);
+    this.actualVelocity = configuration.velocity;
+    this.velocity = configuration.velocity;
+    this.maxHp = configuration.hp;
+    this.currentHp = configuration.hp;
+    this.size = configuration.size;
+    this.color = configuration.color;
+    this.damage = configuration.damage;
+    this.reward = configuration.reward;
   }
 
   move() {
@@ -60,7 +62,7 @@ export abstract class Enemy extends MovingObject {
       return;
     }
 
-    if (this.canSeePlayer) {
+    if (this.canSeePlayer && calculateDistance(this.position, player.getPosition()) > player.getSize() + this.size) {
       const direction = calculateDirection(this.position, player.getPosition());
       const changeX = direction.x * this.velocity;
       const changeY = direction.y * this.velocity;
@@ -241,11 +243,13 @@ export abstract class Enemy extends MovingObject {
     );
 
     if (this.currentHp <= 0) {
-      this.shouldDraw = false;
-
-      gameStats.points += this.maxHp;
-      gameStats.money += this.reward;
+      this.die();
     }
+  }
+
+  private die() {
+    this.shouldDraw = false;
+    player.addExperience(this.reward);
   }
 
   getSize() {

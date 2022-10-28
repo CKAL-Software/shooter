@@ -1,18 +1,19 @@
 import { Gun } from "./Gun";
 
 export class Pistol extends Gun {
-  constructor(
-    magazineSize: number,
-    reloadTime: number,
-    velocity: number,
-    projectileSize: number,
-    projectileColor: string,
-    ammo: number
-  ) {
-    super(magazineSize, reloadTime, 240, velocity, projectileSize, projectileColor, ammo);
+  constructor() {
+    super({
+      magazineSize: 6,
+      reloadTime: 1.2,
+      fireRate: 240,
+      velocity: 3,
+      projectileSize: 5,
+      projectileColor: "black",
+      ammo: 300,
+    });
   }
 
   calculateNextProjectilesDamage(): number {
-    return Math.round(Math.random() * 2) + 2;
+    return Math.round(Math.random() * 2) + 30;
   }
 }

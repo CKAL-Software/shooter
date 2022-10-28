@@ -12,7 +12,7 @@ export const TILE_SIZE = 40;
 export const CANVAS_WIDTH = CANVAS_COLUMNS * TILE_SIZE;
 export const CANVAS_HEIGHT = CANVAS_ROWS * TILE_SIZE;
 export const SELL_PERCENTAGE = 0.5;
-export const TICK_DURATION = 20;
+export const TICK_DURATION = 1000 / 60;
 export const TICK_DURATION_S = TICK_DURATION / 1000;
 
 export interface Point {
@@ -41,3 +41,4 @@ export const TargetingModes: TargetingMode[] = [
 ];
 
 export const experienceThresholdsNormal = [10, 20, 30, 40, 50, 60, 70, 80, 90, 100];
+export const experienceThresholdsPlayer = [50, 100, 150, 200, 250, 300, 350, 400, 450, 500];

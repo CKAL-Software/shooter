@@ -1,17 +1,20 @@
 import { calculateDirection } from "../lib/canvasFunctions";
-import { Point } from "../lib/definitions";
-import { projectiles } from "../Shooter";
-import { Gun } from "../Weapons/Gun";
+import { experienceThresholdsPlayer } from "../lib/definitions";
+import { Direction } from "../lib/models";
+import { mousePos } from "../Shooter";
 import { Pistol } from "../Weapons/Pistol";
 import { GameObject } from "./GameObject";
-import { NormalProjectile } from "./Projectiles/NormalProjectile";
 
 export class Player extends GameObject {
   private moveSpeed = 2.5;
   private health = 100;
   private color = "#c67c16";
   private velocity = { x: 0, y: 0 };
-  private currentWeapon = new Pistol(6, 1.2, 3, 4, "black", 100);
+  private currentWeapon = new Pistol();
+  private moveDirections: Set<Direction> = new Set();
+  private wantFire = false;
+  private level = 1;
+  private experience = 0;
 
   constructor() {
     super(15, { x: 200, y: 280 });
@@ -25,9 +28,19 @@ export class Player extends GameObject {
     ctx.closePath();
   }
 
-  tick(): void {}
+  tick() {
+    this.currentWeapon.tick();
+    this.move();
+    if (this.wantFire) {
+      this.shoot();
+    }
+  }
 
-  move(direction: string) {
+  private move() {
+    this.moveDirections.forEach((dir) => this.moveDirection(dir));
+  }
+
+  private moveDirection(direction: Direction) {
     let newX = this.drawPosition.x;
     let newY = this.drawPosition.y;
 
@@ -78,8 +91,16 @@ export class Player extends GameObject {
     this.updateSurroundingObstacles();
   }
 
-  shoot(target: Point) {
-    const direction = calculateDirection(this.getPosition(), { x: target.x, y: target.y });
+  setMoveDirections(moveDirections: Set<Direction>) {
+    this.moveDirections = moveDirections;
+  }
+
+  setWantFire(wantFire: boolean) {
+    this.wantFire = wantFire;
+  }
+
+  private shoot() {
+    const direction = calculateDirection(this.getPosition(), mousePos);
 
     const ang = (Math.random() * 30 - 15) * (Math.PI / 180);
 
@@ -89,7 +110,27 @@ export class Player extends GameObject {
     };
 
     this.currentWeapon.fire(angledDirection);
-    // projectiles.push(new NormalProjectile(this.getPosition(), 3, 10, 4, "black", angledDirection, true));
+  }
+
+  addExperience(experience: number) {
+    this.experience += experience;
+
+    while (this.experience >= experienceThresholdsPlayer[this.level - 1]) {
+      this.experience -= experienceThresholdsPlayer[this.level - 1];
+      this.level++;
+    }
+  }
+
+  getExperience() {
+    return this.experience;
+  }
+
+  getLevel() {
+    return this.level;
+  }
+
+  getCurrentWeapon() {
+    return this.currentWeapon;
   }
 
   getVelocity() {

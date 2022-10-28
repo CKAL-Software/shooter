@@ -7,21 +7,22 @@ import { Player } from "./GameObjects/Player";
 import { NumberAnimation } from "./GameObjects/NumberAnimation";
 import { ControlPanel } from "./components/controlPanel";
 import { BasicEnemy } from "./GameObjects/Enemies/BasicEnemy";
+import { Direction } from "./lib/models";
 
-const keysDownMap = new Set<string>();
+const moveDirections = new Set<Direction>();
 
-let tick = 0;
 export let map = standardMap;
 export let obstacles = getObstacles(map);
 export const player = new Player();
 export const enemies: Enemy[] = [
-  new BasicEnemy({ x: 200, y: 400 }, 50, 1, 60, 100),
-  new BasicEnemy({ x: 100, y: 100 }, 50, 1, 60, 100),
-  new BasicEnemy({ x: 100, y: 150 }, 150, 0.5, 60, 100),
+  new BasicEnemy({ startPosition: { x: 200, y: 400 }, hp: 50, velocity: 2, damage: 60, reward: 50 }),
+  new BasicEnemy({ startPosition: { x: 200, y: 400 }, hp: 50, velocity: 2, damage: 60, reward: 50 }),
+  new BasicEnemy({ startPosition: { x: 200, y: 400 }, hp: 50, velocity: 2, damage: 60, reward: 50 }),
+  new BasicEnemy({ startPosition: { x: 200, y: 400 }, hp: 50, velocity: 2, damage: 60, reward: 50 }),
 ];
 export const numberAnimations: NumberAnimation[] = [];
 export const projectiles: ActualProjectile[] = [];
-let mousePos: Point = { x: 0, y: 0 };
+export let mousePos: Point = { x: 0, y: 0 };
 export let gameStats = {
   money: 10,
   points: 0,
@@ -32,10 +33,14 @@ export let gameStats = {
   waveHealth: 10,
 };
 
-interface TowerDefenseProps {}
-
-export function Shooter(props: TowerDefenseProps) {
+export function Shooter() {
   const [nums, setNums] = useState<NumberAnimation[]>([]);
+  const [hp, setHp] = useState(0);
+  const [magAmmo, setMagAmmo] = useState(0);
+  const [magSize, setMagSize] = useState(0);
+  const [ammo, setAmmo] = useState(0);
+  const [playerExp, setPlayerExp] = useState(0);
+  const [playerLevel, setPlayerLevel] = useState(0);
 
   useEffect(() => {
     const canvas2 = document.getElementById("background-layer") as HTMLCanvasElement;
@@ -52,11 +57,15 @@ export function Shooter(props: TowerDefenseProps) {
     const game = canvas.getContext("2d");
 
     window.onkeydown = (keyEvent) => {
-      keysDownMap.add(keyEvent.key);
+      if (["a", "s", "d", "w"].includes(keyEvent.key)) {
+        moveDirections.add(keyEvent.key as Direction);
+        player.setMoveDirections(moveDirections);
+      }
     };
 
     window.onkeyup = (keyEvent) => {
-      keysDownMap.delete(keyEvent.key);
+      moveDirections.delete(keyEvent.key as Direction);
+      player.setMoveDirections(moveDirections);
     };
 
     numbersDiv.onmousemove = (mouseEvent) => {
@@ -64,14 +73,16 @@ export function Shooter(props: TowerDefenseProps) {
     };
 
     numbersDiv.onmousedown = () => {
-      player.shoot(mousePos);
+      player.setWantFire(true);
+    };
+
+    numbersDiv.onmouseup = () => {
+      player.setWantFire(false);
     };
 
     if (game) {
       id = setInterval(() => {
         game.clearRect(0, 0, canvas.width, canvas.height);
-
-        keysDownMap.forEach((d) => player.move(d));
 
         drawAndCleanupObjects(game, [player]);
         drawAndCleanupObjects(game, enemies);
@@ -81,10 +92,16 @@ export function Shooter(props: TowerDefenseProps) {
         projectiles.forEach((obj) => obj.tick());
         enemies.forEach((obj) => obj.tick());
         numberAnimations.forEach((obj) => obj.tick());
+        player.tick();
 
         setNums([...numberAnimations]);
 
-        tick++;
+        setHp(player.getHealth());
+        setAmmo(player.getCurrentWeapon().getAmmo());
+        setMagSize(player.getCurrentWeapon().getMagazineSize());
+        setMagAmmo(player.getCurrentWeapon().getMagazineAmmo());
+        setPlayerExp(player.getExperience());
+        setPlayerLevel(player.getLevel());
       }, TICK_DURATION);
     }
 
@@ -136,7 +153,14 @@ export function Shooter(props: TowerDefenseProps) {
               </div>
             </div>
           </div>
-          <ControlPanel />
+          <ControlPanel
+            hp={hp}
+            magSize={magSize}
+            magAmmo={magAmmo}
+            ammo={ammo}
+            playerExp={playerExp}
+            playerLevel={playerLevel}
+          />
         </div>
       </div>
     </div>
