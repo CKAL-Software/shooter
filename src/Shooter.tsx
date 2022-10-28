@@ -8,6 +8,7 @@ import { NumberAnimation } from "./GameObjects/NumberAnimation";
 import { ControlPanel } from "./components/controlPanel";
 import { BasicEnemy } from "./GameObjects/Enemies/BasicEnemy";
 import { Direction } from "./lib/models";
+import { GameObject } from "./GameObjects/GameObject";
 
 const moveDirections = new Set<Direction>();
 
@@ -15,11 +16,12 @@ export let map = standardMap;
 export let obstacles = getObstacles(map);
 export const player = new Player();
 export const enemies: Enemy[] = [
-  new BasicEnemy({ startPosition: { x: 200, y: 400 }, hp: 50, velocity: 2, damage: 60, reward: 50 }),
-  new BasicEnemy({ startPosition: { x: 200, y: 400 }, hp: 50, velocity: 2, damage: 60, reward: 50 }),
-  new BasicEnemy({ startPosition: { x: 200, y: 400 }, hp: 50, velocity: 2, damage: 60, reward: 50 }),
-  new BasicEnemy({ startPosition: { x: 200, y: 400 }, hp: 50, velocity: 2, damage: 60, reward: 50 }),
+  new BasicEnemy({ startPosition: { x: 200, y: 400 }, hp: 50, velocity: 1, damage: 60, reward: 50 }),
+  // new BasicEnemy({ startPosition: { x: 200, y: 400 }, hp: 50, velocity: 2, damage: 60, reward: 50 }),
+  // new BasicEnemy({ startPosition: { x: 200, y: 400 }, hp: 50, velocity: 2, damage: 60, reward: 50 }),
+  // new BasicEnemy({ startPosition: { x: 200, y: 400 }, hp: 50, velocity: 2, damage: 60, reward: 50 }),
 ];
+export const miscellaneous: GameObject[] = [];
 export const numberAnimations: NumberAnimation[] = [];
 export const projectiles: ActualProjectile[] = [];
 export let mousePos: Point = { x: 0, y: 0 };
@@ -87,11 +89,13 @@ export function Shooter() {
         drawAndCleanupObjects(game, [player]);
         drawAndCleanupObjects(game, enemies);
         drawAndCleanupObjects(game, projectiles);
+        drawAndCleanupObjects(game, miscellaneous);
         drawAndCleanupObjects(game, numberAnimations);
 
         projectiles.forEach((obj) => obj.tick());
         enemies.forEach((obj) => obj.tick());
         numberAnimations.forEach((obj) => obj.tick());
+        miscellaneous.forEach((obj) => obj.tick());
         player.tick();
 
         setNums([...numberAnimations]);

@@ -1,3 +1,4 @@
+import { drawBall } from "../../lib/canvasFunctions";
 import { Point } from "../../lib/definitions";
 import { Enemy } from "../Enemies/Enemy";
 import { MovingObject } from "../MovingObject";
@@ -24,11 +25,7 @@ export abstract class Projectile extends MovingObject {
   }
 
   draw(ctx: CanvasRenderingContext2D) {
-    ctx.beginPath();
-    ctx.arc(this.drawPosition.x, this.drawPosition.y, this.size, 0, Math.PI * 2);
-    ctx.fillStyle = this.color;
-    ctx.fill();
-    ctx.closePath();
+    drawBall(ctx, this.drawPosition, this.size, this.color);
   }
 
   hitEnemy(enemyHit: Enemy | Player) {

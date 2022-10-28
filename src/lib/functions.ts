@@ -1,3 +1,4 @@
+import { calculateDistance } from "./canvasFunctions";
 import { getAccessToken } from "./credentialsHandler";
 import { BACKEND_URL, Point, TICK_DURATION } from "./definitions";
 import { LeaderboardEntry } from "./models";
@@ -185,4 +186,23 @@ function quad(a: number, b: number, c: number) {
     }
   }
   return sol;
+}
+
+export function changeDirection(direction: Point, angle: number) {
+  const ang = angle * (Math.PI / 180);
+
+  const angledDirection = {
+    x: direction.x * Math.cos(ang) - direction.y * Math.sin(ang),
+    y: direction.x * Math.sin(ang) + direction.y * Math.cos(ang),
+  };
+
+  return angledDirection;
+}
+
+export function toUnitVector(direction: Point) {
+  const magnitude = calculateDistance({ x: 0, y: 0 }, direction);
+  if (magnitude === 0) {
+    throw new Error("Direction was the 0,0 vector");
+  }
+  return { x: direction.x / magnitude, y: direction.y / magnitude };
 }

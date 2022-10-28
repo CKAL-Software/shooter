@@ -1,5 +1,6 @@
 import { calculateDirection } from "../lib/canvasFunctions";
 import { experienceThresholdsPlayer } from "../lib/definitions";
+import { changeDirection } from "../lib/functions";
 import { Direction } from "../lib/models";
 import { mousePos } from "../Shooter";
 import { Pistol } from "../Weapons/Pistol";
@@ -102,14 +103,9 @@ export class Player extends GameObject {
   private shoot() {
     const direction = calculateDirection(this.getPosition(), mousePos);
 
-    const ang = (Math.random() * 30 - 15) * (Math.PI / 180);
+    const newAngle = Math.random() * 30 - 15;
 
-    const angledDirection = {
-      x: direction.x * Math.cos(ang) - direction.y * Math.sin(ang),
-      y: direction.x * Math.sin(ang) + direction.y * Math.cos(ang),
-    };
-
-    this.currentWeapon.fire(angledDirection);
+    this.currentWeapon.fire(changeDirection(direction, newAngle));
   }
 
   addExperience(experience: number) {

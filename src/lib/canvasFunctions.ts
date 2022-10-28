@@ -25,6 +25,14 @@ export function drawTile(ctx: CanvasRenderingContext2D, x: number, y: number, co
   ctx.closePath();
 }
 
+export function drawBall(ctx: CanvasRenderingContext2D, position: Point, size: number, color: string) {
+  ctx.beginPath();
+  ctx.arc(position.x, position.y, size, 0, Math.PI * 2);
+  ctx.fillStyle = color;
+  ctx.fill();
+  ctx.closePath();
+}
+
 export function drawMap(ctx: CanvasRenderingContext2D, map: string[]) {
   for (let x = 0; x < map[0].length; x++) {
     for (let y = 0; y < map.length; y++) {

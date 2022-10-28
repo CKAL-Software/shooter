@@ -1,11 +1,12 @@
-import { enemies, gameStats, map, numberAnimations, player, projectiles } from "../../Shooter";
+import { enemies, gameStats, map, miscellaneous, numberAnimations, player, projectiles } from "../../Shooter";
 import { Point } from "../../lib/definitions";
 import { MovingObject } from "../MovingObject";
-import { calculateDirection, calculateDistance, getObstacles, pathToPoint } from "../../lib/canvasFunctions";
+import { calculateDirection, calculateDistance, drawBall, getObstacles, pathToPoint } from "../../lib/canvasFunctions";
 import { NumberAnimation } from "../NumberAnimation";
 import { SNode } from "../../lib/models";
-import { intercept, intersects } from "../../lib/functions";
+import { changeDirection, intercept, intersects } from "../../lib/functions";
 import { NormalProjectile } from "../Projectiles/NormalProjectile";
+import { ExperienceOrb } from "../Items/ExperienceOrb";
 
 export interface EnemyConfiguration {
   startPosition: Point;
@@ -149,14 +150,6 @@ export abstract class Enemy extends MovingObject {
     }
   }
 
-  drawBody(ctx: CanvasRenderingContext2D) {
-    ctx.beginPath();
-    ctx.arc(this.drawPosition.x, this.drawPosition.y, this.size, 0, Math.PI * 2);
-    ctx.fillStyle = this.color;
-    ctx.fill();
-    ctx.closePath();
-  }
-
   drawHealthBar(ctx: CanvasRenderingContext2D, doubleLength?: boolean) {
     ctx.beginPath();
     ctx.rect(
@@ -182,7 +175,7 @@ export abstract class Enemy extends MovingObject {
   }
 
   draw(ctx: CanvasRenderingContext2D) {
-    this.drawBody(ctx);
+    drawBall(ctx, this.drawPosition, this.size, this.color);
     this.drawHealthBar(ctx);
 
     // this.path.forEach((node) => {
@@ -250,6 +243,13 @@ export abstract class Enemy extends MovingObject {
   private die() {
     this.shouldDraw = false;
     player.addExperience(this.reward);
+
+    const numExpOrbs = Math.floor(Math.random() * 3) + 1;
+    for (let i = 0; i < numExpOrbs; i++) {
+      const exp = Math.round(Math.random() * 20);
+      const randomDirection = changeDirection({ x: 0, y: 1 }, Math.round(Math.random() * 360));
+      miscellaneous.push(new ExperienceOrb(exp, this.position, randomDirection));
+    }
   }
 
   getSize() {
