@@ -5,6 +5,7 @@ interface ProgressBarProps {
   barColor?: string;
   backgroundColor?: string;
   text?: string;
+  notSmooth?: boolean;
 }
 
 export function ProgressBar(props: ProgressBarProps) {
@@ -26,7 +27,7 @@ export function ProgressBar(props: ProgressBarProps) {
             height: `${props.height || 16}px`,
             width: `${Math.min(width, width * props.percentage)}px`,
             background: props.barColor || "lightgray",
-            transition: "1s",
+            transition: props.notSmooth ? undefined : "1s",
           }}
         />
       </div>

@@ -1,10 +1,7 @@
-import { NormalProjectile } from "../GameObjects/Projectiles/NormalProjectile";
-import { calculateDirection } from "../lib/canvasFunctions";
 import { experienceThresholdsNormal, Point, TICK_DURATION_S } from "../lib/definitions";
-import { changeDirection } from "../lib/functions";
-import { player, projectiles } from "../Shooter";
 
-export interface GunConfigutation {
+export interface GunConfig {
+  name: string;
   magazineSize: number;
   reloadTime: number;
   fireRate: number;
@@ -28,15 +25,17 @@ export abstract class Gun {
   protected projectileSize: number;
   protected projectileColor: string;
   protected shouldReload = false;
+  protected name: string;
 
-  constructor(configuration: GunConfigutation) {
-    this.ammo = configuration.ammo;
-    this.reloadTime = configuration.reloadTime;
-    this.magazineSize = configuration.magazineSize;
-    this.fireRate = configuration.fireRate;
-    this.velocity = configuration.velocity;
-    this.projectileSize = configuration.projectileSize;
-    this.projectileColor = configuration.projectileColor;
+  constructor(config: GunConfig) {
+    this.name = config.name;
+    this.ammo = config.ammo;
+    this.reloadTime = config.reloadTime;
+    this.magazineSize = config.magazineSize;
+    this.fireRate = config.fireRate;
+    this.velocity = config.velocity;
+    this.projectileSize = config.projectileSize;
+    this.projectileColor = config.projectileColor;
     this.reload();
   }
 
@@ -53,26 +52,13 @@ export abstract class Gun {
     this.magazineAmmo--;
     this.fireTimeRemaining = 60 / this.fireRate;
 
-    const direction = calculateDirection(player.getPosition(), target);
-    const newAngle = Math.random() * 30 - 15;
-    const newDirection = changeDirection(direction, newAngle);
-
-    projectiles.push(
-      new NormalProjectile({
-        position: player.getPosition(),
-        direction: newDirection,
-        velocity: this.velocity,
-        damage: this.calculateNextProjectilesDamage(),
-        size: this.projectileSize,
-        color: this.projectileColor,
-        shotByPlayer: true,
-      })
-    );
+    this.shoot(target);
   }
 
   initiateReload() {
-    if (this.reloadTimeRemaining <= 0 && this.ammo > 0) {
+    if (this.reloadTimeRemaining <= 0 && this.ammo > 0 && this.magazineAmmo !== this.magazineSize) {
       this.reloadTimeRemaining = this.reloadTime;
+      this.magazineAmmo = 0;
       this.shouldReload = true;
     }
   }
@@ -83,7 +69,7 @@ export abstract class Gun {
   }
 
   tick() {
-    this.reloadTimeRemaining -= TICK_DURATION_S;
+    this.reloadTimeRemaining = Math.max(0, this.reloadTimeRemaining - TICK_DURATION_S);
     this.fireTimeRemaining -= TICK_DURATION_S;
 
     if (this.magazineAmmo === 0 && !this.shouldReload) {
@@ -108,12 +94,23 @@ export abstract class Gun {
     return this.experience;
   }
 
+  getReloadProgress() {
+    if (!this.shouldReload) {
+      return 0;
+    }
+    return 1 - this.reloadTimeRemaining / this.reloadTime;
+  }
+
   getLevel() {
     return this.level;
   }
 
   getAmmo() {
     return this.ammo;
+  }
+
+  getName() {
+    return this.name;
   }
 
   getMagazineSize() {
@@ -124,5 +121,17 @@ export abstract class Gun {
     return this.magazineAmmo;
   }
 
-  abstract calculateNextProjectilesDamage(): number;
+  getFireRate() {
+    return this.fireRate;
+  }
+
+  getVelocity() {
+    return this.velocity;
+  }
+
+  isReloading() {
+    return this.reloadTimeRemaining > 0;
+  }
+
+  abstract shoot(target: Point): void;
 }

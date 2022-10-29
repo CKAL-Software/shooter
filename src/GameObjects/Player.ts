@@ -1,18 +1,23 @@
-import { experienceThresholdsPlayer } from "../lib/definitions";
+import { experienceThresholdsPlayer, TICK_DURATION_S } from "../lib/definitions";
 import { toUnitVector } from "../lib/functions";
 import { Direction } from "../lib/models";
 import { mousePos } from "../Shooter";
+import { Gun } from "../Weapons/Gun";
 import { Pistol } from "../Weapons/Pistol";
+import { Shotgun } from "../Weapons/Shotgun";
 import { MovingObject } from "./MovingObject";
 
 export class Player extends MovingObject {
   private health = 100;
   private maxHealth = 100;
-  private currentWeapon = new Pistol();
+  private weapons: Gun[] = [new Pistol(), new Shotgun()];
+  private currentWeapon = this.weapons[0];
   private moveDirections: Set<Direction> = new Set();
   private wantFire = false;
   private level = 1;
   private experience = 0;
+  private tintTime = 0;
+  private tintColor = "255,0,0";
 
   constructor() {
     super({ position: { x: 200, y: 280 }, size: 15, velocity: 2.5, color: "#c67c16" });
@@ -26,14 +31,58 @@ export class Player extends MovingObject {
     ctx.fillStyle = this.color;
     ctx.fill();
     ctx.closePath();
+
+    this.drawHealthBar(ctx);
+  }
+
+  drawHealthBar(ctx: CanvasRenderingContext2D, doubleLength?: boolean) {
+    const width = 40;
+    const height = 8;
+
+    const drawPos = this.getDrawPosition();
+
+    ctx.beginPath();
+    ctx.rect(
+      drawPos.x - (width / 2) * (doubleLength ? 2 : 1),
+      drawPos.y - (this.size + height + 4),
+      width * (doubleLength ? 2 : 1),
+      height
+    );
+    ctx.fillStyle = "red";
+    ctx.fill();
+    ctx.closePath();
+
+    ctx.beginPath();
+    ctx.rect(
+      drawPos.x - (width / 2) * (doubleLength ? 2 : 1),
+      drawPos.y - (this.size + height + 4),
+      Math.round(width * (doubleLength ? 2 : 1) * (this.health / this.maxHealth)),
+      height
+    );
+    ctx.fillStyle = "#3cff00";
+    ctx.fill();
+    ctx.closePath();
   }
 
   tick() {
+    this.tintTime = Math.max(0, this.tintTime - TICK_DURATION_S);
     this.currentWeapon.tick();
     this.move();
     if (this.wantFire) {
       this.shoot();
     }
+  }
+
+  changeWeapon(weaponSlot: number) {
+    if (weaponSlot < 0 || weaponSlot >= this.weapons.length) {
+      return;
+    }
+
+    if (this.currentWeapon.isReloading()) {
+      return;
+    }
+
+    this.currentWeapon = this.weapons[weaponSlot];
   }
 
   private move() {
@@ -109,6 +158,10 @@ export class Player extends MovingObject {
     }
   }
 
+  getTintColor() {
+    return this.tintColor;
+  }
+
   getExperience() {
     return this.experience;
   }
@@ -155,7 +208,27 @@ export class Player extends MovingObject {
     return this.health;
   }
 
+  reload() {
+    this.currentWeapon.initiateReload();
+  }
+
+  getTintIntencity() {
+    return 0.35 * (this.tintTime / 0.7);
+  }
+
+  setTint(r: number, g: number, b: number) {
+    const newTintColor = `${r},${g},${b}`;
+
+    if (this.tintTime > 0 && this.tintColor !== newTintColor) {
+      return;
+    }
+
+    this.tintTime = 0.7;
+    this.tintColor = newTintColor;
+  }
+
   inflictDamage(damage: number) {
-    this.health -= damage;
+    this.health = Math.max(0, this.health - damage);
+    this.setTint(255, 0, 0);
   }
 }

@@ -53,6 +53,15 @@ export function Shooter() {
   const [ammo, setAmmo] = useState(0);
   const [playerExp, setPlayerExp] = useState(0);
   const [playerLevel, setPlayerLevel] = useState(0);
+  const [weaponExp, setWeaponExp] = useState(0);
+  const [weaponLevel, setWeaponLevel] = useState(0);
+  const [fireRate, setFireRate] = useState(0);
+  const [velocity, setVelocity] = useState(0);
+  const [weaponVelocity, setWeaponVelocity] = useState(0);
+  const [weaponName, setWeaponName] = useState("");
+  const [reloadProgress, setReloadProgress] = useState(0);
+  const [tint, setTint] = useState(0);
+  const [tintColor, setTintColor] = useState("0,0,0");
 
   useEffect(() => {
     const canvas2 = document.getElementById("background-layer") as HTMLCanvasElement;
@@ -65,13 +74,21 @@ export function Shooter() {
     }
 
     const canvas = document.getElementById("game-layer") as HTMLCanvasElement;
-    const numbersDiv = document.getElementById("numbers") as HTMLCanvasElement;
+    const upperDiv = document.getElementById("tint") as HTMLCanvasElement;
     const game = canvas.getContext("2d");
 
     window.onkeydown = (keyEvent) => {
       if (["a", "s", "d", "w"].includes(keyEvent.key)) {
         moveDirections.add(keyEvent.key as Direction);
         player.setMoveDirections(moveDirections);
+      }
+
+      if (keyEvent.key === "r") {
+        player.reload();
+      }
+
+      if (["1", "2", "3", "4", "5", "6", "7", "8", "9", "0"].includes(keyEvent.key)) {
+        player.changeWeapon(keyEvent.key === "0" ? 9 : Number(keyEvent.key) - 1);
       }
     };
 
@@ -80,15 +97,15 @@ export function Shooter() {
       player.setMoveDirections(moveDirections);
     };
 
-    numbersDiv.onmousemove = (mouseEvent) => {
+    upperDiv.onmousemove = (mouseEvent) => {
       mousePos = getMousePos(canvas, mouseEvent);
     };
 
-    numbersDiv.onmousedown = () => {
+    upperDiv.onmousedown = () => {
       player.setWantFire(true);
     };
 
-    numbersDiv.onmouseup = () => {
+    upperDiv.onmouseup = () => {
       player.setWantFire(false);
     };
 
@@ -124,6 +141,15 @@ export function Shooter() {
         setPlayerExp(player.getExperience());
         setPlayerLevel(player.getLevel());
         setMaxHp(player.getMaxHealth());
+        setWeaponExp(player.getCurrentWeapon().getExperience());
+        setWeaponLevel(player.getCurrentWeapon().getLevel());
+        setWeaponVelocity(player.getCurrentWeapon().getVelocity());
+        setVelocity(player.getVelocity());
+        setFireRate(player.getCurrentWeapon().getFireRate());
+        setWeaponName(player.getCurrentWeapon().getName());
+        setReloadProgress(player.getCurrentWeapon().getReloadProgress());
+        setTint(player.getTintIntencity());
+        setTintColor(player.getTintColor());
       }, TICK_DURATION);
     }
 
@@ -174,6 +200,17 @@ export function Shooter() {
                 ))}
               </div>
             </div>
+            <div
+              id="tint"
+              style={{
+                height: CANVAS_HEIGHT,
+                width: CANVAS_WIDTH,
+                position: "absolute",
+                zIndex: 4,
+                backgroundColor: `rgba(${tintColor},${tint})`,
+                // backgroundColor: `rgba(0,0,0,0)`,
+              }}
+            />
           </div>
           <ControlPanel
             hp={hp}
@@ -183,6 +220,13 @@ export function Shooter() {
             ammo={ammo}
             playerExp={playerExp}
             playerLevel={playerLevel}
+            weaponExp={weaponExp}
+            weaponLevel={weaponLevel}
+            velocity={velocity}
+            weaponVelocity={weaponVelocity}
+            fireRate={fireRate}
+            weaponName={weaponName}
+            reloadProgress={reloadProgress}
           />
         </div>
       </div>

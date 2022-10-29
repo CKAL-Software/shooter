@@ -27,6 +27,7 @@ export class ExperienceOrb extends MovingObject {
     if (calculateDistance(player.getPosition(), this.position) < player.getSize() + this.size) {
       this.shouldDraw = false;
       player.addExperience(this.experience);
+      player.setTint(144, 202, 249);
     }
   }
 
