@@ -3,7 +3,7 @@ import { Gun } from "./Gun";
 export class Pistol extends Gun {
   constructor() {
     super({
-      magazineSize: 6,
+      magazineSize: 30,
       reloadTime: 1.2,
       fireRate: 240,
       velocity: 3,

@@ -1,6 +1,19 @@
 import { useEffect, useState } from "react";
-import { drawBackground, drawAndCleanupObjects, getMousePos, getObstacles } from "./lib/canvasFunctions";
-import { Point, CANVAS_HEIGHT, CANVAS_WIDTH, TICK_DURATION, ActualProjectile } from "./lib/definitions";
+import {
+  drawBackground,
+  drawAndCleanupObjects,
+  getMousePos,
+  getObstacles,
+  findRandomLocation,
+} from "./lib/canvasFunctions";
+import {
+  Point,
+  CANVAS_HEIGHT,
+  CANVAS_WIDTH,
+  TICK_DURATION,
+  ActualProjectile,
+  TICK_DURATION_S,
+} from "./lib/definitions";
 import { Enemy } from "./GameObjects/Enemies/Enemy";
 import { standardMap } from "./Definitions/Maps";
 import { Player } from "./GameObjects/Player";
@@ -34,6 +47,7 @@ export let gameStats = {
 export function Shooter() {
   const [nums, setNums] = useState<NumberAnimation[]>([]);
   const [hp, setHp] = useState(0);
+  const [maxHp, setMaxHp] = useState(0);
   const [magAmmo, setMagAmmo] = useState(0);
   const [magSize, setMagSize] = useState(0);
   const [ammo, setAmmo] = useState(0);
@@ -94,14 +108,12 @@ export function Shooter() {
         miscellaneous.forEach((obj) => obj.tick());
         player.tick();
 
-        /*timeUntilNextSpawn -= TICK_DURATION_S;
+        timeUntilNextSpawn -= TICK_DURATION_S;
 
         if (timeUntilNextSpawn < 0) {
           timeUntilNextSpawn = 3;
-          enemies.push(
-            new BasicEnemy({ startPosition: findRandomLocation(), hp: 50, velocity: 1, damage: 60, reward: 50 })
-          );
-        }*/
+          enemies.push(new BasicEnemy(findRandomLocation()));
+        }
 
         setNums([...numberAnimations]);
 
@@ -111,6 +123,7 @@ export function Shooter() {
         setMagAmmo(player.getCurrentWeapon().getMagazineAmmo());
         setPlayerExp(player.getExperience());
         setPlayerLevel(player.getLevel());
+        setMaxHp(player.getMaxHealth());
       }, TICK_DURATION);
     }
 
@@ -164,6 +177,7 @@ export function Shooter() {
           </div>
           <ControlPanel
             hp={hp}
+            maxHp={maxHp}
             magSize={magSize}
             magAmmo={magAmmo}
             ammo={ammo}

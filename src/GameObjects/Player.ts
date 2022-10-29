@@ -7,6 +7,7 @@ import { MovingObject } from "./MovingObject";
 
 export class Player extends MovingObject {
   private health = 100;
+  private maxHealth = 100;
   private currentWeapon = new Pistol();
   private moveDirections: Set<Direction> = new Set();
   private wantFire = false;
@@ -144,6 +145,10 @@ export class Player extends MovingObject {
 
   getSize() {
     return this.size;
+  }
+
+  getMaxHealth() {
+    return this.maxHealth;
   }
 
   getHealth() {

@@ -10,7 +10,7 @@ export class ExperienceOrb extends MovingObject {
 
   constructor(experience: number, position: Point, direction: Point) {
     const size = Math.min(16, Math.max(4, experience));
-    super({ position, size, velocity: Math.random() * 1 + 1.5, color: "#7bff00" });
+    super({ position, size, velocity: Math.random() * 1 + 1.5, color: "#90caf9" });
 
     this.experience = experience;
     this.direction = direction;
