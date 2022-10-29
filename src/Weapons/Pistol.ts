@@ -9,7 +9,7 @@ export class Pistol extends Gun {
   constructor() {
     super({
       name: "Pistol",
-      magazineSize: 30,
+      magazineSize: 45,
       reloadTime: 1.2,
       fireRate: 240,
       velocity: 3,

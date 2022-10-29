@@ -1,5 +1,5 @@
-import { ReactElement, useMemo } from "react";
 import { CANVAS_HEIGHT, experienceThresholdsNormal, experienceThresholdsPlayer } from "../lib/definitions";
+import { Magazine } from "./controlPanelElements/magazine";
 import { ProgressBar } from "./controlPanelElements/progressBar";
 
 interface ControlPanelProps {
@@ -20,27 +20,6 @@ interface ControlPanelProps {
 }
 
 export function ControlPanel(props: ControlPanelProps) {
-  const magazine = useMemo(() => {
-    const bullets: ReactElement[] = [];
-
-    for (let i = 0; i < props.magSize; i++) {
-      bullets.push(
-        <div
-          key={i}
-          style={{
-            height: 14,
-            width: "100%",
-            borderRadius: 4,
-            backgroundColor: props.magAmmo >= i + 1 ? "#333333" : "darkgray",
-            maxWidth: 20,
-          }}
-        />
-      );
-    }
-
-    return bullets;
-  }, [props.magSize, props.magAmmo]);
-
   return (
     <div
       style={{
@@ -115,21 +94,7 @@ export function ControlPanel(props: ControlPanelProps) {
         <div style={{ marginBottom: 8 }}>
           <div style={{ marginBottom: 4, fontSize: 16, marginLeft: 2 }}>Ammo</div>
           <div style={{ marginBottom: 4, fontSize: 20 }}>{props.magAmmo + "/" + (props.ammo - props.magAmmo)}</div>
-          {props.reloadProgress > 0 ? (
-            <ProgressBar
-              percentage={props.reloadProgress}
-              barColor="#333333"
-              backgroundColor="darkgray"
-              height={30}
-              width={props.magSize * 22 - 2 >= 260 ? 260 : props.magSize * 22 - 2}
-              notSmooth
-            />
-          ) : (
-            <div>
-              <div style={{ display: "flex", columnGap: 2, marginBottom: 2 }}>{magazine}</div>
-              <div style={{ display: "flex", columnGap: 2 }}>{magazine}</div>
-            </div>
-          )}
+          <Magazine magSize={props.magSize} reloadProgress={props.reloadProgress} magAmmo={props.magAmmo} />
         </div>
         <div>
           <div style={{ marginBottom: 4, fontSize: 16, marginLeft: 2 }}>Experience</div>

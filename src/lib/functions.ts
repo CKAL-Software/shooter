@@ -206,3 +206,7 @@ export function toUnitVector(direction: Point) {
   }
   return { x: direction.x / magnitude, y: direction.y / magnitude };
 }
+
+export function nTimes(n: number) {
+  return Array.from(new Array(n)).map((_, i) => i);
+}
