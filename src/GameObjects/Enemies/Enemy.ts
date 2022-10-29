@@ -1,6 +1,6 @@
 import { enemies, gameStats, map, miscellaneous, numberAnimations, player, projectiles } from "../../Shooter";
-import { Point, TICK_DURATION_S } from "../../lib/definitions";
-import { MovingObject } from "../MovingObject";
+import { TICK_DURATION_S } from "../../lib/definitions";
+import { MovingObject, MovingObjectConfig } from "../MovingObject";
 import { calculateDirection, calculateDistance, drawBall, getObstacles, pathToPoint } from "../../lib/canvasFunctions";
 import { NumberAnimation } from "../NumberAnimation";
 import { SNode } from "../../lib/models";
@@ -8,19 +8,14 @@ import { changeDirection, intercept, intersects } from "../../lib/functions";
 import { NormalProjectile } from "../Projectiles/NormalProjectile";
 import { ExperienceOrb } from "../Items/ExperienceOrb";
 
-export interface EnemyConfiguration {
-  startPosition: Point;
+export interface EnemyConfig extends MovingObjectConfig {
   hp: number;
-  size: number;
-  color: string;
-  velocity: number;
   damage: number;
   reward: number;
 }
 
 export abstract class Enemy extends MovingObject {
   private pathIndex = 0;
-  private color: string;
   private maxHp: number;
   private currentHp: number;
   private damage: number;
@@ -32,15 +27,14 @@ export abstract class Enemy extends MovingObject {
   //private spawnTimeLeft = 4;
   private spawnTimeLeft = 0;
 
-  constructor(configuration: EnemyConfiguration) {
-    super(configuration.startPosition, configuration.velocity, configuration.size);
-    this.velocity = configuration.velocity;
-    this.maxHp = configuration.hp;
-    this.currentHp = configuration.hp;
-    this.size = configuration.size;
-    this.color = configuration.color;
-    this.damage = configuration.damage;
-    this.reward = configuration.reward;
+  constructor(config: EnemyConfig) {
+    super(config);
+
+    this.maxHp = config.hp;
+    this.currentHp = config.hp;
+    this.color = config.color;
+    this.damage = config.damage;
+    this.reward = config.reward;
   }
 
   move() {
@@ -115,15 +109,15 @@ export abstract class Enemy extends MovingObject {
           {
             x: playerPos.x,
             y: playerPos.y,
-            vx: playerVel.x,
-            vy: playerVel.y,
+            vx: playerPos.x * playerVel,
+            vy: playerPos.y * playerVel,
           },
           1.5
         );
 
         projectiles.push(
           new NormalProjectile({
-            startPosition: this.position,
+            position: this.position,
             direction: calculateDirection(this.position, leadShotDirection || player.getPosition()),
             velocity: 1.5,
             damage: 5,
@@ -159,10 +153,12 @@ export abstract class Enemy extends MovingObject {
     const width = 40;
     const height = 8;
 
+    const drawPos = this.getDrawPosition();
+
     ctx.beginPath();
     ctx.rect(
-      this.drawPosition.x - (width / 2) * (doubleLength ? 2 : 1),
-      this.drawPosition.y - (this.size + height + 4),
+      drawPos.x - (width / 2) * (doubleLength ? 2 : 1),
+      drawPos.y - (this.size + height + 4),
       width * (doubleLength ? 2 : 1),
       height
     );
@@ -172,8 +168,8 @@ export abstract class Enemy extends MovingObject {
 
     ctx.beginPath();
     ctx.rect(
-      this.drawPosition.x - (width / 2) * (doubleLength ? 2 : 1),
-      this.drawPosition.y - (this.size + height + 4),
+      drawPos.x - (width / 2) * (doubleLength ? 2 : 1),
+      drawPos.y - (this.size + height + 4),
       Math.round(width * (doubleLength ? 2 : 1) * (this.currentHp / this.maxHp)),
       height
     );
@@ -183,12 +179,14 @@ export abstract class Enemy extends MovingObject {
   }
 
   draw(ctx: CanvasRenderingContext2D) {
+    const drawPos = this.getDrawPosition();
+
     if (this.spawnTimeLeft > 0) {
-      drawBall(ctx, this.drawPosition, this.size * (1 - this.spawnTimeLeft / 4), this.color);
+      drawBall(ctx, drawPos, this.size * (1 - this.spawnTimeLeft / 4), this.color);
       return;
     }
 
-    drawBall(ctx, this.drawPosition, this.size, this.color);
+    drawBall(ctx, drawPos, this.size, this.color);
     this.drawHealthBar(ctx);
 
     // this.path.forEach((node) => {

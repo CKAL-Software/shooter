@@ -1,19 +1,6 @@
 import { useEffect, useState } from "react";
-import {
-  drawBackground,
-  drawAndCleanupObjects,
-  getMousePos,
-  getObstacles,
-  findRandomLocation,
-} from "./lib/canvasFunctions";
-import {
-  Point,
-  CANVAS_HEIGHT,
-  CANVAS_WIDTH,
-  TICK_DURATION,
-  ActualProjectile,
-  TICK_DURATION_S,
-} from "./lib/definitions";
+import { drawBackground, drawAndCleanupObjects, getMousePos, getObstacles } from "./lib/canvasFunctions";
+import { Point, CANVAS_HEIGHT, CANVAS_WIDTH, TICK_DURATION, ActualProjectile } from "./lib/definitions";
 import { Enemy } from "./GameObjects/Enemies/Enemy";
 import { standardMap } from "./Definitions/Maps";
 import { Player } from "./GameObjects/Player";
@@ -28,12 +15,7 @@ const moveDirections = new Set<Direction>();
 export let map = standardMap;
 export let obstacles = getObstacles(map);
 export const player = new Player();
-export const enemies: Enemy[] = [
-  new BasicEnemy({ startPosition: { x: 200, y: 400 }, hp: 50, velocity: 1, damage: 60, reward: 50 }),
-  // new BasicEnemy({ startPosition: { x: 200, y: 400 }, hp: 50, velocity: 2, damage: 60, reward: 50 }),
-  // new BasicEnemy({ startPosition: { x: 200, y: 400 }, hp: 50, velocity: 2, damage: 60, reward: 50 }),
-  // new BasicEnemy({ startPosition: { x: 200, y: 400 }, hp: 50, velocity: 2, damage: 60, reward: 50 }),
-];
+export const enemies: Enemy[] = [new BasicEnemy({ x: 200, y: 400 })];
 export let timeUntilNextSpawn = 3;
 export const miscellaneous: GameObject[] = [];
 export const numberAnimations: NumberAnimation[] = [];

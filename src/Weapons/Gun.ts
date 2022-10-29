@@ -59,7 +59,7 @@ export abstract class Gun {
 
     projectiles.push(
       new NormalProjectile({
-        startPosition: player.getPosition(),
+        position: player.getPosition(),
         direction: newDirection,
         velocity: this.velocity,
         damage: this.calculateNextProjectilesDamage(),

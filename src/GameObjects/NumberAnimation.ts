@@ -7,10 +7,10 @@ export class NumberAnimation extends GameObject {
   protected position = { x: -100, y: -100 };
   protected number = 0;
 
-  constructor(startPosition: Point, number: number) {
-    super(0);
+  constructor(position: Point, number: number) {
+    super({ position, size: 0, color: "" });
 
-    this.position = startPosition;
+    this.position = position;
     this.number = number;
     this.id = (Math.random() * 1000000).toString();
   }

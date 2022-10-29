@@ -2,25 +2,20 @@ import { CANVAS_COLUMNS, CANVAS_ROWS } from "../Definitions/Maps";
 import { getSurroundingObstacles, pixelsToTile } from "../lib/canvasFunctions";
 import { Point, TILE_SIZE } from "../lib/definitions";
 import { map } from "../Shooter";
-import { GameObject } from "./GameObject";
+import { GameObject, GameObjectConfig } from "./GameObject";
+
+export interface MovingObjectConfig extends GameObjectConfig {
+  velocity: number;
+}
 
 export abstract class MovingObject extends GameObject {
   protected surroundingObstacles: { topLeftPoint: Point }[] = [];
   protected tile = { x: 0, y: 0 };
-  protected position: Point = { x: -100, y: -100 };
   protected velocity: number;
 
-  constructor(position: Point, velocity: number, size: number) {
-    super(size);
-    this.position = position;
-    this.drawPosition = position;
-    this.velocity = velocity;
-    this.size = size;
-  }
-
-  protected setPosition(pos: Point) {
-    this.position = { x: pos.x, y: pos.y };
-    this.drawPosition = { x: Math.round(pos.x), y: Math.round(pos.y) };
+  constructor(config: MovingObjectConfig) {
+    super(config);
+    this.velocity = config.velocity;
   }
 
   protected shiftPosition(changeX: number, changeY: number) {
@@ -30,14 +25,12 @@ export abstract class MovingObject extends GameObject {
     });
   }
 
-  protected moveAroundObstacle(direction: Point) {}
-
   protected updateSurroundingObstacles() {
-    const currentTile = pixelsToTile({ x: this.drawPosition.x, y: this.drawPosition.y });
+    const currentTile = pixelsToTile({ x: this.position.x, y: this.position.y });
 
     if (currentTile.x !== this.tile.x || currentTile.y !== this.tile.y) {
       this.tile = currentTile;
-      this.surroundingObstacles = getSurroundingObstacles(map, { x: this.drawPosition.x, y: this.drawPosition.y });
+      this.surroundingObstacles = getSurroundingObstacles(map, { x: this.position.x, y: this.position.y });
     }
   }
 
@@ -71,11 +64,5 @@ export abstract class MovingObject extends GameObject {
       }
     }
     return [false, false];
-  }
-
-  abstract move(direction: Point): void;
-
-  getPosition() {
-    return this.position;
   }
 }

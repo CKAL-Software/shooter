@@ -10,14 +10,14 @@ export class ExperienceOrb extends MovingObject {
 
   constructor(experience: number, position: Point, direction: Point) {
     const size = Math.min(16, Math.max(4, experience));
-    super(position, Math.random() * 1 + 1.5, size);
+    super({ position, size, velocity: Math.random() * 1 + 1.5, color: "#7bff00" });
 
     this.experience = experience;
     this.direction = direction;
   }
 
   draw(ctx: CanvasRenderingContext2D): void {
-    drawBall(ctx, this.drawPosition, this.size, "#7bff00");
+    drawBall(ctx, this.getDrawPosition(), this.size, this.color);
   }
 
   tick(): void {
