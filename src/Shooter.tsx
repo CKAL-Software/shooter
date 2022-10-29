@@ -112,14 +112,14 @@ export function Shooter() {
         miscellaneous.forEach((obj) => obj.tick());
         player.tick();
 
-        timeUntilNextSpawn -= TICK_DURATION_S;
+        /*timeUntilNextSpawn -= TICK_DURATION_S;
 
         if (timeUntilNextSpawn < 0) {
           timeUntilNextSpawn = 3;
           enemies.push(
             new BasicEnemy({ startPosition: findRandomLocation(), hp: 50, velocity: 1, damage: 60, reward: 50 })
           );
-        }
+        }*/
 
         setNums([...numberAnimations]);
 

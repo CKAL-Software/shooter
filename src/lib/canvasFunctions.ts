@@ -196,21 +196,21 @@ export function pathToPoint(map: string[], fromPosition: Point, toPosition: Poin
     }
 
     const indexDeltas = [
-      [0, -1],
-      [1, -1],
-      [1, 0],
-      [1, 1],
-      [0, 1],
-      [-1, 1],
-      [-1, 0],
-      [-1, -1],
+      [0, -1, TILE_SIZE],
+      [1, -1, TILE_SIZE * Math.SQRT2],
+      [1, 0, TILE_SIZE],
+      [1, 1, TILE_SIZE * Math.SQRT2],
+      [0, 1, TILE_SIZE],
+      [-1, 1, TILE_SIZE * Math.SQRT2],
+      [-1, 0, TILE_SIZE],
+      [-1, -1, TILE_SIZE * Math.SQRT2],
     ];
-    for (const [deltaX, deltaY] of indexDeltas) {
+    for (const [deltaX, deltaY, cost] of indexDeltas) {
       const neighborX = current.tilePos.x + deltaX;
       const neighborY = current.tilePos.y + deltaY;
 
       if (map[neighborY] && map[neighborY][neighborX] === " ") {
-        const tentativeGScore = gScore[current.key] + TILE_SIZE;
+        const tentativeGScore = gScore[current.key] + cost;
         const neighbor = createNode({ x: neighborX, y: neighborY });
         if (tentativeGScore < (gScore[neighbor.key] || Number.MAX_SAFE_INTEGER)) {
           cameFrom[neighbor.key] = current;

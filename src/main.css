@@ -1,8 +1,9 @@
 body {
   margin: 0;
   /*font-family: "Cairo", sans-serif;*/
-  font-family: "Press Start 2P", cursive;
-  font-weight: 300;
+  /*font-family: "Press Start 2P", cursive;*/
+  font-family: "Exo 2", sans-serif;
+
   color: #3e3e3e;
   background: #011821;
 }

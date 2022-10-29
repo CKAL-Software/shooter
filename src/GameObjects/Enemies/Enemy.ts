@@ -19,17 +19,18 @@ export interface EnemyConfiguration {
 }
 
 export abstract class Enemy extends MovingObject {
+  private pathIndex = 0;
+  private color: string;
   private maxHp: number;
   private currentHp: number;
-  private color: string;
-  private pathIndex = 0;
   private damage: number;
   private reward: number;
   private path: SNode[] = [];
   private ticksUntilPathRecalculated = 0;
-  private shootCounter = 0;
+  private timeUntilShot = this.getTimeUntilNextShot();
   private canSeePlayer = false;
-  private spawnTimeLeft = 4;
+  //private spawnTimeLeft = 4;
+  private spawnTimeLeft = 0;
 
   constructor(configuration: EnemyConfiguration) {
     super(configuration.startPosition, configuration.velocity, configuration.size);
@@ -101,10 +102,10 @@ export abstract class Enemy extends MovingObject {
     this.updatePath();
 
     if (this.canSeePlayer) {
-      this.shootCounter--;
+      this.timeUntilShot -= TICK_DURATION_S;
 
-      if (this.shootCounter <= 0) {
-        this.shootCounter = Math.round(Math.random() * 200) + 100;
+      if (this.timeUntilShot <= 0) {
+        this.timeUntilShot = this.getTimeUntilNextShot();
 
         const playerPos = player.getPosition();
         const playerVel = player.getVelocity();
@@ -135,6 +136,10 @@ export abstract class Enemy extends MovingObject {
     }
 
     this.move();
+  }
+
+  private getTimeUntilNextShot() {
+    return Math.random() * 2 + 1;
   }
 
   updatePath() {
@@ -194,11 +199,11 @@ export abstract class Enemy extends MovingObject {
     //   ctx.closePath();
     // });
 
-    // ctx.beginPath();
-    // ctx.moveTo(this.position.x, this.position.y);
-    // const { x, y } = player.getPosition();
-    // ctx.lineTo(x, y);
-    // ctx.strokeStyle = this.canSeePlayer ? "green" : "red";
+    //ctx.beginPath();
+    //ctx.moveTo(this.position.x, this.position.y);
+    //const { x, y } = player.getPosition();
+    //ctx.lineTo(x, y);
+    //ctx.strokeStyle = this.canSeePlayer ? "green" : "red";
     // ctx.stroke();
   }
 
@@ -208,8 +213,8 @@ export abstract class Enemy extends MovingObject {
       const vertexDeltas = [
         [0, 0, 50, 0],
         [0, 0, 0, 50],
-        [50, 0, 0, 50],
-        [0, 50, 50, 0],
+        [50, 0, 50, 50],
+        [0, 50, 50, 50],
       ];
 
       for (const [startDeltaX, startDeltaY, endDeltaX, endDeltaY] of vertexDeltas) {
