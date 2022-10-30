@@ -56,7 +56,7 @@ export function Magazine(props: MagazineProps) {
   return (
     <div>
       {props.reloadProgress > 0 ? (
-        <div style={{ marginBottom: props.magSize > 60 ? 9 : undefined }}>
+        <div style={{ height: props.magSize > 60 ? Math.ceil(props.magSize / 30) * 11 - 2 : undefined }}>
           <ProgressBar
             percentage={props.reloadProgress}
             barColor="#333333"

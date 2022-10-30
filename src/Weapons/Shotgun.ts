@@ -9,13 +9,13 @@ export class Shotgun extends Gun {
   constructor() {
     super({
       name: "Shotgun",
-      magazineSize: 2,
-      reloadTime: 2,
-      fireRate: 60,
+      magazineSize: 40,
+      reloadTime: 5,
+      fireRate: 300,
       velocity: 2.5,
       projectileSize: 5,
       projectileColor: "black",
-      ammo: 20,
+      ammo: 200,
     });
   }
 
