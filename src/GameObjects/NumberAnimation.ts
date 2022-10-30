@@ -1,9 +1,9 @@
-import { Point } from "../lib/definitions";
+import { Point, TICK_DURATION_S } from "../lib/definitions";
 import { GameObject } from "./GameObject";
 
 export class NumberAnimation extends GameObject {
   protected id = "";
-  protected ticksLeft = 100;
+  protected timeLeft = 1;
   protected position = { x: -100, y: -100 };
   protected number = 0;
 
@@ -18,9 +18,9 @@ export class NumberAnimation extends GameObject {
   draw(ctx: CanvasRenderingContext2D): void {}
 
   tick(): void {
-    this.ticksLeft--;
+    this.timeLeft -= TICK_DURATION_S;
 
-    if (this.ticksLeft < 0) {
+    if (this.timeLeft < 0) {
       this.shouldDraw = false;
     }
   }

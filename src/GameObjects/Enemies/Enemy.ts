@@ -249,6 +249,7 @@ export abstract class Enemy extends MovingObject {
   private die() {
     this.shouldDraw = false;
     player.addExperience(this.reward);
+    player.getCurrentWeapon().addExperience(this.reward);
 
     const numExpOrbs = Math.floor(Math.random() * 3) + 1;
     for (let i = 0; i < numExpOrbs; i++) {

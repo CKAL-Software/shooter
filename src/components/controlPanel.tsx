@@ -107,7 +107,7 @@ export function ControlPanel(props: ControlPanelProps) {
           <ProgressBar
             percentage={props.weaponExp / experienceThresholdsNormal[props.weaponLevel - 1]}
             text={props.weaponExp + "/" + experienceThresholdsNormal[props.weaponLevel - 1]}
-            barColor="#333333"
+            barColor="#90caf9"
             backgroundColor="darkgray"
             height={20}
             width={260}
