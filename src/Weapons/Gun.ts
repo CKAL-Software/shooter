@@ -101,6 +101,10 @@ export abstract class Gun {
     return 1 - this.reloadTimeRemaining / this.reloadTime;
   }
 
+  getReloadTime() {
+    return this.reloadTime;
+  }
+
   getLevel() {
     return this.level;
   }

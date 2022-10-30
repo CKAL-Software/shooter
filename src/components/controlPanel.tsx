@@ -17,6 +17,7 @@ interface ControlPanelProps {
   weaponVelocity: number;
   weaponName: string;
   reloadProgress: number;
+  reloadTime: number;
 }
 
 export function ControlPanel(props: ControlPanelProps) {
@@ -94,7 +95,12 @@ export function ControlPanel(props: ControlPanelProps) {
         <div style={{ marginBottom: 8 }}>
           <div style={{ marginBottom: 4, fontSize: 16, marginLeft: 2 }}>Ammo</div>
           <div style={{ marginBottom: 4, fontSize: 20 }}>{props.magAmmo + "/" + (props.ammo - props.magAmmo)}</div>
-          <Magazine magSize={props.magSize} reloadProgress={props.reloadProgress} magAmmo={props.magAmmo} />
+          <Magazine
+            magSize={props.magSize}
+            reloadProgress={props.reloadProgress}
+            magAmmo={props.magAmmo}
+            reloadTime={props.reloadTime}
+          />
         </div>
         <div>
           <div style={{ marginBottom: 4, fontSize: 16, marginLeft: 2 }}>Experience</div>

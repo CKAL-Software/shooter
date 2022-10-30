@@ -60,6 +60,7 @@ export function Shooter() {
   const [weaponVelocity, setWeaponVelocity] = useState(0);
   const [weaponName, setWeaponName] = useState("");
   const [reloadProgress, setReloadProgress] = useState(0);
+  const [reloadTime, setReloadTime] = useState(0);
   const [tint, setTint] = useState(0);
   const [tintColor, setTintColor] = useState("0,0,0");
 
@@ -150,6 +151,7 @@ export function Shooter() {
         setReloadProgress(player.getCurrentWeapon().getReloadProgress());
         setTint(player.getTintIntencity());
         setTintColor(player.getTintColor());
+        setReloadTime(player.getCurrentWeapon().getReloadTime());
       }, TICK_DURATION);
     }
 
@@ -227,6 +229,7 @@ export function Shooter() {
             fireRate={fireRate}
             weaponName={weaponName}
             reloadProgress={reloadProgress}
+            reloadTime={reloadTime}
           />
         </div>
       </div>
