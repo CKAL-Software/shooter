@@ -24,8 +24,7 @@ export abstract class Enemy extends MovingObject {
   private ticksUntilPathRecalculated = 0;
   private timeUntilShot = this.getTimeUntilNextShot();
   private canSeePlayer = false;
-  //private spawnTimeLeft = 4;
-  private spawnTimeLeft = 0;
+  private spawnTimeLeft = 4;
 
   constructor(config: EnemyConfig) {
     super(config);
@@ -141,7 +140,7 @@ export abstract class Enemy extends MovingObject {
 
     if (this.ticksUntilPathRecalculated <= 0) {
       this.ticksUntilPathRecalculated = 100;
-      this.path = pathToPoint(map, this.position, player.getPosition()).slice(1);
+      this.path = pathToPoint(map.layout, this.position, player.getPosition()).slice(1);
     }
 
     if (this.path.length > 0 && calculateDistance(this.position, this.path[0].pos) <= 1) {
@@ -206,7 +205,7 @@ export abstract class Enemy extends MovingObject {
   }
 
   updateCanSeePlayer() {
-    for (let obstacle of getObstacles(map)) {
+    for (let obstacle of getObstacles(map.layout)) {
       const { x, y } = obstacle.topLeftPoint;
       const vertexDeltas = [
         [0, 0, 50, 0],

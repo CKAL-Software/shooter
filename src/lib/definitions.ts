@@ -8,12 +8,21 @@ export const BACKEND_URL = `https://api.${DOMAIN}/tower-defense/`;
 export const LF_CREDENTIALS = "tower-defense_creds";
 export const AWS_CLIENT_ID = "6nki0f24aj9hrvluekbmkea631";
 
-export const TILE_SIZE = 40;
+export const TILE_SIZE = 30;
 export const CANVAS_WIDTH = CANVAS_COLUMNS * TILE_SIZE;
 export const CANVAS_HEIGHT = CANVAS_ROWS * TILE_SIZE;
 export const SELL_PERCENTAGE = 0.5;
 export const TICK_DURATION = 1000 / 60;
 export const TICK_DURATION_S = TICK_DURATION / 1000;
+
+export type MapSide = "up" | "right" | "down" | "left";
+
+export type Teleporters = { [side in string]: { startPosition?: number; size: number } };
+
+export interface Map {
+  layout: string[][];
+  teleporters: Teleporters;
+}
 
 export interface Point {
   x: number;

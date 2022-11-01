@@ -1,30 +1,81 @@
-Tower balance idea
-	Basic
-		Good early, falls off late
-
-	Scout
-		Long range
-		Piercing
-
-	Machine Gun
-		High DPS close range
-
-	Freezer
-		Slows
-
-	Hashtag
-		Medium range
-		Scales well
-
-	Boat
-		Very high dps
+Add a reaction time. The AI can just know everything happens in the game immediately, but player can't. So in real time games, you must add 100–200ms delays between AI actions.
+Imperfect aim. AI can input a perfect angle with 32bit precision, where player are lucky to aim with 12bit precision. In everyday terms the AI can snipe a coin in the moon.
+Make random mistakes. If an AI should be easy to beat, make it to randomly do nothing, recruit a suboptimal unit, miss the shot or give a bad order
+Keep It Simple and Stupid. No need to make best decision. Just take a decision fast.
+No need for artificial networks or genetic AI, unless that is the main feature of the game.
+Look at other games about how they do things. Free Open Source games often have enjoyable AIs and made with good ideas.
+If you need something more complex than a priority queue for tasks, probably you are overthinking it.
+The AI must not know what the same things the player doesn't know. Example: if the player can see the monster health bar, also the AI can know player remaining HPs.
+Recycle AI code with parameters. Angry AI will maximize damage doing reckless actions, Careful will act delayed but do balanced decisions, Evil Mastermind will hoard resources before unleashing a total attack. This makes the game much more interesting as player learns different approaches.
+Group AI. If player can control a group of units have simple high level commands like “follow me”, “ attack what I attack”, “stay here, dammit”, and “survive”.
+Enemy group AI. A cheater way to do good flocking behavior is to choose a leader, have others to follow that leader and stay at random distance from him based on number of units. When leader dies, the nearest becomes the leader.
+Basic rock paper scissor AI. If player keeps throwing rock, choose paper more. It is enough to give the illusion of a much bigger intelligence.
+There is only one rule at the end, when making games: the game must be fun to play!
 
 
-Wave balance
-	30 waves
 
-	10, 20, 30	boss levels
-	5,15,25 		fast bois
-	9, 19, 29 	flying
-	4, 14, 24		dense, normal
-	rest				normal scaling
+
+raw stats:
+reload time
+fire rate
+mag size
+max ammo
+start ammo
+ammo price
+xp multiplier
+money multiplier
+range
+damage
+damage random
+number of projectiles
+recoil
+spread
+knockback reduction
+knockback on enemies
+droprate
+slow
+penetration
+penetration dropoff
+score multiplier
+aoe
+crit
+
+effect:
+homing
+healing
+burn
+no mag
+regen ammo
+infinite scaling dmg on kills
+xp on dmg instead only on kills
+go through walls
+stun
+destroy walls (to get loot)
+
+
+
+for character:
+hp
+hp regen
+shield
+shield regen
+num restarts
+xp multiplier
+money multiplier
+dash/tp
+drop rate
+move speed
+slow resist
+weapon slots
+resist vs type of attacks
+score multiplier
+minions (helpers)
+weapon swap time
+
+game tweaks tradeoffs:
+spawn rate
+movespeed
+dmg
+resistance
+rewards / drops
+

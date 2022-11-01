@@ -1,7 +1,9 @@
+import { CANVAS_COLUMNS, CANVAS_ROWS, MAP_SIZE } from "../Definitions/Maps";
 import { calculateDistance } from "./canvasFunctions";
 import { getAccessToken } from "./credentialsHandler";
-import { BACKEND_URL, Point, TICK_DURATION } from "./definitions";
+import { BACKEND_URL, Map, MapSide, Point, Teleporters, TICK_DURATION } from "./definitions";
 import { LeaderboardEntry } from "./models";
+import { getRandomInt } from "./utils";
 
 export async function doFetch(
   httpMethod: "GET" | "POST" | "PUT" | "DELETE",
@@ -209,4 +211,167 @@ export function toUnitVector(direction: Point) {
 
 export function nTimes(n: number) {
   return Array.from(new Array(n)).map((_, i) => i);
+}
+
+export function getSeededRandomGenerator(seed: number) {
+  let m_w = 123456789;
+  let m_z = 987654321;
+  let mask = 0xffffffff;
+
+  function doSeed(i: number) {
+    m_w = (123456789 + i) & mask;
+    m_z = (987654321 - i) & mask;
+  }
+
+  function random() {
+    m_z = (36969 * (m_z & 65535) + (m_z >> 16)) & mask;
+    m_w = (18000 * (m_w & 65535) + (m_w >> 16)) & mask;
+    var result = ((m_z << 16) + (m_w & 65535)) >>> 0;
+    result /= 4294967296;
+    return result;
+  }
+
+  doSeed(seed);
+  return random;
+}
+
+export function generateRandomMap(config: { rng: () => number; teleporters: Teleporters; numStructures: number }): Map {
+  const map = Array.from(new Array(CANVAS_ROWS)).map(() => Array.from(new Array(CANVAS_COLUMNS)).map(() => " "));
+
+  const teleporters: Teleporters = {};
+
+  Object.entries(config.teleporters).forEach(([side, tpInfo]) => {
+    let horizontal = true;
+    let fixedCoordinate = 0;
+
+    if (side === "up") {
+      horizontal = true;
+      fixedCoordinate = 0;
+    } else if (side === "right") {
+      horizontal = false;
+      fixedCoordinate = CANVAS_COLUMNS - 1;
+    } else if (side === "down") {
+      horizontal = true;
+      fixedCoordinate = CANVAS_ROWS - 1;
+    } else {
+      horizontal = false;
+      fixedCoordinate = 0;
+    }
+
+    const startPosition = tpInfo.startPosition ?? Math.floor(config.rng() * (MAP_SIZE - 2 - tpInfo.size)) + 1;
+    for (let i = startPosition; i < startPosition + tpInfo.size; i++) {
+      map[horizontal ? fixedCoordinate : i][horizontal ? i : fixedCoordinate] = "~";
+    }
+
+    teleporters[side] = { size: tpInfo.size, startPosition: startPosition };
+  });
+
+  const structures: number[][][] = [
+    [
+      [0, 0],
+      [1, 0],
+      [2, 0],
+      [3, 0],
+      [0, 1],
+      [1, 1],
+      [2, 1],
+      [3, 1],
+    ],
+    [
+      [0, 0],
+      [0, 1],
+      [0, 2],
+      [1, 0],
+      [1, 1],
+      [1, 2],
+      [2, 0],
+      [2, 1],
+      [2, 2],
+    ],
+    [
+      [0, 0],
+      [0, 1],
+      [1, 0],
+      [1, 1],
+    ],
+    [
+      [0, 0],
+      [1, 0],
+      [2, 0],
+      [3, 0],
+      [4, 0],
+      [5, 0],
+    ],
+    [
+      [0, 0],
+      [1, 0],
+      [2, 0],
+      [3, 0],
+      [3, 1],
+      [3, 2],
+      [3, 3],
+    ],
+    [
+      [0, 0],
+      [1, 0],
+      [2, 0],
+      [3, 0],
+      [3, 1],
+      [3, 2],
+      [3, 3],
+      [3, 4],
+      [2, 4],
+      [1, 4],
+      [0, 4],
+    ],
+  ];
+
+  for (let i = 0; i < config.numStructures; i++) {
+    const structure = structures[getRandomInt(0, structures.length - 1, config.rng)];
+    const flipOne = getRandomInt(0, 1, config.rng) === 0;
+    const flipTwo = getRandomInt(0, 1, config.rng) === 0;
+    for (let tries = 0; tries < 5; tries++) {
+      const row = getRandomInt(0, MAP_SIZE - 1, config.rng);
+      const col = getRandomInt(0, MAP_SIZE - 1, config.rng);
+
+      let canPlace = true;
+      for (const [preX, preY] of structure) {
+        const [x, y] = flipCoords(preX, preY, flipOne, flipTwo);
+        if (!map[row + y] || map[row + y][col + x] !== " ") {
+          canPlace = false;
+          break;
+        }
+      }
+
+      if (canPlace) {
+        for (const [preX, preY] of structure) {
+          const [x, y] = flipCoords(preX, preY, flipOne, flipTwo);
+          map[row + y][col + x] = "x";
+        }
+        break;
+      }
+    }
+  }
+
+  return { layout: map, teleporters: teleporters };
+}
+
+function flipCoords(x: number, y: number, flipOne: boolean, flipTwo: boolean) {
+  if (flipOne) {
+    if (flipTwo) {
+      return [x, y];
+    } else {
+      return [-y, x];
+    }
+  } else {
+    if (flipTwo) {
+      return [-x, -y];
+    } else {
+      return [y, -x];
+    }
+  }
+}
+
+export function flipSide(side: MapSide): MapSide {
+  return ({ up: "down", right: "left", down: "up", left: "right" } as { [side in MapSide]: MapSide })[side];
 }

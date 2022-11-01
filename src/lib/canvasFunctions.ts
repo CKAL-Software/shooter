@@ -1,18 +1,17 @@
 import { CANVAS_COLUMNS, CANVAS_ROWS } from "../Definitions/Maps";
 import { GameObject } from "../GameObjects/GameObject";
-import { map } from "../Shooter";
 import { Point, TILE_SIZE } from "./definitions";
 import { MinHeap } from "./minHeap";
 import { SNode } from "./models";
 
-export function drawBackground(ctx: CanvasRenderingContext2D, map: string[]) {
+export function drawBackground(ctx: CanvasRenderingContext2D, mapLayout: string[][]) {
   ctx.beginPath();
 
   ctx.rect(0, 0, ctx.canvas.width, ctx.canvas.height);
   ctx.fillStyle = "lightgray";
   ctx.fill();
 
-  drawMap(ctx, map);
+  drawMap(ctx, mapLayout);
 
   ctx.closePath();
 }
@@ -35,26 +34,26 @@ export function drawBall(ctx: CanvasRenderingContext2D, position: Point, size: n
   ctx.closePath();
 }
 
-export function drawMap(ctx: CanvasRenderingContext2D, map: string[]) {
-  for (let x = 0; x < map[0].length; x++) {
-    for (let y = 0; y < map.length; y++) {
-      if (map[y][x] === "x") {
+export function drawMap(ctx: CanvasRenderingContext2D, mapLayout: string[][]) {
+  for (let x = 0; x < mapLayout[0].length; x++) {
+    for (let y = 0; y < mapLayout.length; y++) {
+      if (mapLayout[y][x] === "x") {
         drawTile(ctx, x, y, "#444444");
-      } else if (map[y][x] === "~") {
+      } else if (mapLayout[y][x] === "~") {
         drawTile(ctx, x, y, "#006fff");
-      } else if (map[y][x] === "^") {
+      } else if (mapLayout[y][x] === "^") {
         drawTile(ctx, x, y, "lightgray");
       }
     }
   }
 }
 
-export function getObstacles(map: string[]) {
+export function getObstacles(mapLayout: string[][]) {
   const obstacles: { topLeftPoint: Point }[] = [];
 
-  for (let row = 0; row < map.length; row++) {
-    for (let col = 0; col < map[row].length; col++) {
-      if (map[row][col] === "x") {
+  for (let row = 0; row < mapLayout.length; row++) {
+    for (let col = 0; col < mapLayout[row].length; col++) {
+      if (mapLayout[row][col] === "x") {
         obstacles.push({ topLeftPoint: { x: TILE_SIZE * col, y: TILE_SIZE * row } });
       }
     }
@@ -63,7 +62,7 @@ export function getObstacles(map: string[]) {
   return obstacles;
 }
 
-export function getSurroundingObstacles(map: String[], pixelPos: Point) {
+export function getSurroundingObstacles(mapLayout: string[][], pixelPos: Point) {
   const tilePos = pixelsToTile(pixelPos);
 
   const surroundingIndexDeltas = [
@@ -83,11 +82,11 @@ export function getSurroundingObstacles(map: String[], pixelPos: Point) {
     const col = tilePos.x + deltaX;
     const row = tilePos.y + deltaY;
 
-    if (col < 0 || col > map[0].length - 1 || row < 0 || row > map.length - 1) {
+    if (col < 0 || col > mapLayout[0].length - 1 || row < 0 || row > mapLayout.length - 1) {
       continue;
     }
 
-    if (map[row][col] === "x") {
+    if (mapLayout[row][col] === "x") {
       obstacles.push({ topLeftPoint: { x: TILE_SIZE * col, y: TILE_SIZE * row } });
     }
   }
@@ -148,7 +147,7 @@ export function drawAndCleanupObjects(ctx: CanvasRenderingContext2D, objects: Ga
   }
 }
 
-export function pathToPoint(map: string[], fromPosition: Point, toPosition: Point): SNode[] {
+export function pathToPoint(mapLayout: string[][], fromPosition: Point, toPosition: Point): SNode[] {
   function h(node: SNode) {
     return calculateDistance(node.pos, toPosition);
   }
@@ -209,7 +208,7 @@ export function pathToPoint(map: string[], fromPosition: Point, toPosition: Poin
       const neighborX = current.tilePos.x + deltaX;
       const neighborY = current.tilePos.y + deltaY;
 
-      if (map[neighborY] && map[neighborY][neighborX] === " ") {
+      if (mapLayout[neighborY] && mapLayout[neighborY][neighborX] === " ") {
         const tentativeGScore = gScore[current.key] + cost;
         const neighbor = createNode({ x: neighborX, y: neighborY });
         if (tentativeGScore < (gScore[neighbor.key] || Number.MAX_SAFE_INTEGER)) {
@@ -227,11 +226,11 @@ export function pathToPoint(map: string[], fromPosition: Point, toPosition: Poin
   return [];
 }
 
-export function findRandomLocation() {
+export function findRandomLocation(mapLayout: string[][]) {
   let randomRow = Math.floor(Math.random() * CANVAS_ROWS);
   let randomColumn = Math.floor(Math.random() * CANVAS_COLUMNS);
 
-  while (map[randomRow][randomColumn] !== " ") {
+  while (mapLayout[randomRow][randomColumn] !== " ") {
     randomRow = Math.floor(Math.random() * CANVAS_ROWS);
     randomColumn = Math.floor(Math.random() * CANVAS_COLUMNS);
   }

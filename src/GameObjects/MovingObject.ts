@@ -30,7 +30,7 @@ export abstract class MovingObject extends GameObject {
 
     if (currentTile.x !== this.tile.x || currentTile.y !== this.tile.y) {
       this.tile = currentTile;
-      this.surroundingObstacles = getSurroundingObstacles(map, { x: this.position.x, y: this.position.y });
+      this.surroundingObstacles = getSurroundingObstacles(map.layout, { x: this.position.x, y: this.position.y });
     }
   }
 

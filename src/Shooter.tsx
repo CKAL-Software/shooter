@@ -1,32 +1,24 @@
 import { useEffect, useState } from "react";
-import {
-  drawBackground,
-  drawAndCleanupObjects,
-  getMousePos,
-  getObstacles,
-  findRandomLocation,
-} from "./lib/canvasFunctions";
-import {
-  Point,
-  CANVAS_HEIGHT,
-  CANVAS_WIDTH,
-  TICK_DURATION,
-  ActualProjectile,
-  TICK_DURATION_S,
-} from "./lib/definitions";
+import { drawBackground, drawAndCleanupObjects, getMousePos, getObstacles } from "./lib/canvasFunctions";
+import { Point, CANVAS_HEIGHT, CANVAS_WIDTH, TICK_DURATION, ActualProjectile } from "./lib/definitions";
 import { Enemy } from "./GameObjects/Enemies/Enemy";
-import { standardMap } from "./Definitions/Maps";
 import { Player } from "./GameObjects/Player";
 import { NumberAnimation } from "./GameObjects/NumberAnimation";
 import { ControlPanel } from "./components/controlPanel";
 import { BasicEnemy } from "./GameObjects/Enemies/BasicEnemy";
 import { Direction } from "./lib/models";
 import { GameObject } from "./GameObjects/GameObject";
+import { flipSide, generateRandomMap, getSeededRandomGenerator } from "./lib/functions";
+import { getRandomInt } from "./lib/utils";
 
 const moveDirections = new Set<Direction>();
-
-export let map = standardMap;
-export let obstacles = getObstacles(map);
+const r = getSeededRandomGenerator(getRandomInt(0, 100));
+export let map = generateRandomMap({
+  rng: r,
+  numStructures: 7,
+  teleporters: { up: { size: 1 }, right: { size: 2 }, down: { size: 3 }, left: { size: 4 } },
+});
+export let obstacles = getObstacles(map.layout);
 export const player = new Player();
 export const enemies: Enemy[] = [new BasicEnemy({ x: 200, y: 400 })];
 export let timeUntilNextSpawn = 3;
@@ -71,7 +63,7 @@ export function Shooter() {
     let id: NodeJS.Timeout;
 
     if (bg) {
-      drawBackground(bg, map);
+      drawBackground(bg, map.layout);
     }
 
     const canvas = document.getElementById("game-layer") as HTMLCanvasElement;
@@ -125,13 +117,23 @@ export function Shooter() {
         numberAnimations.forEach((obj) => obj.tick());
         miscellaneous.forEach((obj) => obj.tick());
         player.tick();
-
-        timeUntilNextSpawn -= TICK_DURATION_S;
-
-        if (timeUntilNextSpawn < 0) {
-          timeUntilNextSpawn = 3;
-          enemies.push(new BasicEnemy(findRandomLocation()));
+        const teleportSide = player.getTeleportSide();
+        if (teleportSide !== "none") {
+          const teleporters = { up: { size: 1 }, right: { size: 2 }, down: { size: 3 }, left: { size: 4 } };
+          teleporters[flipSide(teleportSide)] = map.teleporters[teleportSide];
+          map = generateRandomMap({
+            rng: r,
+            numStructures: 7,
+            teleporters: teleporters,
+          });
         }
+
+        // timeUntilNextSpawn -= TICK_DURATION_S;
+
+        // if (timeUntilNextSpawn < 0) {
+        //   timeUntilNextSpawn = 3;
+        //   enemies.push(new BasicEnemy(findRandomLocation()));
+        // }
 
         setNums([...numberAnimations]);
 

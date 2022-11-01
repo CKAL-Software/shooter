@@ -56,7 +56,7 @@ export abstract class Gun {
   }
 
   initiateReload() {
-    if (this.reloadTimeRemaining <= 0 && this.ammo > 0 && this.magazineAmmo !== this.magazineSize) {
+    if (this.reloadTimeRemaining === 0 && this.ammo > 0 && this.magazineAmmo !== this.magazineSize) {
       this.reloadTimeRemaining = this.reloadTime;
       this.magazineAmmo = 0;
       this.shouldReload = true;
@@ -70,7 +70,7 @@ export abstract class Gun {
 
   tick() {
     this.reloadTimeRemaining = Math.max(0, this.reloadTimeRemaining - TICK_DURATION_S);
-    this.fireTimeRemaining -= TICK_DURATION_S;
+    this.fireTimeRemaining = Math.max(0, this.fireTimeRemaining - TICK_DURATION_S);
 
     if (this.magazineAmmo === 0 && !this.shouldReload) {
       this.initiateReload();
@@ -135,6 +135,10 @@ export abstract class Gun {
 
   isReloading() {
     return this.reloadTimeRemaining > 0;
+  }
+
+  isLoadingBulletIntoChamber() {
+    return this.fireTimeRemaining > 0;
   }
 
   abstract shoot(target: Point): void;

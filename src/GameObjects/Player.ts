@@ -1,7 +1,8 @@
+import { MAP_SIZE } from "../Definitions/Maps";
 import { experienceThresholdsPlayer, TICK_DURATION_S } from "../lib/definitions";
 import { toUnitVector } from "../lib/functions";
 import { Direction } from "../lib/models";
-import { mousePos } from "../Shooter";
+import { map, mousePos } from "../Shooter";
 import { Gun } from "../Weapons/Gun";
 import { Pistol } from "../Weapons/Pistol";
 import { Shotgun } from "../Weapons/Shotgun";
@@ -20,7 +21,7 @@ export class Player extends MovingObject {
   private tintColor = "255,0,0";
 
   constructor() {
-    super({ position: { x: 200, y: 280 }, size: 15, velocity: 2.5, color: "#c67c16" });
+    super({ position: { x: 180, y: 280 }, size: 13, velocity: 2.5, color: "#c67c16" });
   }
 
   draw(ctx: CanvasRenderingContext2D): void {
@@ -78,7 +79,7 @@ export class Player extends MovingObject {
       return;
     }
 
-    if (this.currentWeapon.isReloading()) {
+    if (this.currentWeapon.isReloading() || this.currentWeapon.isLoadingBulletIntoChamber()) {
       return;
     }
 
@@ -93,14 +94,16 @@ export class Player extends MovingObject {
     let newX = this.position.x;
     let newY = this.position.y;
 
+    const actualVelocity = this.moveDirections.size > 1 ? this.velocity / Math.SQRT2 : this.velocity;
+
     if (direction === "w") {
-      newY -= this.velocity;
+      newY -= actualVelocity;
     } else if (direction === "a") {
-      newX -= this.velocity;
+      newX -= actualVelocity;
     } else if (direction === "s") {
-      newY += this.velocity;
+      newY += actualVelocity;
     } else if (direction === "d") {
-      newX += this.velocity;
+      newX += actualVelocity;
     }
 
     const [isColliding, mayForce] = this.checkCollision({ x: newX, y: newY });
@@ -113,9 +116,9 @@ export class Player extends MovingObject {
 
       if (direction === "a" || direction === "d") {
         if (!this.checkCollision({ x: newX, y: newY - this.velocity })[0]) {
-          newY -= this.velocity;
+          newY -= actualVelocity;
         } else if (!this.checkCollision({ x: newX, y: newY + this.velocity })[0]) {
-          newY += this.velocity;
+          newY += actualVelocity;
         } else {
           return;
         }
@@ -123,9 +126,9 @@ export class Player extends MovingObject {
 
       if (direction === "w" || direction === "s") {
         if (!this.checkCollision({ x: newX - this.velocity, y: newY })[0]) {
-          newX -= this.velocity;
+          newX -= actualVelocity;
         } else if (!this.checkCollision({ x: newX + this.velocity, y: newY })[0]) {
-          newX += this.velocity;
+          newX += actualVelocity;
         } else {
           return;
         }
@@ -164,6 +167,17 @@ export class Player extends MovingObject {
 
   getExperience() {
     return this.experience;
+  }
+
+  getTeleportSide() {
+    const { x, y } = this.tile;
+    if (map.layout[y][x] === "~") {
+      if (x === 0) return "left";
+      if (x === MAP_SIZE - 1) return "right";
+      if (y === MAP_SIZE - 1) return "down";
+      if (y === 0) return "up";
+    }
+    return "none";
   }
 
   getLevel() {

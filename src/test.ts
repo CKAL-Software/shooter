@@ -1,5 +1,12 @@
-import { pathToPoint } from "./lib/canvasFunctions";
-import { TILE_SIZE } from "./lib/definitions";
-import { map } from "./Shooter";
+import { generateRandomMap, getSeededRandomGenerator } from "./lib/functions";
+import { getRandomInt } from "./lib/utils";
 
-pathToPoint(map, { x: 5 * TILE_SIZE, y: 1 * TILE_SIZE }, { x: 11 * TILE_SIZE, y: 8 * TILE_SIZE });
+const r = getSeededRandomGenerator(getRandomInt(0, 100));
+
+for (let i = 0; i < 5; i++) {
+  generateRandomMap({
+    rng: r,
+    numStructures: 3,
+    teleporters: { up: { size: 1 }, right: { size: 2 }, down: { size: 3 }, left: { size: 4 } },
+  });
+}
