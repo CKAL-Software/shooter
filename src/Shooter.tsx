@@ -25,6 +25,7 @@ import {
   posToKey,
 } from "./lib/functions";
 import { getRandomInt } from "./lib/utils";
+import { Minimap } from "./components/minimap";
 
 const moveDirections = new Set<Direction>();
 const r = getSeededRandomGenerator(getRandomInt(0, 100));
@@ -75,6 +76,8 @@ export function Shooter() {
   const [reloadTime, setReloadTime] = useState(0);
   const [tint, setTint] = useState(0);
   const [tintColor, setTintColor] = useState("0,0,0");
+  const [currentMapPosition, setCurrentMapPosition] = useState(currentMap.position);
+  const [allMaps, setAllMaps] = useState(maps);
 
   useEffect(() => {
     const canvas2 = document.getElementById("background-layer") as HTMLCanvasElement;
@@ -191,6 +194,8 @@ export function Shooter() {
         setTint(player.getTintIntencity());
         setTintColor(player.getTintColor());
         setReloadTime(player.getCurrentWeapon().getReloadTime());
+        setCurrentMapPosition(currentMap.position);
+        setAllMaps(new Map(maps));
       }, TICK_DURATION);
     }
 
@@ -217,8 +222,11 @@ export function Shooter() {
         tabIndex={0}
       >
         <div style={{ display: "grid", gridTemplateColumns: "1fr auto 1fr" }}>
-          {/* <div style={{ display: "flex" }}> */}
-          <div />
+          <div style={{ display: "flex", justifyContent: "flex-end" }}>
+            <div style={{ padding: 24 }}>
+              <Minimap maps={allMaps} currentMapPosition={currentMapPosition} vision={3} />
+            </div>
+          </div>
           <div
             style={{
               position: "relative",

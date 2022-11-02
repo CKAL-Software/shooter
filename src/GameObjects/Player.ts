@@ -1,5 +1,4 @@
 import { MAP_SIZE } from "../Definitions/Maps";
-import { pixelsToTile } from "../lib/canvasFunctions";
 import { experienceThresholdsPlayer, MapSide, TICK_DURATION_S, TILE_SIZE } from "../lib/definitions";
 import { toUnitVector } from "../lib/functions";
 import { Direction } from "../lib/models";
@@ -174,7 +173,7 @@ export class Player extends MovingObject {
       this.setPosition({ x: MAP_SIZE * TILE_SIZE - TILE_SIZE / 2, y: y });
     }
 
-    this.tile = pixelsToTile(this.position);
+    this.updateSurroundingObstacles();
   }
 
   getTintColor() {

@@ -400,3 +400,7 @@ export function getPredefinedTeleporters(maps: Map<string, MapInfo>, newMapPosit
 export function posToKey(position: Point) {
   return position.x + "," + position.y;
 }
+
+export function n(num: number) {
+  return Array.from(new Array(num)).map((_, i) => i);
+}
