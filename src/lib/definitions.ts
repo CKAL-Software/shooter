@@ -52,3 +52,15 @@ export const TargetingModes: TargetingMode[] = [
 
 export const experienceThresholdsNormal = [10, 20, 30, 40, 50, 60, 70, 80, 90, 100];
 export const experienceThresholdsPlayer = [50, 100, 150, 200, 250, 300, 350, 400, 450, 500];
+
+export const COLOR_MONEY = "#edd500";
+export const COLOR_EXP = "#90caf9";
+export const COLOR_DMG = "red";
+export const COLOR_PLAYER = "#ed8300";
+export const COLOR_HP_BAR_RED = "red";
+export const COLOR_HP_BAR_GREEN = "#36e400";
+export const COLOR_HP_GREEN = "#3cff00";
+
+export const ANIM_COLLECT_TIME = 0.4;
+export const ANIM_TIME = 1.0;
+export const ANIM_MIN_REFRESH_TIME = 0.5;

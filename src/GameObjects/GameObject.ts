@@ -32,6 +32,10 @@ export abstract class GameObject {
     return this.drawPosition;
   }
 
+  getColor() {
+    return this.color;
+  }
+
   abstract tick(): void;
 
   abstract draw(ctx: CanvasRenderingContext2D): void;

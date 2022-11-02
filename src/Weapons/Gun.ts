@@ -11,6 +11,8 @@ export interface GunConfig {
   ammo: number;
 }
 
+// const recoilRecoveryPerSecond = 40;
+
 export abstract class Gun {
   protected level = 1;
   protected experience = 0;
@@ -26,6 +28,7 @@ export abstract class Gun {
   protected projectileColor: string;
   protected shouldReload = false;
   protected name: string;
+  protected currentRecoil = 0;
 
   constructor(config: GunConfig) {
     this.name = config.name;
@@ -36,6 +39,7 @@ export abstract class Gun {
     this.velocity = config.velocity;
     this.projectileSize = config.projectileSize;
     this.projectileColor = config.projectileColor;
+
     this.reload();
   }
 
@@ -53,6 +57,8 @@ export abstract class Gun {
     this.fireTimeRemaining = 60 / this.fireRate;
 
     this.shoot(target);
+
+    // this.currentRecoil += 15;
   }
 
   initiateReload() {
@@ -63,6 +69,10 @@ export abstract class Gun {
     }
   }
 
+  getRecoil() {
+    return this.currentRecoil;
+  }
+
   reload() {
     this.magazineAmmo = Math.min(this.magazineSize, this.ammo);
     this.shouldReload = false;
@@ -71,6 +81,7 @@ export abstract class Gun {
   tick() {
     this.reloadTimeRemaining = Math.max(0, this.reloadTimeRemaining - TICK_DURATION_S);
     this.fireTimeRemaining = Math.max(0, this.fireTimeRemaining - TICK_DURATION_S);
+    // this.currentRecoil = Math.max(10, this.currentRecoil - recoilRecoveryPerSecond * TICK_DURATION_S);
 
     if (this.magazineAmmo === 0 && !this.shouldReload) {
       this.initiateReload();

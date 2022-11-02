@@ -1,27 +1,48 @@
 import { MAP_SIZE } from "../Definitions/Maps";
-import { experienceThresholdsPlayer, MapSide, TICK_DURATION_S, TILE_SIZE } from "../lib/definitions";
+import {
+  ANIM_COLLECT_TIME,
+  COLOR_DMG,
+  COLOR_EXP,
+  COLOR_HP_BAR_GREEN,
+  COLOR_HP_BAR_RED,
+  COLOR_MONEY,
+  COLOR_PLAYER,
+  experienceThresholdsPlayer,
+  MapSide,
+  TICK_DURATION_S,
+  TILE_SIZE,
+} from "../lib/definitions";
 import { toUnitVector } from "../lib/functions";
 import { Direction } from "../lib/models";
-import { currentMap, mousePos } from "../Shooter";
+import { currentMap, mousePos, numberAnimations as animations } from "../Shooter";
 import { Gun } from "../Weapons/Gun";
 import { Pistol } from "../Weapons/Pistol";
 import { Shotgun } from "../Weapons/Shotgun";
 import { MovingObject } from "./MovingObject";
+import { RisingText } from "./RisingText";
 
 export class Player extends MovingObject {
   private health = 100;
   private maxHealth = 100;
+  private money = 0;
   private weapons: Gun[] = [new Pistol(), new Shotgun()];
   private currentWeapon = this.weapons[0];
   private moveDirections: Set<Direction> = new Set();
   private wantFire = false;
   private level = 1;
   private experience = 0;
+  private totalExperience = 0;
   private tintTime = 0;
   private tintColor = "255,0,0";
+  private lastExpAnim: RisingText | undefined = undefined;
+  private lastExpAnimTimeLeft = 0;
+  private lastMoneyAnim: RisingText | undefined = undefined;
+  private lastMoneyAnimTimeLeft = 0;
+  private lastDmgAnim: RisingText | undefined = undefined;
+  private lastDmgAnimTimeLeft = 0;
 
   constructor() {
-    super({ position: { x: 180, y: 280 }, size: 13, velocity: 2.5, color: "#c67c16" });
+    super({ position: { x: 180, y: 280 }, size: 13, velocity: 2.5, color: COLOR_PLAYER });
   }
 
   draw(ctx: CanvasRenderingContext2D): void {
@@ -49,7 +70,7 @@ export class Player extends MovingObject {
       width * (doubleLength ? 2 : 1),
       height
     );
-    ctx.fillStyle = "red";
+    ctx.fillStyle = COLOR_HP_BAR_RED;
     ctx.fill();
     ctx.closePath();
 
@@ -60,7 +81,7 @@ export class Player extends MovingObject {
       Math.round(width * (doubleLength ? 2 : 1) * (this.health / this.maxHealth)),
       height
     );
-    ctx.fillStyle = "#3cff00";
+    ctx.fillStyle = COLOR_HP_BAR_GREEN;
     ctx.fill();
     ctx.closePath();
   }
@@ -72,6 +93,8 @@ export class Player extends MovingObject {
     if (this.wantFire) {
       this.shoot();
     }
+
+    this.lastExpAnimTimeLeft = Math.max(0, this.lastExpAnimTimeLeft - TICK_DURATION_S);
   }
 
   changeWeapon(weaponSlot: number) {
@@ -153,12 +176,41 @@ export class Player extends MovingObject {
   }
 
   addExperience(experience: number) {
+    this.totalExperience += experience;
     this.experience += experience;
+
+    if (this.lastExpAnimTimeLeft > 0) {
+      this.lastExpAnim?.setText(Number(this.lastExpAnim.getText()) + experience);
+    } else {
+      const newAnim = new RisingText(this.position, experience, COLOR_EXP);
+      animations.push(newAnim);
+      this.lastExpAnim = newAnim;
+    }
+    this.lastExpAnimTimeLeft = ANIM_COLLECT_TIME;
 
     while (this.experience >= experienceThresholdsPlayer[this.level - 1]) {
       this.experience -= experienceThresholdsPlayer[this.level - 1];
       this.level++;
+      animations.push(new RisingText(this.position, "Level up!", COLOR_EXP));
     }
+  }
+
+  changeMoney(change: number) {
+    if (this.lastMoneyAnimTimeLeft > 0) {
+      this.lastMoneyAnim?.setText(Number(this.lastMoneyAnim.getText()) + change);
+    } else {
+      const newAnim = new RisingText(this.position, change, COLOR_MONEY);
+      animations.push(newAnim);
+      this.lastMoneyAnim = newAnim;
+    }
+
+    this.lastMoneyAnimTimeLeft = ANIM_COLLECT_TIME;
+
+    this.money += change;
+  }
+
+  getTotalExperience() {
+    return this.totalExperience;
   }
 
   enterTeleporter(side: MapSide) {
@@ -207,6 +259,10 @@ export class Player extends MovingObject {
     return this.velocity;
   }
 
+  getMoney() {
+    return this.money;
+  }
+
   getDirection() {
     const direction = { x: 0, y: 0 };
 
@@ -227,6 +283,10 @@ export class Player extends MovingObject {
 
   getSize() {
     return this.size;
+  }
+
+  getWeapons() {
+    return this.weapons;
   }
 
   getMaxHealth() {
@@ -259,5 +319,15 @@ export class Player extends MovingObject {
   inflictDamage(damage: number) {
     this.health = Math.max(0, this.health - damage);
     this.setTint(255, 0, 0);
+
+    if (this.lastDmgAnimTimeLeft > 0) {
+      this.lastDmgAnim?.setText(Number(this.lastDmgAnim.getText()) + damage);
+    } else {
+      const newAnim = new RisingText(this.position, damage, COLOR_DMG);
+      animations.push(newAnim);
+      this.lastDmgAnim = newAnim;
+    }
+
+    this.lastDmgAnimTimeLeft = ANIM_COLLECT_TIME;
   }
 }

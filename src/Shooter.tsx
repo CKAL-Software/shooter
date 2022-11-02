@@ -1,5 +1,11 @@
 import { useEffect, useState } from "react";
-import { drawBackground, drawAndCleanupObjects, getMousePos, getObstacles } from "./lib/canvasFunctions";
+import {
+  drawBackground,
+  drawAndCleanupObjects,
+  getMousePos,
+  getObstacles,
+  findRandomLocation,
+} from "./lib/canvasFunctions";
 import {
   Point,
   CANVAS_HEIGHT,
@@ -12,7 +18,7 @@ import {
 } from "./lib/definitions";
 import { Enemy } from "./GameObjects/Enemies/Enemy";
 import { Player } from "./GameObjects/Player";
-import { NumberAnimation } from "./GameObjects/NumberAnimation";
+import { RisingText } from "./GameObjects/RisingText";
 import { ControlPanel } from "./components/controlPanel";
 import { BasicEnemy } from "./GameObjects/Enemies/BasicEnemy";
 import { Direction } from "./lib/models";
@@ -26,6 +32,8 @@ import {
 } from "./lib/functions";
 import { getRandomInt } from "./lib/utils";
 import { Minimap } from "./components/minimap";
+import { AiOutlineAim } from "react-icons/ai";
+import { MenuContainer } from "./components/menu/menuContainer";
 
 const moveDirections = new Set<Direction>();
 const r = getSeededRandomGenerator(getRandomInt(0, 100));
@@ -42,28 +50,21 @@ export const player = new Player();
 export const enemies: Enemy[] = [new BasicEnemy({ x: 200, y: 400 })];
 export let timeUntilNextSpawn = 3;
 export const miscellaneous: GameObject[] = [];
-export const numberAnimations: NumberAnimation[] = [];
+export const numberAnimations: RisingText[] = [];
 export const projectiles: ActualProjectile[] = [];
 export let mousePos: Point = { x: 0, y: 0 };
-export let gameStats = {
-  money: 10,
-  points: 0,
-  health: 100,
-  isPaused: true,
-  requestForPause: false,
-  isFast: false,
-  waveHealth: 10,
-};
+export let menuOpen = false;
 
 let hasTeleported = 0;
 
 export function Shooter() {
-  const [nums, setNums] = useState<NumberAnimation[]>([]);
+  const [anims, setAnims] = useState<RisingText[]>([]);
   const [hp, setHp] = useState(0);
   const [maxHp, setMaxHp] = useState(0);
   const [magAmmo, setMagAmmo] = useState(0);
   const [magSize, setMagSize] = useState(0);
   const [ammo, setAmmo] = useState(0);
+  const [money, setMoney] = useState(0);
   const [playerExp, setPlayerExp] = useState(0);
   const [playerLevel, setPlayerLevel] = useState(0);
   const [weaponExp, setWeaponExp] = useState(0);
@@ -78,6 +79,7 @@ export function Shooter() {
   const [tintColor, setTintColor] = useState("0,0,0");
   const [currentMapPosition, setCurrentMapPosition] = useState(currentMap.position);
   const [allMaps, setAllMaps] = useState(maps);
+  const [menuOpenState, setMenuOpenState] = useState(false);
 
   useEffect(() => {
     const canvas2 = document.getElementById("background-layer") as HTMLCanvasElement;
@@ -106,6 +108,11 @@ export function Shooter() {
       if (["1", "2", "3", "4", "5", "6", "7", "8", "9", "0"].includes(keyEvent.key)) {
         player.changeWeapon(keyEvent.key === "0" ? 9 : Number(keyEvent.key) - 1);
       }
+
+      if (["Escape", "p"].includes(keyEvent.key)) {
+        menuOpen = !menuOpen;
+        setMenuOpenState((open) => !open);
+      }
     };
 
     window.onkeyup = (keyEvent) => {
@@ -115,6 +122,13 @@ export function Shooter() {
 
     upperDiv.onmousemove = (mouseEvent) => {
       mousePos = getMousePos(canvas, mouseEvent);
+
+      const crosshair = document.getElementById("crosshair");
+      if (!crosshair) {
+        return;
+      }
+
+      crosshair.style.transform = `translate3d(${mousePos.x}px, ${mousePos.y}px, 0)`;
     };
 
     upperDiv.onmousedown = () => {
@@ -127,19 +141,29 @@ export function Shooter() {
 
     if (game) {
       id = setInterval(() => {
+        if (menuOpen) return;
+
         game.clearRect(0, 0, canvas.width, canvas.height);
 
-        drawAndCleanupObjects(game, [player]);
         drawAndCleanupObjects(game, enemies);
         drawAndCleanupObjects(game, projectiles);
         drawAndCleanupObjects(game, miscellaneous);
         drawAndCleanupObjects(game, numberAnimations);
+        drawAndCleanupObjects(game, [player]);
 
         projectiles.forEach((obj) => obj.tick());
         enemies.forEach((obj) => obj.tick());
         numberAnimations.forEach((obj) => obj.tick());
         miscellaneous.forEach((obj) => obj.tick());
         player.tick();
+
+        const crosshair = document.getElementById("crosshair");
+        if (crosshair) {
+          const size = Math.max(8, 3 * player.getCurrentWeapon().getRecoil());
+          crosshair.style.height = size + "px";
+          crosshair.style.width = size + "px";
+        }
+
         const teleportSide = player.getTeleportSide();
         if (teleportSide !== "none" && hasTeleported <= 0) {
           const newMapPosition = {
@@ -170,12 +194,12 @@ export function Shooter() {
 
         // timeUntilNextSpawn -= TICK_DURATION_S;
 
-        // if (timeUntilNextSpawn < 0) {
-        //   timeUntilNextSpawn = 3;
-        //   enemies.push(new BasicEnemy(findRandomLocation()));
-        // }
+        if (timeUntilNextSpawn < 0) {
+          timeUntilNextSpawn = 3;
+          enemies.push(new BasicEnemy(findRandomLocation(currentMap.layout)));
+        }
 
-        setNums([...numberAnimations]);
+        setAnims([...numberAnimations]);
 
         setHp(player.getHealth());
         setAmmo(player.getCurrentWeapon().getAmmo());
@@ -196,6 +220,7 @@ export function Shooter() {
         setReloadTime(player.getCurrentWeapon().getReloadTime());
         setCurrentMapPosition(currentMap.position);
         setAllMaps(new Map(maps));
+        setMoney(player.getMoney());
       }, TICK_DURATION);
     }
 
@@ -204,10 +229,11 @@ export function Shooter() {
         clearInterval(id);
       }
     };
-  }, [nums]);
+  }, [anims]);
 
   return (
     <div style={{ position: "relative" }}>
+      {menuOpenState && <MenuContainer />}
       <div
         style={{
           display: "flex",
@@ -238,13 +264,23 @@ export function Shooter() {
             <canvas id="game-layer" height={CANVAS_HEIGHT} width={CANVAS_WIDTH} style={{ zIndex: 2 }} />
             <div id="numbers" style={{ height: CANVAS_HEIGHT, width: CANVAS_WIDTH, zIndex: 3 }}>
               <div style={{ height: CANVAS_HEIGHT, width: CANVAS_WIDTH, userSelect: "none" }}>
-                {nums.map((na) => (
+                <div id="crosshair" style={{ marginLeft: -13, marginTop: -13 }}>
+                  <AiOutlineAim style={{ fontSize: 26, verticalAlign: 0, color: "rgba(0,0,0,0.5)" }} />
+                </div>
+                {anims.map((anim) => (
                   <div
-                    key={na.getId()}
-                    style={{ left: na.getX(), top: na.getY(), position: "absolute", fontWeight: "bold", lineHeight: 0 }}
+                    key={anim.getId()}
+                    style={{
+                      left: anim.getX(),
+                      top: anim.getY(),
+                      position: "absolute",
+                      fontWeight: "bold",
+                      lineHeight: 0,
+                      color: anim.getColor(),
+                    }}
                     className="number-flow"
                   >
-                    {na.getNumber()}
+                    {anim.getText()}
                   </div>
                 ))}
               </div>
@@ -257,6 +293,7 @@ export function Shooter() {
                 position: "absolute",
                 zIndex: 4,
                 backgroundColor: `rgba(${tintColor},${tint})`,
+                cursor: "none",
                 // backgroundColor: `rgba(0,0,0,0)`,
               }}
             />
@@ -264,6 +301,7 @@ export function Shooter() {
           <ControlPanel
             hp={hp}
             maxHp={maxHp}
+            money={money}
             magSize={magSize}
             magAmmo={magAmmo}
             ammo={ammo}

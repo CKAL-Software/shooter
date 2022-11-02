@@ -18,6 +18,7 @@ interface ControlPanelProps {
   weaponName: string;
   reloadProgress: number;
   reloadTime: number;
+  money: number;
 }
 
 export function ControlPanel(props: ControlPanelProps) {
@@ -25,7 +26,7 @@ export function ControlPanel(props: ControlPanelProps) {
     <div
       style={{
         marginLeft: "24px",
-        background: "lightgray",
+        background: "#eeeeee",
         height: CANVAS_HEIGHT,
         overflow: "hidden",
         userSelect: "none",
@@ -47,6 +48,8 @@ export function ControlPanel(props: ControlPanelProps) {
           <div style={{ textAlign: "end" }}>{props.playerLevel}</div>
           <div style={{ whiteSpace: "nowrap" }}>Move speed</div>
           <div style={{ textAlign: "end" }}>{props.velocity}</div>
+          <div style={{ whiteSpace: "nowrap" }}>Money</div>
+          <div style={{ textAlign: "end" }}>{props.money}</div>
         </div>
         <div style={{ marginBottom: 8 }}>
           <div style={{ marginBottom: 4, fontSize: 16, marginLeft: 2 }}>Health</div>

@@ -1,7 +1,7 @@
 import { CANVAS_COLUMNS, CANVAS_ROWS } from "../Definitions/Maps";
 import { GameObject } from "../GameObjects/GameObject";
 import { Point, TILE_SIZE } from "./definitions";
-import { getTileType } from "./functions";
+import { changeDirection, getTileType } from "./functions";
 import { MinHeap } from "./minHeap";
 import { SNode } from "./models";
 
@@ -9,7 +9,7 @@ export function drawBackground(ctx: CanvasRenderingContext2D, mapLayout: string[
   ctx.beginPath();
 
   ctx.rect(0, 0, ctx.canvas.width, ctx.canvas.height);
-  ctx.fillStyle = "lightgray";
+  ctx.fillStyle = "#eeeeee";
   ctx.fill();
 
   drawMap(ctx, mapLayout);
@@ -25,6 +25,29 @@ export function drawTile(ctx: CanvasRenderingContext2D, x: number, y: number, co
   ctx.fill();
 
   ctx.closePath();
+}
+
+export function drawCrosshair(
+  ctx: CanvasRenderingContext2D,
+  playerPosition: Point,
+  mousePosition: Point,
+  recoil: number
+) {
+  const direction = calculateDirection(playerPosition, mousePosition);
+
+  const a = changeDirection(direction, 90);
+  const b = changeDirection(direction, -90);
+
+  drawLine(ctx, mousePosition, { x: a.x * recoil + mousePosition.x, y: a.y * recoil + mousePosition.y }, "black");
+  drawLine(ctx, mousePosition, { x: b.x * recoil + mousePosition.x, y: b.y * recoil + mousePosition.y }, "black");
+}
+
+export function drawLine(ctx: CanvasRenderingContext2D, fromPos: Point, toPos: Point, color: string) {
+  ctx.beginPath();
+  ctx.moveTo(fromPos.x, fromPos.y);
+  ctx.lineTo(toPos.x, toPos.y);
+  ctx.strokeStyle = color;
+  ctx.stroke();
 }
 
 export function drawBall(ctx: CanvasRenderingContext2D, position: Point, size: number, color: string) {

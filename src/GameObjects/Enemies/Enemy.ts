@@ -1,12 +1,13 @@
-import { enemies, gameStats, currentMap, miscellaneous, numberAnimations, player, projectiles } from "../../Shooter";
-import { TICK_DURATION_S } from "../../lib/definitions";
+import { enemies, currentMap, miscellaneous, numberAnimations, player, projectiles } from "../../Shooter";
+import { COLOR_HP_BAR_GREEN, COLOR_HP_BAR_RED, TICK_DURATION_S } from "../../lib/definitions";
 import { MovingObject, MovingObjectConfig } from "../MovingObject";
 import { calculateDirection, calculateDistance, drawBall, getObstacles, pathToPoint } from "../../lib/canvasFunctions";
-import { NumberAnimation } from "../NumberAnimation";
+import { RisingText } from "../RisingText";
 import { SNode } from "../../lib/models";
 import { changeDirection, intercept, intersects, toUnitVector } from "../../lib/functions";
 import { NormalProjectile } from "../Projectiles/NormalProjectile";
 import { ExperienceOrb } from "../Items/ExperienceOrb";
+import { Money } from "../Items/Money";
 
 export interface EnemyConfig extends MovingObjectConfig {
   hp: number;
@@ -165,7 +166,7 @@ export abstract class Enemy extends MovingObject {
       width * (doubleLength ? 2 : 1),
       height
     );
-    ctx.fillStyle = "red";
+    ctx.fillStyle = COLOR_HP_BAR_RED;
     ctx.fill();
     ctx.closePath();
 
@@ -176,7 +177,7 @@ export abstract class Enemy extends MovingObject {
       Math.round(width * (doubleLength ? 2 : 1) * (this.currentHp / this.maxHp)),
       height
     );
-    ctx.fillStyle = "#3cff00";
+    ctx.fillStyle = COLOR_HP_BAR_GREEN;
     ctx.fill();
     ctx.closePath();
   }
@@ -237,11 +238,10 @@ export abstract class Enemy extends MovingObject {
   }
 
   inflictDamage(damage: number) {
-    gameStats.waveHealth -= Math.min(this.currentHp, damage);
     this.currentHp = Math.max(0, this.currentHp - damage);
 
     numberAnimations.push(
-      new NumberAnimation({ x: this.position.x - this.size, y: this.position.y - this.size }, damage)
+      new RisingText({ x: this.position.x - this.size, y: this.position.y - this.size }, damage, "black")
     );
 
     if (this.currentHp <= 0) {
@@ -254,12 +254,15 @@ export abstract class Enemy extends MovingObject {
     player.addExperience(this.reward);
     player.getCurrentWeapon().addExperience(this.reward);
 
-    const numExpOrbs = Math.floor(Math.random() * 3) + 1;
+    const numExpOrbs = Math.floor(Math.random() * 6) + 1;
     for (let i = 0; i < numExpOrbs; i++) {
       const exp = Math.round(Math.random() * 20);
       const randomDirection = changeDirection({ x: 0, y: 1 }, Math.round(Math.random() * 360));
       miscellaneous.push(new ExperienceOrb(exp, this.position, randomDirection));
     }
+
+    const randomDirection = changeDirection({ x: 0, y: 1 }, Math.round(Math.random() * 360));
+    miscellaneous.push(new Money(this.reward, this.position, randomDirection));
   }
 
   hasSpawned() {

@@ -9,9 +9,9 @@ export class Pistol extends Gun {
   constructor() {
     super({
       name: "Pistol",
-      magazineSize: 6,
+      magazineSize: 100,
       reloadTime: 1.2,
-      fireRate: 240,
+      fireRate: 2400,
       velocity: 3,
       projectileSize: 5,
       projectileColor: "black",
@@ -20,12 +20,12 @@ export class Pistol extends Gun {
   }
 
   private calculateNextProjectilesDamage(): number {
-    return Math.round(Math.random() * 3) + 7;
+    return Math.round(Math.random() * 3) + 70;
   }
 
   shoot(target: Point) {
     const direction = calculateDirection(player.getPosition(), target);
-    const newAngle = Math.random() * 30 - 15;
+    const newAngle = Math.random() * 2 * this.currentRecoil - this.currentRecoil;
     const newDirection = changeDirection(direction, newAngle);
 
     projectiles.push(
