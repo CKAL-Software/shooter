@@ -1,7 +1,7 @@
 import { CANVAS_COLUMNS, CANVAS_ROWS } from "../Definitions/Maps";
 import { getSurroundingObstacles, pixelsToTile } from "../lib/canvasFunctions";
 import { Point, TILE_SIZE } from "../lib/definitions";
-import { map } from "../Shooter";
+import { currentMap } from "../Shooter";
 import { GameObject, GameObjectConfig } from "./GameObject";
 
 export interface MovingObjectConfig extends GameObjectConfig {
@@ -30,7 +30,10 @@ export abstract class MovingObject extends GameObject {
 
     if (currentTile.x !== this.tile.x || currentTile.y !== this.tile.y) {
       this.tile = currentTile;
-      this.surroundingObstacles = getSurroundingObstacles(map.layout, { x: this.position.x, y: this.position.y });
+      this.surroundingObstacles = getSurroundingObstacles(currentMap.layout, {
+        x: this.position.x,
+        y: this.position.y,
+      });
     }
   }
 

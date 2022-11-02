@@ -1,7 +1,7 @@
 import { CANVAS_COLUMNS, CANVAS_ROWS, MAP_SIZE } from "../Definitions/Maps";
 import { calculateDistance } from "./canvasFunctions";
 import { getAccessToken } from "./credentialsHandler";
-import { BACKEND_URL, Map, MapSide, Point, Teleporters, TICK_DURATION } from "./definitions";
+import { BACKEND_URL, MapInfo, MapSide, Point, Teleporters, TICK_DURATION } from "./definitions";
 import { LeaderboardEntry } from "./models";
 import { getRandomInt } from "./utils";
 
@@ -235,7 +235,12 @@ export function getSeededRandomGenerator(seed: number) {
   return random;
 }
 
-export function generateRandomMap(config: { rng: () => number; teleporters: Teleporters; numStructures: number }): Map {
+export function generateRandomMap(config: {
+  position: Point;
+  rng: () => number;
+  teleporters: Teleporters;
+  numStructures: number;
+}): MapInfo {
   const map = Array.from(new Array(CANVAS_ROWS)).map(() => Array.from(new Array(CANVAS_COLUMNS)).map(() => " "));
 
   const teleporters: Teleporters = {};
@@ -353,7 +358,7 @@ export function generateRandomMap(config: { rng: () => number; teleporters: Tele
     }
   }
 
-  return { layout: map, teleporters: teleporters };
+  return { position: config.position, layout: map, teleporters: teleporters };
 }
 
 function flipCoords(x: number, y: number, flipOne: boolean, flipTwo: boolean) {
@@ -374,4 +379,24 @@ function flipCoords(x: number, y: number, flipOne: boolean, flipTwo: boolean) {
 
 export function flipSide(side: MapSide): MapSide {
   return ({ up: "down", right: "left", down: "up", left: "right" } as { [side in MapSide]: MapSide })[side];
+}
+
+export function getPredefinedTeleporters(maps: Map<string, MapInfo>, newMapPosition: Point) {
+  const mapAbove = maps.get(posToKey({ x: newMapPosition.x, y: newMapPosition.y - 1 }));
+  const mapBelow = maps.get(posToKey({ x: newMapPosition.x, y: newMapPosition.y + 1 }));
+  const mapToTheLeft = maps.get(posToKey({ x: newMapPosition.x - 1, y: newMapPosition.y }));
+  const mapToTheRight = maps.get(posToKey({ x: newMapPosition.x + 1, y: newMapPosition.y }));
+
+  const predefinedTeleporters: Teleporters = {};
+
+  if (mapAbove) predefinedTeleporters["up"] = mapAbove.teleporters["down"];
+  if (mapBelow) predefinedTeleporters["down"] = mapBelow.teleporters["up"];
+  if (mapToTheLeft) predefinedTeleporters["left"] = mapToTheLeft.teleporters["right"];
+  if (mapToTheRight) predefinedTeleporters["right"] = mapToTheRight.teleporters["left"];
+
+  return predefinedTeleporters;
+}
+
+export function posToKey(position: Point) {
+  return position.x + "," + position.y;
 }

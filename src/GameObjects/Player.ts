@@ -1,8 +1,9 @@
 import { MAP_SIZE } from "../Definitions/Maps";
-import { experienceThresholdsPlayer, TICK_DURATION_S } from "../lib/definitions";
+import { pixelsToTile } from "../lib/canvasFunctions";
+import { experienceThresholdsPlayer, MapSide, TICK_DURATION_S, TILE_SIZE } from "../lib/definitions";
 import { toUnitVector } from "../lib/functions";
 import { Direction } from "../lib/models";
-import { map, mousePos } from "../Shooter";
+import { currentMap, mousePos } from "../Shooter";
 import { Gun } from "../Weapons/Gun";
 import { Pistol } from "../Weapons/Pistol";
 import { Shotgun } from "../Weapons/Shotgun";
@@ -161,6 +162,21 @@ export class Player extends MovingObject {
     }
   }
 
+  enterTeleporter(side: MapSide) {
+    const { x, y } = this.position;
+    if (side === "up") {
+      this.setPosition({ x, y: MAP_SIZE * TILE_SIZE - TILE_SIZE / 2 });
+    } else if (side === "right") {
+      this.setPosition({ x: TILE_SIZE / 2, y });
+    } else if (side === "down") {
+      this.setPosition({ x, y: TILE_SIZE / 2 });
+    } else {
+      this.setPosition({ x: MAP_SIZE * TILE_SIZE - TILE_SIZE / 2, y: y });
+    }
+
+    this.tile = pixelsToTile(this.position);
+  }
+
   getTintColor() {
     return this.tintColor;
   }
@@ -171,7 +187,7 @@ export class Player extends MovingObject {
 
   getTeleportSide() {
     const { x, y } = this.tile;
-    if (map.layout[y][x] === "~") {
+    if (currentMap.layout[y][x] === "~") {
       if (x === 0) return "left";
       if (x === MAP_SIZE - 1) return "right";
       if (y === MAP_SIZE - 1) return "down";

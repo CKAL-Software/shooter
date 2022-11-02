@@ -19,7 +19,8 @@ export type MapSide = "up" | "right" | "down" | "left";
 
 export type Teleporters = { [side in string]: { startPosition?: number; size: number } };
 
-export interface Map {
+export interface MapInfo {
+  position: Point;
   layout: string[][];
   teleporters: Teleporters;
 }

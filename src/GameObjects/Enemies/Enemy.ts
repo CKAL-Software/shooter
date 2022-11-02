@@ -1,4 +1,4 @@
-import { enemies, gameStats, map, miscellaneous, numberAnimations, player, projectiles } from "../../Shooter";
+import { enemies, gameStats, currentMap, miscellaneous, numberAnimations, player, projectiles } from "../../Shooter";
 import { TICK_DURATION_S } from "../../lib/definitions";
 import { MovingObject, MovingObjectConfig } from "../MovingObject";
 import { calculateDirection, calculateDistance, drawBall, getObstacles, pathToPoint } from "../../lib/canvasFunctions";
@@ -140,7 +140,7 @@ export abstract class Enemy extends MovingObject {
 
     if (this.ticksUntilPathRecalculated <= 0) {
       this.ticksUntilPathRecalculated = 100;
-      this.path = pathToPoint(map.layout, this.position, player.getPosition()).slice(1);
+      this.path = pathToPoint(currentMap.layout, this.position, player.getPosition()).slice(1);
     }
 
     if (this.path.length > 0 && calculateDistance(this.position, this.path[0].pos) <= 1) {
@@ -205,7 +205,7 @@ export abstract class Enemy extends MovingObject {
   }
 
   updateCanSeePlayer() {
-    for (let obstacle of getObstacles(map.layout)) {
+    for (let obstacle of getObstacles(currentMap.layout)) {
       const { x, y } = obstacle.topLeftPoint;
       const vertexDeltas = [
         [0, 0, 50, 0],

@@ -1,6 +1,15 @@
 import { useEffect, useState } from "react";
 import { drawBackground, drawAndCleanupObjects, getMousePos, getObstacles } from "./lib/canvasFunctions";
-import { Point, CANVAS_HEIGHT, CANVAS_WIDTH, TICK_DURATION, ActualProjectile } from "./lib/definitions";
+import {
+  Point,
+  CANVAS_HEIGHT,
+  CANVAS_WIDTH,
+  TICK_DURATION,
+  ActualProjectile,
+  TICK_DURATION_S,
+  MapInfo,
+  MapSide,
+} from "./lib/definitions";
 import { Enemy } from "./GameObjects/Enemies/Enemy";
 import { Player } from "./GameObjects/Player";
 import { NumberAnimation } from "./GameObjects/NumberAnimation";
@@ -8,17 +17,26 @@ import { ControlPanel } from "./components/controlPanel";
 import { BasicEnemy } from "./GameObjects/Enemies/BasicEnemy";
 import { Direction } from "./lib/models";
 import { GameObject } from "./GameObjects/GameObject";
-import { flipSide, generateRandomMap, getSeededRandomGenerator } from "./lib/functions";
+import {
+  flipSide,
+  generateRandomMap,
+  getPredefinedTeleporters,
+  getSeededRandomGenerator,
+  posToKey,
+} from "./lib/functions";
 import { getRandomInt } from "./lib/utils";
 
 const moveDirections = new Set<Direction>();
 const r = getSeededRandomGenerator(getRandomInt(0, 100));
-export let map = generateRandomMap({
+export let currentMap = generateRandomMap({
+  position: { x: 0, y: 0 },
   rng: r,
   numStructures: 7,
   teleporters: { up: { size: 1 }, right: { size: 2 }, down: { size: 3 }, left: { size: 4 } },
 });
-export let obstacles = getObstacles(map.layout);
+const maps = new Map<string, MapInfo>();
+maps.set(currentMap.position.x + "," + currentMap.position.y, currentMap);
+export let obstacles = getObstacles(currentMap.layout);
 export const player = new Player();
 export const enemies: Enemy[] = [new BasicEnemy({ x: 200, y: 400 })];
 export let timeUntilNextSpawn = 3;
@@ -35,6 +53,8 @@ export let gameStats = {
   isFast: false,
   waveHealth: 10,
 };
+
+let hasTeleported = 0;
 
 export function Shooter() {
   const [nums, setNums] = useState<NumberAnimation[]>([]);
@@ -63,7 +83,7 @@ export function Shooter() {
     let id: NodeJS.Timeout;
 
     if (bg) {
-      drawBackground(bg, map.layout);
+      drawBackground(bg, currentMap.layout);
     }
 
     const canvas = document.getElementById("game-layer") as HTMLCanvasElement;
@@ -118,15 +138,32 @@ export function Shooter() {
         miscellaneous.forEach((obj) => obj.tick());
         player.tick();
         const teleportSide = player.getTeleportSide();
-        if (teleportSide !== "none") {
-          const teleporters = { up: { size: 1 }, right: { size: 2 }, down: { size: 3 }, left: { size: 4 } };
-          teleporters[flipSide(teleportSide)] = map.teleporters[teleportSide];
-          map = generateRandomMap({
-            rng: r,
-            numStructures: 7,
-            teleporters: teleporters,
-          });
+        if (teleportSide !== "none" && hasTeleported <= 0) {
+          const newMapPosition = {
+            x: currentMap.position.x + (teleportSide === "left" ? -1 : teleportSide === "right" ? 1 : 0),
+            y: currentMap.position.y + (teleportSide === "up" ? -1 : teleportSide === "down" ? 1 : 0),
+          };
+          const existingMap = maps.get(posToKey(newMapPosition));
+          if (existingMap) {
+            currentMap = existingMap;
+          } else {
+            const teleporters = { up: { size: 1 }, right: { size: 2 }, down: { size: 3 }, left: { size: 4 } };
+            const predefinedTeleporters = getPredefinedTeleporters(maps, newMapPosition);
+            Object.entries(predefinedTeleporters).forEach(([side, tpInfo]) => (teleporters[side as MapSide] = tpInfo));
+            teleporters[flipSide(teleportSide)] = currentMap.teleporters[teleportSide];
+            currentMap = generateRandomMap({
+              position: newMapPosition,
+              rng: r,
+              numStructures: 7,
+              teleporters: teleporters,
+            });
+            maps.set(posToKey(currentMap.position), currentMap);
+          }
+          player.enterTeleporter(teleportSide);
+          hasTeleported = 2;
         }
+
+        hasTeleported -= TICK_DURATION_S;
 
         // timeUntilNextSpawn -= TICK_DURATION_S;
 
