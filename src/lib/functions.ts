@@ -404,3 +404,7 @@ export function posToKey(position: Point) {
 export function n(num: number) {
   return Array.from(new Array(num)).map((_, i) => i);
 }
+
+export function getTileType(map: string[][], tile: Point) {
+  return map[tile.y] ? map[tile.y][tile.x] : undefined;
+}

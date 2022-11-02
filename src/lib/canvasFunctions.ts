@@ -1,6 +1,7 @@
 import { CANVAS_COLUMNS, CANVAS_ROWS } from "../Definitions/Maps";
 import { GameObject } from "../GameObjects/GameObject";
 import { Point, TILE_SIZE } from "./definitions";
+import { getTileType } from "./functions";
 import { MinHeap } from "./minHeap";
 import { SNode } from "./models";
 
@@ -207,8 +208,21 @@ export function pathToPoint(mapLayout: string[][], fromPosition: Point, toPositi
     for (const [deltaX, deltaY, cost] of indexDeltas) {
       const neighborX = current.tilePos.x + deltaX;
       const neighborY = current.tilePos.y + deltaY;
+      const neighbor = { x: neighborX, y: neighborY };
 
-      if (mapLayout[neighborY] && mapLayout[neighborY][neighborX] === " ") {
+      // We move diagonally, check no obstacles on either side
+      if (cost > TILE_SIZE) {
+        if (deltaX === -1 && getTileType(mapLayout, { x: current.tilePos.x - 1, y: current.tilePos.y }) !== " ")
+          continue;
+        if (deltaX === 1 && getTileType(mapLayout, { x: current.tilePos.x + 1, y: current.tilePos.y }) !== " ")
+          continue;
+        if (deltaY === -1 && getTileType(mapLayout, { x: current.tilePos.x, y: current.tilePos.y - 1 }) !== " ")
+          continue;
+        if (deltaY === 1 && getTileType(mapLayout, { x: current.tilePos.x, y: current.tilePos.y + 1 }) !== " ")
+          continue;
+      }
+
+      if (getTileType(mapLayout, neighbor) === " ") {
         const tentativeGScore = gScore[current.key] + cost;
         const neighbor = createNode({ x: neighborX, y: neighborY });
         if (tentativeGScore < (gScore[neighbor.key] || Number.MAX_SAFE_INTEGER)) {

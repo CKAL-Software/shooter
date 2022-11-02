@@ -4,7 +4,7 @@ import { MovingObject, MovingObjectConfig } from "../MovingObject";
 import { calculateDirection, calculateDistance, drawBall, getObstacles, pathToPoint } from "../../lib/canvasFunctions";
 import { NumberAnimation } from "../NumberAnimation";
 import { SNode } from "../../lib/models";
-import { changeDirection, intercept, intersects } from "../../lib/functions";
+import { changeDirection, intercept, intersects, toUnitVector } from "../../lib/functions";
 import { NormalProjectile } from "../Projectiles/NormalProjectile";
 import { ExperienceOrb } from "../Items/ExperienceOrb";
 
@@ -53,22 +53,24 @@ export abstract class Enemy extends MovingObject {
       return;
     }
 
+    let changeX = 0;
+    let changeY = 0;
+
     if (this.canSeePlayer && calculateDistance(this.position, player.getPosition()) > player.getSize() + this.size) {
       const direction = calculateDirection(this.position, player.getPosition());
-      const changeX = direction.x * this.velocity;
-      const changeY = direction.y * this.velocity;
-      this.shiftPosition(changeX, changeY);
-      return;
-    }
+      changeX = direction.x * this.velocity;
+      changeY = direction.y * this.velocity;
+      // this.shiftPosition(changeX, changeY);
+      // return;
+    } else {
+      if (this.path.length === 0) {
+        return;
+      }
 
-    if (this.path.length === 0) {
-      return;
+      const direction = calculateDirection(this.position, this.path[0].pos);
+      changeX = direction.x * this.velocity;
+      changeY = direction.y * this.velocity;
     }
-
-    // follow path
-    const direction = calculateDirection(this.position, this.path[0].pos);
-    let changeX = direction.x * this.velocity;
-    let changeY = direction.y * this.velocity;
 
     const [isColliding] = this.checkCollision({ x: this.position.x + changeX, y: this.position.y + changeY });
     if (isColliding) {
@@ -81,7 +83,9 @@ export abstract class Enemy extends MovingObject {
       }
     }
 
-    this.shiftPosition(changeX, changeY);
+    const unit = toUnitVector({ x: changeX, y: changeY });
+
+    this.shiftPosition(unit.x * this.velocity, unit.y * this.velocity);
   }
 
   tick() {
@@ -196,11 +200,11 @@ export abstract class Enemy extends MovingObject {
     //   ctx.closePath();
     // });
 
-    //ctx.beginPath();
-    //ctx.moveTo(this.position.x, this.position.y);
-    //const { x, y } = player.getPosition();
-    //ctx.lineTo(x, y);
-    //ctx.strokeStyle = this.canSeePlayer ? "green" : "red";
+    // ctx.beginPath();
+    // ctx.moveTo(this.position.x, this.position.y);
+    // const { x, y } = player.getPosition();
+    // ctx.lineTo(x, y);
+    // ctx.strokeStyle = this.canSeePlayer ? "green" : "red";
     // ctx.stroke();
   }
 
