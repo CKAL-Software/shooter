@@ -1,4 +1,5 @@
 import { experienceThresholdsNormal, TICK_DURATION_S } from "../../lib/definitions";
+import { player } from "../../Shooter";
 import { Gun } from "../../Weapons/Gun";
 import { ProgressBar } from "../controlPanelElements/progressBar";
 
@@ -10,7 +11,7 @@ export function WeaponStats(props: WeaponStatsProps) {
   return (
     <>
       <div style={{ fontSize: 20, fontWeight: "bold", gridColumn: "span 2", margin: "18px 0 4px" }}>
-        {props.weapon.getName()}
+        {props.weapon.getName() + (player.getCurrentWeapon().getName() === props.weapon.getName() ? " (current)" : "")}
       </div>
       <div style={{ gridColumn: "span 2", margin: "4px 0" }}>
         <ProgressBar

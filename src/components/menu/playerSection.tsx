@@ -1,7 +1,6 @@
 import {
   COLOR_HP_BAR_GREEN,
   COLOR_HP_BAR_RED,
-  COLOR_HP_GREEN,
   COLOR_PLAYER,
   experienceThresholdsPlayer,
   TICK_DURATION_S,

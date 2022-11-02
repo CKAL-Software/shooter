@@ -10,7 +10,6 @@ export function MenuContainer() {
       <div
         style={{
           background: "#ded4b2",
-          width: 1000,
           height: 600,
           border: "2px solid gray",
           borderRadius: 4,

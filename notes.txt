@@ -13,6 +13,39 @@ Basic rock paper scissor AI. If player keeps throwing rock, choose paper more. I
 There is only one rule at the end, when making games: the game must be fun to play!
 
 
+block 1, ammo
+reload time
+mag size
+max ammo
+start ammo
+ammo price
+NO MAG
+
+block 2, dmg
+damage
+damage random
+crit
+penetration
+penetration dropoff
+burn
+shield penetration
+fire rate
+NUMBER OF PROJECTILES
+BURN
+
+block 3, util
+velocity
+xp multiplier
+money multiplier
+range
+recoil
+spread
+knockback reduction
+knockback on enemies
+slow
+score multiplier
+DROPRATE
+VERY PRECISE
 
 
 raw stats:
@@ -25,6 +58,7 @@ ammo price
 xp multiplier
 money multiplier
 range
+velocity
 damage
 damage random
 number of projectiles
@@ -79,3 +113,91 @@ dmg
 resistance
 rewards / drops
 
+
+
+
+Startede ved denne, kig dem før også
+GiColtM1911
+GiCzSkorpion
+GiDesertEagle
+GiMp5K
+GiMp5
+GiMp40
+GiMusket
+GiFamas
+GiLuger
+GiMac10
+GiThompsonM1928
+GiThompsonM1
+GiUzi
+GiWaltherPpk
+GiWinchesterRifle
+GiM3GreaseGun
+GiMinigun
+GiFlamethrower
+GiP90
+GiFnFal
+GiSpectreM4
+GiGlock
+GiSteyrAug
+GiPistolGun
+GiTec9
+GiRayGun
+GiRevolver
+GiSentryGun
+
+
+GiCycle
+GiStrikingArrows
+GiStrikingBalls
+GiReloadGunBarrel
+GiStrikingClamps
+GiStrikingDiamonds
+GiSupersonicBullet
+GiMoneyStack
+GiAtomicSlashes
+GiBattleAxe
+GiBladeDrag
+GiShieldDisabled
+GiShotgunRounds
+GiSilverBullet
+GiSnowflake2
+GiFrozenArrow
+GiBladeFall
+GiDiceSixFacesSix
+GiDoubleShot
+GiDrippingSword
+GiElectric
+GiGunshot
+GiBloodySword
+GiBoatFishing
+GiRollingDices
+GiCrackedShield
+GiCrosshair
+GiCrosshairArrow
+GiPerspectiveDiceSixFacesSix
+GiPiercedBody
+GiCubes
+GiBrightExplosion
+GiBullseye
+GiChainedArrowHeads
+GiChargedArrow
+GiChemicalArrow
+GiEnergyArrow
+GiChest
+GiHeavyRain
+GiChewedSkull
+GiCoins
+
+GiDodging
+GiSwitchWeapon
+GiLockedChest
+GiOpenTreasureChest
+GiOverdose
+GiCash
+GiHealing
+GiHealthIncrease
+GiBackpack
+GiBanknote
+GiBarefoot
+GiBiceps
