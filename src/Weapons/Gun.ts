@@ -1,7 +1,10 @@
 import { experienceThresholdsNormal, Point, TICK_DURATION_S } from "../lib/definitions";
+import { n } from "../lib/functions";
+import { GunSkill } from "../lib/skillDefinitions";
 
 export interface GunConfig {
   name: string;
+  damage: number;
   magazineSize: number;
   reloadTime: number;
   fireRate: number;
@@ -9,6 +12,7 @@ export interface GunConfig {
   projectileSize: number;
   projectileColor: string;
   ammo: number;
+  skillSheet: GunSkill[];
 }
 
 // const recoilRecoveryPerSecond = 40;
@@ -29,16 +33,22 @@ export abstract class Gun {
   protected shouldReload = false;
   protected name: string;
   protected currentRecoil = 0;
+  protected damage: number;
+  protected skillSheet: GunSkill[];
+  protected skillPointsUsed: number[];
 
   constructor(config: GunConfig) {
     this.name = config.name;
     this.ammo = config.ammo;
+    this.damage = config.damage;
     this.reloadTime = config.reloadTime;
     this.magazineSize = config.magazineSize;
     this.fireRate = config.fireRate;
     this.velocity = config.velocity;
     this.projectileSize = config.projectileSize;
     this.projectileColor = config.projectileColor;
+    this.skillSheet = config.skillSheet.reverse();
+    this.skillPointsUsed = n(config.skillSheet.length).map(() => 0);
 
     this.reload();
   }
@@ -101,6 +111,8 @@ export abstract class Gun {
     }
   }
 
+  setDamage() {}
+
   getExperience() {
     return this.experience;
   }
@@ -142,6 +154,18 @@ export abstract class Gun {
 
   getVelocity() {
     return this.velocity;
+  }
+
+  getSkillSheet() {
+    return this.skillSheet;
+  }
+
+  getSkillPointsUsed() {
+    return this.skillPointsUsed;
+  }
+
+  upSkill(index: number) {
+    return this.skillPointsUsed[index]++;
   }
 
   isReloading() {

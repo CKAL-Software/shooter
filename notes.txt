@@ -46,6 +46,7 @@ slow
 score multiplier
 DROPRATE
 VERY PRECISE
+ALLOW TO LEVEL WEAPON TO LVL 30
 
 
 raw stats:
@@ -144,6 +145,8 @@ GiPistolGun
 GiTec9
 GiRayGun
 GiRevolver
+GiAk47
+GiAk47U
 GiSentryGun
 
 

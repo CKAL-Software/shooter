@@ -60,6 +60,7 @@ export const COLOR_PLAYER = "#ed8300";
 export const COLOR_HP_BAR_RED = "red";
 export const COLOR_HP_BAR_GREEN = "#36e400";
 export const COLOR_HP_GREEN = "#3cff00";
+export const COLOR_MENU_BACKGROUND = "#ded4b2";
 
 export const ANIM_COLLECT_TIME = 0.4;
 export const ANIM_TIME = 1.0;

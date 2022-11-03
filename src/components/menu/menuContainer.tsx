@@ -1,3 +1,4 @@
+import { COLOR_MENU_BACKGROUND } from "../../lib/definitions";
 import { PlayerSection } from "./playerSection";
 import { SkillTree } from "./skillTree";
 import { WeaponsSection } from "./weaponsSection";
@@ -9,7 +10,7 @@ export function MenuContainer() {
     >
       <div
         style={{
-          background: "#ded4b2",
+          background: COLOR_MENU_BACKGROUND,
           height: 600,
           border: "2px solid gray",
           borderRadius: 4,

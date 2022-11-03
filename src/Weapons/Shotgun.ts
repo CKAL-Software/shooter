@@ -13,9 +13,11 @@ export class Shotgun extends Gun {
       reloadTime: 3,
       fireRate: 60,
       velocity: 2.5,
+      damage: 5,
       projectileSize: 4,
       projectileColor: "black",
       ammo: 20,
+      skillSheet: [],
     });
   }
 
@@ -34,7 +36,7 @@ export class Shotgun extends Gun {
           position: { x: position.x + delta.x, y: position.y + delta.y },
           direction: newDirection,
           velocity: this.velocity,
-          damage: 5,
+          damage: this.damage,
           size: this.projectileSize,
           color: this.projectileColor,
           shotByPlayer: true,

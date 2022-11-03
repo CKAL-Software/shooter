@@ -8,3 +8,5 @@ export const DataContext = createContext<{
   leaderboardEntries: [],
   getPlayerName: () => "",
 });
+
+export const TriggerRenderContext = createContext<() => void>(() => {});

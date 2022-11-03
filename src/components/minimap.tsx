@@ -28,7 +28,7 @@ export function Minimap(props: MinimapProps) {
           );
 
           if (!mapOfInterest) {
-            return <div />;
+            return <div key={row + "," + col} />;
           }
 
           return (

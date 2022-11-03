@@ -11,15 +11,15 @@ export function SpecialSkill(props: SpecialSkillProps) {
     <Tooltip title={props.text} followCursor>
       <div
         style={{
-          // width: "max-content",
-          gridColumn: "span 2",
+          height: 50,
+          width: 50,
           border: `2px solid ${props.color}`,
-          borderRadius: 4,
-          height: 40,
+          borderRadius: "50%",
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
           cursor: "pointer",
+          color: props.color === "gray" ? "#494747" : "gray",
         }}
       >
         {props.children}

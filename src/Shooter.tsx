@@ -34,6 +34,7 @@ import { getRandomInt } from "./lib/utils";
 import { Minimap } from "./components/minimap";
 import { AiOutlineAim } from "react-icons/ai";
 import { MenuContainer } from "./components/menu/menuContainer";
+import { TriggerRenderContext } from "./lib/contexts";
 
 const moveDirections = new Set<Direction>();
 const r = getSeededRandomGenerator(getRandomInt(0, 100));
@@ -80,6 +81,8 @@ export function Shooter() {
   const [currentMapPosition, setCurrentMapPosition] = useState(currentMap.position);
   const [allMaps, setAllMaps] = useState(maps);
   const [menuOpenState, setMenuOpenState] = useState(false);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [_, setRerenderFlip] = useState(false);
 
   useEffect(() => {
     const canvas2 = document.getElementById("background-layer") as HTMLCanvasElement;
@@ -112,6 +115,7 @@ export function Shooter() {
       if (["Escape", "p"].includes(keyEvent.key)) {
         menuOpen = !menuOpen;
         setMenuOpenState((open) => !open);
+        console.log(menuOpen);
       }
     };
 
@@ -232,92 +236,94 @@ export function Shooter() {
   }, [anims]);
 
   return (
-    <div style={{ position: "relative" }}>
-      {menuOpenState && <MenuContainer />}
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "center",
-          marginTop: "48px",
-          outline: "none",
-        }}
-        onKeyDown={(e) => {}}
-        onContextMenu={(e) => {
-          e.preventDefault();
-        }}
-        tabIndex={0}
-      >
-        <div style={{ display: "grid", gridTemplateColumns: "1fr auto 1fr" }}>
-          <div style={{ display: "flex", justifyContent: "flex-end" }}>
-            <div style={{ padding: 24 }}>
-              <Minimap maps={allMaps} currentMapPosition={currentMapPosition} vision={3} />
-            </div>
-          </div>
-          <div
-            style={{
-              position: "relative",
-              height: CANVAS_HEIGHT,
-              width: CANVAS_WIDTH,
-            }}
-          >
-            <canvas id="background-layer" height={CANVAS_HEIGHT} width={CANVAS_WIDTH} style={{ zIndex: 1 }} />
-            <canvas id="game-layer" height={CANVAS_HEIGHT} width={CANVAS_WIDTH} style={{ zIndex: 2 }} />
-            <div id="numbers" style={{ height: CANVAS_HEIGHT, width: CANVAS_WIDTH, zIndex: 3 }}>
-              <div style={{ height: CANVAS_HEIGHT, width: CANVAS_WIDTH, userSelect: "none" }}>
-                <div id="crosshair" style={{ marginLeft: -13, marginTop: -13 }}>
-                  <AiOutlineAim style={{ fontSize: 26, verticalAlign: 0, color: "rgba(0,0,0,0.5)" }} />
-                </div>
-                {anims.map((anim) => (
-                  <div
-                    key={anim.getId()}
-                    style={{
-                      left: anim.getX(),
-                      top: anim.getY(),
-                      position: "absolute",
-                      fontWeight: "bold",
-                      lineHeight: 0,
-                      color: anim.getColor(),
-                    }}
-                    className="number-flow"
-                  >
-                    {anim.getText()}
-                  </div>
-                ))}
+    <TriggerRenderContext.Provider value={() => setRerenderFlip((flip) => !flip)}>
+      <div style={{ position: "relative" }}>
+        {menuOpenState && <MenuContainer />}
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            marginTop: "48px",
+            outline: "none",
+          }}
+          onKeyDown={(e) => {}}
+          onContextMenu={(e) => {
+            e.preventDefault();
+          }}
+          tabIndex={0}
+        >
+          <div style={{ display: "grid", gridTemplateColumns: "1fr auto 1fr" }}>
+            <div style={{ display: "flex", justifyContent: "flex-end" }}>
+              <div style={{ padding: 24 }}>
+                <Minimap maps={allMaps} currentMapPosition={currentMapPosition} vision={3} />
               </div>
             </div>
             <div
-              id="tint"
               style={{
+                position: "relative",
                 height: CANVAS_HEIGHT,
                 width: CANVAS_WIDTH,
-                position: "absolute",
-                zIndex: 4,
-                backgroundColor: `rgba(${tintColor},${tint})`,
-                cursor: "none",
-                // backgroundColor: `rgba(0,0,0,0)`,
               }}
+            >
+              <canvas id="background-layer" height={CANVAS_HEIGHT} width={CANVAS_WIDTH} style={{ zIndex: 1 }} />
+              <canvas id="game-layer" height={CANVAS_HEIGHT} width={CANVAS_WIDTH} style={{ zIndex: 2 }} />
+              <div id="numbers" style={{ height: CANVAS_HEIGHT, width: CANVAS_WIDTH, zIndex: 3 }}>
+                <div style={{ height: CANVAS_HEIGHT, width: CANVAS_WIDTH, userSelect: "none" }}>
+                  <div id="crosshair" style={{ marginLeft: -13, marginTop: -13 }}>
+                    <AiOutlineAim style={{ fontSize: 26, verticalAlign: 0, color: "rgba(0,0,0,0.5)" }} />
+                  </div>
+                  {anims.map((anim) => (
+                    <div
+                      key={anim.getId()}
+                      style={{
+                        left: anim.getX(),
+                        top: anim.getY(),
+                        position: "absolute",
+                        fontWeight: "bold",
+                        lineHeight: 0,
+                        color: anim.getColor(),
+                      }}
+                      className="number-flow"
+                    >
+                      {anim.getText()}
+                    </div>
+                  ))}
+                </div>
+              </div>
+              <div
+                id="tint"
+                style={{
+                  height: CANVAS_HEIGHT,
+                  width: CANVAS_WIDTH,
+                  position: "absolute",
+                  zIndex: 4,
+                  backgroundColor: `rgba(${tintColor},${tint})`,
+                  cursor: "none",
+                  // backgroundColor: `rgba(0,0,0,0)`,
+                }}
+              />
+            </div>
+            <ControlPanel
+              hp={hp}
+              maxHp={maxHp}
+              money={money}
+              magSize={magSize}
+              magAmmo={magAmmo}
+              ammo={ammo}
+              playerExp={playerExp}
+              playerLevel={playerLevel}
+              weaponExp={weaponExp}
+              weaponLevel={weaponLevel}
+              velocity={velocity}
+              weaponVelocity={weaponVelocity}
+              fireRate={fireRate}
+              weaponName={weaponName}
+              reloadProgress={reloadProgress}
+              reloadTime={reloadTime}
             />
           </div>
-          <ControlPanel
-            hp={hp}
-            maxHp={maxHp}
-            money={money}
-            magSize={magSize}
-            magAmmo={magAmmo}
-            ammo={ammo}
-            playerExp={playerExp}
-            playerLevel={playerLevel}
-            weaponExp={weaponExp}
-            weaponLevel={weaponLevel}
-            velocity={velocity}
-            weaponVelocity={weaponVelocity}
-            fireRate={fireRate}
-            weaponName={weaponName}
-            reloadProgress={reloadProgress}
-            reloadTime={reloadTime}
-          />
         </div>
       </div>
-    </div>
+    </TriggerRenderContext.Provider>
   );
 }

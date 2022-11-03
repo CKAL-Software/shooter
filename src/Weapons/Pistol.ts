@@ -2,6 +2,7 @@ import { NormalProjectile } from "../GameObjects/Projectiles/NormalProjectile";
 import { calculateDirection } from "../lib/canvasFunctions";
 import { Point } from "../lib/definitions";
 import { changeDirection } from "../lib/functions";
+import { PistolSkillSheet } from "../lib/skillDefinitions";
 import { player, projectiles } from "../Shooter";
 import { Gun } from "./Gun";
 
@@ -9,6 +10,7 @@ export class Pistol extends Gun {
   constructor() {
     super({
       name: "Pistol",
+      damage: 7,
       magazineSize: 100,
       reloadTime: 1.2,
       fireRate: 2400,
@@ -16,11 +18,12 @@ export class Pistol extends Gun {
       projectileSize: 5,
       projectileColor: "black",
       ammo: 300,
+      skillSheet: PistolSkillSheet,
     });
   }
 
   private calculateNextProjectilesDamage(): number {
-    return Math.round(Math.random() * 3) + 70;
+    return Math.round(Math.random() * 3) + this.damage;
   }
 
   shoot(target: Point) {

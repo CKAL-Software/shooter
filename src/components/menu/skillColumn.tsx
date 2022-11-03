@@ -23,7 +23,7 @@ export function SkillColumn(props: SkillColumnProps) {
         <SpecialSkill text="Very nice" color={props.color}>
           <GiBurningDot style={{ fontSize: 30 }} />
         </SpecialSkill>
-        <Skill text="asd" color={props.color}>
+        {/* <Skill text="asd" color={props.color} >
           <GiBlaster style={{ fontSize: 30 }} />
         </Skill>
         <Skill text="asd" color={props.color}>
@@ -40,7 +40,7 @@ export function SkillColumn(props: SkillColumnProps) {
         </Skill>
         <Skill text="asd" color={props.color}>
           <GiArrowScope style={{ fontSize: 30 }} />
-        </Skill>
+        </Skill> */}
       </div>
     </div>
   );

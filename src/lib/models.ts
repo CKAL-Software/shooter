@@ -1,3 +1,4 @@
+import { Gun } from "../Weapons/Gun";
 import { Point } from "./definitions";
 
 export interface UserInfo {
@@ -36,3 +37,29 @@ export interface SNode {
 }
 
 export type Direction = "a" | "s" | "d" | "w";
+
+export type EffectFunction = (gun: Gun, points: number) => number;
+
+export interface UpgradeSheet {
+  damage: {
+    damage: EffectFunction[];
+    randomness: EffectFunction[];
+    criticalDamage: EffectFunction[];
+    penetration: EffectFunction[];
+  };
+  ammo: {
+    magSize: EffectFunction[];
+    reloadSpeed: EffectFunction[];
+    fireRate: EffectFunction[];
+    projectiles: EffectFunction[];
+    aoeRange: EffectFunction[];
+  };
+  utility: {
+    range: EffectFunction[];
+    recoil: EffectFunction[];
+    velocity: EffectFunction[];
+    expMultiplier: EffectFunction[];
+    slow: EffectFunction[];
+    dropRate: EffectFunction[];
+  };
+}
