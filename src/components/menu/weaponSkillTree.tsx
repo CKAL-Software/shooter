@@ -10,63 +10,60 @@ interface WeaponSkillTreeProps {
 export function WeaponSkillTree(props: WeaponSkillTreeProps) {
   const rerender = useContext(TriggerRenderContext);
 
-  const skillPointsUsed = props.gun.getSkillPointsUsed().reduce((total, points) => total + points, 0);
-
-  const hasSkillPointsLeft = true;
+  const skillPointsUsed = props.gun.getTotalSkillPointsUsed();
 
   return (
     <div style={{ display: "flex" }}>
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 16 }}>
-        {props.gun.getSkillSheet().map((gs, i) => {
-          const currentNumSkillPoints = props.gun.getSkillPointsUsed()[i];
-          const isMaxLevel = currentNumSkillPoints === 3;
-          const beforeValue = gs.getEffect(props.gun, isMaxLevel ? currentNumSkillPoints - 1 : currentNumSkillPoints);
-          const afterValue = gs.getEffect(props.gun, isMaxLevel ? currentNumSkillPoints : currentNumSkillPoints + 1);
-          let text = gs.description.replace("<before>", beforeValue + "").replace("<after>", afterValue + "");
-          if (isMaxLevel) {
-            text = text.replace("Increase", "Increased").replace("Decrease", "Decreased");
-          }
+        {Object.values(props.gun.getSkillSheet())
+          .sort((a, b) => a.skillTreeIndex - b.skillTreeIndex)
+          .map((gs, i) => {
+            const isMaxLevel = gs.points === 3;
+            const beforeValue = gs.getEffect(isMaxLevel ? gs.points - 1 : gs.points, props.gun);
+            const afterValue = gs.getEffect(isMaxLevel ? gs.points : gs.points + 1, props.gun);
+            let text = gs.description.replace("<before>", beforeValue + "").replace("<after>", afterValue + "");
+            if (isMaxLevel) {
+              text = text.replace("Increase", "Increased").replace("Decrease", "Decreased");
+            }
 
-          const isSpecial = i < 3;
-          const unavailable = isSpecial
-            ? skillPointsUsed < 9
-            : i < 6
-            ? skillPointsUsed < 6
-            : i < 9
-            ? skillPointsUsed < 3
-            : false;
+            const isSpecial = i < 3;
+            const unavailable = isSpecial
+              ? skillPointsUsed < 9
+              : i < 6
+              ? skillPointsUsed < 6
+              : i < 9
+              ? skillPointsUsed < 3
+              : false;
 
-          const disableCursor =
-            !hasSkillPointsLeft ||
-            unavailable ||
-            (isSpecial ? currentNumSkillPoints === 1 : currentNumSkillPoints === 3);
+            const disableCursor =
+              props.gun.getUnusedSkillPoints() === 0 || unavailable || (isSpecial ? gs.points === 1 : gs.points === 3);
 
-          return (
-            <Skill
-              text={text}
-              special={isSpecial}
-              state={
-                unavailable
-                  ? "unavailable"
-                  : currentNumSkillPoints === 0
-                  ? "available"
-                  : (isSpecial && currentNumSkillPoints === 1) || currentNumSkillPoints === 3
-                  ? "maxed"
-                  : currentNumSkillPoints < 3
-                  ? "picked"
-                  : "bonus"
-              }
-              currentLevel={currentNumSkillPoints}
-              onClick={() => {
-                props.gun.upSkill(i);
-                rerender();
-              }}
-              disableCursor={disableCursor}
-            >
-              {gs.content}
-            </Skill>
-          );
-        })}
+            return (
+              <Skill
+                text={text}
+                special={isSpecial}
+                state={
+                  unavailable
+                    ? "unavailable"
+                    : gs.points === 0
+                    ? "available"
+                    : (isSpecial && gs.points === 1) || gs.points === 3
+                    ? "maxed"
+                    : gs.points < 3
+                    ? "picked"
+                    : "bonus"
+                }
+                currentLevel={gs.points}
+                onClick={() => {
+                  props.gun.upgrade(gs.type);
+                  rerender();
+                }}
+                disableCursor={disableCursor}
+              >
+                {gs.content}
+              </Skill>
+            );
+          })}
       </div>
     </div>
   );

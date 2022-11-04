@@ -47,7 +47,7 @@ export function PlayerSection() {
               ? "#d5c800"
               : "#32d500"
           }
-          backgroundColor="darkgray"
+          backgroundColor={"rgba(0,0,0,0.15)"}
           height={30}
           width={260}
         />
@@ -59,7 +59,7 @@ export function PlayerSection() {
           percentage={player.getExperience() / experienceThresholdsPlayer[player.getLevel() - 1]}
           text={player.getExperience() + "/" + experienceThresholdsPlayer[player.getLevel() - 1]}
           barColor="#90caf9"
-          backgroundColor="darkgray"
+          backgroundColor={"rgba(0,0,0,0.15)"}
           height={30}
           width={260}
         />

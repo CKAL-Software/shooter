@@ -59,7 +59,7 @@ export function ControlPanel(props: ControlPanelProps) {
             barColor={
               props.hp / props.maxHp <= 0.25 ? "#d50000" : props.hp / props.maxHp <= 0.5 ? "#d5c800" : "#32d500"
             }
-            backgroundColor="darkgray"
+            backgroundColor={"rgba(0,0,0,0.15)"}
             height={30}
             width={260}
           />
@@ -71,7 +71,7 @@ export function ControlPanel(props: ControlPanelProps) {
             percentage={props.playerExp / experienceThresholdsPlayer[props.playerLevel - 1]}
             text={props.playerExp + "/" + experienceThresholdsPlayer[props.playerLevel - 1]}
             barColor="#90caf9"
-            backgroundColor="darkgray"
+            backgroundColor={"rgba(0,0,0,0.15)"}
             height={30}
             width={260}
           />
@@ -111,7 +111,7 @@ export function ControlPanel(props: ControlPanelProps) {
             percentage={props.weaponExp / experienceThresholdsNormal[props.weaponLevel - 1]}
             text={props.weaponExp + "/" + experienceThresholdsNormal[props.weaponLevel - 1]}
             barColor="#90caf9"
-            backgroundColor="darkgray"
+            backgroundColor={"rgba(0,0,0,0.15)"}
             height={20}
             width={260}
           />

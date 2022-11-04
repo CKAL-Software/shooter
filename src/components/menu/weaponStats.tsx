@@ -18,7 +18,7 @@ export function WeaponStats(props: WeaponStatsProps) {
           percentage={props.weapon.getExperience() / experienceThresholdsNormal[props.weapon.getLevel() - 1]}
           text={props.weapon.getExperience() + "/" + experienceThresholdsNormal[props.weapon.getLevel() - 1]}
           barColor="#90caf9"
-          backgroundColor="darkgray"
+          backgroundColor={"rgba(0,0,0,0.15)"}
           height={20}
           width={260}
         />

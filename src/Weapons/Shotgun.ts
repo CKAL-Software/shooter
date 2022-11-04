@@ -17,7 +17,7 @@ export class Shotgun extends Gun {
       projectileSize: 4,
       projectileColor: "black",
       ammo: 20,
-      skillSheet: [],
+      skills: [],
     });
   }
 

@@ -16,7 +16,7 @@ export function MenuContainer() {
           borderRadius: 4,
           display: "flex",
           columnGap: 48,
-          padding: 20,
+          padding: "20px 40px",
         }}
       >
         <PlayerSection />

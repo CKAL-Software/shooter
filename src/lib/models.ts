@@ -1,5 +1,6 @@
 import { Gun } from "../Weapons/Gun";
 import { Point } from "./definitions";
+import { GunSkill, SkillType } from "./skillDefinitions";
 
 export interface UserInfo {
   email: string;
@@ -38,7 +39,8 @@ export interface SNode {
 
 export type Direction = "a" | "s" | "d" | "w";
 
-export type EffectFunction = (gun: Gun, points: number) => number;
+export type EffectFunction = (points: number, gun: Gun) => number;
+export type EffectFunction2 = (gun: Gun) => number;
 
 export interface UpgradeSheet {
   damage: {
@@ -63,3 +65,10 @@ export interface UpgradeSheet {
     dropRate: EffectFunction[];
   };
 }
+
+export interface GunSkillExtended extends GunSkill {
+  points: number;
+  skillTreeIndex: number;
+}
+
+export type SkillSheet = { [skillType in SkillType]?: GunSkillExtended } & { [skillType in string]: GunSkillExtended };

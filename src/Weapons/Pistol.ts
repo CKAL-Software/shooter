@@ -2,7 +2,7 @@ import { NormalProjectile } from "../GameObjects/Projectiles/NormalProjectile";
 import { calculateDirection } from "../lib/canvasFunctions";
 import { Point } from "../lib/definitions";
 import { changeDirection } from "../lib/functions";
-import { PistolSkillSheet } from "../lib/skillDefinitions";
+import { PistolSkills } from "../lib/skillDefinitions";
 import { player, projectiles } from "../Shooter";
 import { Gun } from "./Gun";
 
@@ -18,7 +18,7 @@ export class Pistol extends Gun {
       projectileSize: 5,
       projectileColor: "black",
       ammo: 300,
-      skillSheet: PistolSkillSheet,
+      skills: PistolSkills,
     });
   }
 
