@@ -126,6 +126,7 @@ export abstract class Enemy extends MovingObject {
             velocity: 1.5,
             damage: 5,
             size: 5,
+            range: 10,
             color: "red",
             shotByPlayer: false,
           })

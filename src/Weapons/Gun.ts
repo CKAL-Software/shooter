@@ -1,6 +1,10 @@
+import { NormalProjectile } from "../GameObjects/Projectiles/NormalProjectile";
+import { calculateDirection } from "../lib/canvasFunctions";
 import { experienceThresholdsNormal, Point, TICK_DURATION_S } from "../lib/definitions";
+import { changeDirection } from "../lib/functions";
 import { SkillSheet } from "../lib/models";
 import { createSkillSheet, GunSkill, SkillType } from "../lib/skillDefinitions";
+import { player, projectiles } from "../Shooter";
 
 export interface GunConfig {
   name: string;
@@ -9,13 +13,14 @@ export interface GunConfig {
   reloadTime: number;
   fireRate: number;
   velocity: number;
+  recoil: number;
+  range: number;
+  critChance: number;
   projectileSize: number;
   projectileColor: string;
   ammo: number;
   skills: GunSkill[];
 }
-
-// const recoilRecoveryPerSecond = 40;
 
 export abstract class Gun {
   protected level = 1;
@@ -34,7 +39,12 @@ export abstract class Gun {
   protected fireTimeRemaining = 0;
   protected baseVelocity: number;
   protected velocity: number;
-  protected currentRecoil = 0;
+  protected baseRecoil: number;
+  protected recoil: number;
+  protected baseCritChance: number;
+  protected critChance: number;
+  protected baseRange: number;
+  protected range: number;
   protected projectileSize: number;
   protected projectileColor: string;
   protected shouldReload = false;
@@ -53,12 +63,27 @@ export abstract class Gun {
     this.baseMagazineSize = config.magazineSize;
     this.fireRate = config.fireRate;
     this.baseFireRate = config.fireRate;
+    this.recoil = config.recoil;
+    this.baseRecoil = config.recoil;
+    this.range = config.range;
+    this.baseRange = config.range;
+    this.critChance = config.critChance;
+    this.baseCritChance = config.critChance;
     this.velocity = config.velocity;
     this.baseVelocity = config.velocity;
     this.projectileSize = config.projectileSize;
     this.projectileColor = config.projectileColor;
 
     this.skillSheet = createSkillSheet(config.skills);
+
+    this.reload();
+  }
+
+  protected getNewDirectionAfterRecoil(target: Point) {
+    const direction = calculateDirection(player.getPosition(), target);
+    const newAngle = Math.random() * 2 * this.recoil - this.recoil;
+    const newDirection = changeDirection(direction, newAngle);
+    return newDirection;
   }
 
   fire(target: Point) {
@@ -87,8 +112,12 @@ export abstract class Gun {
     }
   }
 
-  getRecoil() {
-    return this.currentRecoil;
+  getRecoil(base?: boolean) {
+    return base ? this.baseRecoil : this.recoil;
+  }
+
+  getRange(base?: boolean) {
+    return base ? this.baseRange : this.range;
   }
 
   reload() {
@@ -131,8 +160,8 @@ export abstract class Gun {
     return 1 - this.reloadTimeRemaining / this.reloadTime;
   }
 
-  getReloadTime() {
-    return this.reloadTime;
+  getReloadTime(base?: boolean) {
+    return base ? this.baseReloadTime : this.reloadTime;
   }
 
   getLevel() {
@@ -147,11 +176,31 @@ export abstract class Gun {
     return this.name;
   }
 
-  getMagazineSize() {
-    return this.magazineSize;
+  getMagazineSize(base?: boolean) {
+    return base ? this.baseMagazineSize : this.magazineSize;
+  }
+
+  getCritChance(base?: boolean) {
+    return base ? this.baseCritChance : this.critChance;
+  }
+
+  getCurrentEffect(stat: SkillType) {
+    const skill = this.skillSheet[stat];
+
+    if (!skill) {
+      return 0;
+    }
+
+    return skill.getEffect(skill.points, this);
   }
 
   upgrade(stat: SkillType) {
+    if (this.unusedSkillPoints < 1) {
+      throw new Error("Upgrade method was called without any unused skillpoints");
+    }
+
+    this.unusedSkillPoints--;
+
     const skill = this.skillSheet[stat];
     if (!skill) {
       throw new Error("An upgrade was request for skill that didn't exist in the gun");
@@ -160,21 +209,21 @@ export abstract class Gun {
     skill.points++;
     const effect = skill.getEffect(skill.points, this);
 
-    if (stat === "magSize") this.magazineSize = Math.round(this.baseMagazineSize * effect);
-    if (stat === "damage") this.damage = Math.round(this.baseDamage * effect);
-    if (stat === "reloadSpeed") this.reloadTime = this.baseReloadTime * effect;
+    if (stat === "magSize") this.magazineSize = Math.round(this.baseMagazineSize + effect);
+    if (stat === "damage") this.damage = Math.round(this.baseDamage + effect);
+    if (stat === "reloadSpeed") this.reloadTime = this.baseReloadTime + effect;
   }
 
   getMagazineAmmo() {
     return this.magazineAmmo;
   }
 
-  getFireRate() {
-    return this.fireRate;
+  getFireRate(base?: boolean) {
+    return base ? this.baseFireRate : this.fireRate;
   }
 
-  getVelocity() {
-    return this.velocity;
+  getVelocity(base?: boolean) {
+    return base ? this.baseVelocity : this.velocity;
   }
 
   getSkillSheet() {
@@ -201,5 +250,18 @@ export abstract class Gun {
     return this.fireTimeRemaining > 0;
   }
 
-  abstract shoot(target: Point): void;
+  shoot(target: Point) {
+    projectiles.push(
+      new NormalProjectile({
+        position: player.getPosition(),
+        direction: this.getNewDirectionAfterRecoil(target),
+        velocity: this.velocity,
+        damage: this.damage,
+        range: this.range,
+        size: this.projectileSize,
+        color: this.projectileColor,
+        shotByPlayer: true,
+      })
+    );
+  }
 }

@@ -48,7 +48,9 @@ const maps = new Map<string, MapInfo>();
 maps.set(currentMap.position.x + "," + currentMap.position.y, currentMap);
 export let obstacles = getObstacles(currentMap.layout);
 export const player = new Player();
-export const enemies: Enemy[] = [new BasicEnemy({ x: 200, y: 400 })];
+export const enemies: Enemy[] = [
+  // new BasicEnemy({ x: 200, y: 400 })
+];
 export let timeUntilNextSpawn = 3;
 export const miscellaneous: GameObject[] = [];
 export const numberAnimations: RisingText[] = [];
@@ -115,7 +117,6 @@ export function Shooter() {
       if (["Escape", "p"].includes(keyEvent.key)) {
         menuOpen = !menuOpen;
         setMenuOpenState((open) => !open);
-        console.log(menuOpen);
       }
     };
 

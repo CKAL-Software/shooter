@@ -11,7 +11,6 @@ import {
   GiOpenTreasureChest,
   GiPiercedBody,
   GiReloadGunBarrel,
-  GiStrikingArrows,
   GiStrikingBalls,
   GiSupersonicBullet,
 } from "react-icons/gi";
@@ -158,7 +157,7 @@ export const PistolSkills: GunSkill[] = [
   RecoilSkill((points) => -points * 3),
   RangeSkill((points) => points * 10),
   DamageSkill((points) => points * 10),
-  ReloadSkill((points) => points * 10),
+  ReloadSkill((points, gun) => -points * 0.1 * gun.getReloadTime(true)),
   MagSizeSkill((p) => p),
 ];
 

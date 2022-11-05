@@ -1,17 +1,38 @@
 import { experienceThresholdsNormal, TICK_DURATION_S } from "../../lib/definitions";
-import { player } from "../../Shooter";
+import { SkillType } from "../../lib/skillDefinitions";
 import { Gun } from "../../Weapons/Gun";
 import { ProgressBar } from "../controlPanelElements/progressBar";
+import { GunIcon } from "../gunIcon";
 
 interface WeaponStatsProps {
   weapon: Gun;
 }
 
 export function WeaponStats(props: WeaponStatsProps) {
+  function getStatText(stat: SkillType, base: number, total: number, formatter?: (val: number) => string | number) {
+    return (
+      <div style={{ textAlign: "end" }}>
+        {base === total ? "" : formatter ? formatter(base) : base}
+        {getBonusStatText(stat, formatter)}
+        {formatter ? formatter(total) : total}
+      </div>
+    );
+  }
+
+  function getBonusStatText(stat: SkillType, conversion?: (val: number) => string | number) {
+    const effect = props.weapon.getCurrentEffect(stat);
+    return effect === 0 ? "" : (effect > 0 ? "+" : "") + (conversion ? conversion(effect) : effect) + "=";
+  }
+
   return (
     <>
-      <div style={{ fontSize: 20, fontWeight: "bold", gridColumn: "span 2", margin: "18px 0 4px" }}>
-        {props.weapon.getName() + (player.getCurrentWeapon().getName() === props.weapon.getName() ? " (current)" : "")}
+      <div style={{ display: "flex", alignItems: "center", gridColumn: "span 2", margin: "24px 0 8px" }}>
+        <GunIcon
+          gunName={props.weapon.getName()}
+          level={props.weapon.getLevel()}
+          unusedSkillPoints={props.weapon.getUnusedSkillPoints()}
+        />
+        <div style={{ fontSize: 20, fontWeight: "bold", marginLeft: 20 }}>{props.weapon.getName()}</div>
       </div>
       <div style={{ gridColumn: "span 2", margin: "4px 0" }}>
         <ProgressBar
@@ -23,16 +44,27 @@ export function WeaponStats(props: WeaponStatsProps) {
           width={260}
         />
       </div>
-      <div>Level</div>
-      <div style={{ textAlign: "end" }}>{props.weapon.getLevel()}</div>
       <div>Ammo</div>
-      <div style={{ textAlign: "end" }}>
-        {props.weapon.getMagazineAmmo() + "/" + (props.weapon.getAmmo() - props.weapon.getMagazineAmmo())}
-      </div>
+      <div style={{ textAlign: "end" }}>{props.weapon.getAmmo()}</div>
+      <div>Damage</div>
+      <div style={{ textAlign: "end" }}>{3}</div>
+      <div>Magazine size</div>
+      {getStatText("magSize", props.weapon.getMagazineSize(true), props.weapon.getMagazineSize())}
+      <div>Reload time</div>
+      {getStatText(
+        "reloadSpeed",
+        props.weapon.getReloadTime(true),
+        props.weapon.getReloadTime(),
+        (t) => Math.round(t * 100) / 100
+      )}
       <div style={{ whiteSpace: "nowrap" }}>Fire rate</div>
-      <div style={{ textAlign: "end" }}>{props.weapon.getFireRate() + " RPM"}</div>
+      {getStatText("fireRate", props.weapon.getFireRate(true), props.weapon.getFireRate())}
       <div>Velocity</div>
-      <div style={{ textAlign: "end" }}>{props.weapon.getVelocity() / TICK_DURATION_S}</div>
+      {getStatText("velocity", props.weapon.getVelocity(true), props.weapon.getVelocity(), (v) => v / TICK_DURATION_S)}
+      <div>Recoil</div>
+      {getStatText("recoil", props.weapon.getRecoil(true), props.weapon.getMagazineSize())}
+      <div>Range</div>
+      {getStatText("range", props.weapon.getRange(true), props.weapon.getMagazineSize())}
     </>
   );
 }

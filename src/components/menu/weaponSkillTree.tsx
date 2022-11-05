@@ -40,6 +40,7 @@ export function WeaponSkillTree(props: WeaponSkillTreeProps) {
 
             return (
               <Skill
+                key={gs.type}
                 text={text}
                 special={isSpecial}
                 state={
