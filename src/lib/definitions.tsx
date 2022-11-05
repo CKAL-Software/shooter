@@ -62,6 +62,7 @@ export const COLOR_HP_BAR_RED = "red";
 export const COLOR_HP_BAR_GREEN = "#36e400";
 export const COLOR_HP_GREEN = "#3cff00";
 export const COLOR_MENU_BACKGROUND = "#ded4b2";
+export const COLOR_STAT_BONUS_BLUE = "#0091df";
 // export const COLOR_SELECTED = "#70baf6";
 export const COLOR_SELECTED = "#4f97d1";
 export const COLOR_GUN_SELECTED = "#4f97d1";

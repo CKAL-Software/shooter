@@ -14,6 +14,7 @@ export class Pistol extends Gun {
       recoil: 30,
       critChance: 0,
       range: TILE_SIZE * 5,
+      numBullets: 1,
       projectileSize: 5,
       projectileColor: "black",
       ammo: 300,

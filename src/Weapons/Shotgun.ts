@@ -2,6 +2,7 @@ import { NormalProjectile } from "../GameObjects/Projectiles/NormalProjectile";
 import { calculateDirection } from "../lib/canvasFunctions";
 import { Point, TILE_SIZE } from "../lib/definitions";
 import { changeDirection } from "../lib/functions";
+import { ShotgunSkills } from "../lib/skillDefinitions";
 import { player, projectiles } from "../Shooter";
 import { Gun } from "./Gun";
 
@@ -17,20 +18,19 @@ export class Shotgun extends Gun {
       critChance: 0,
       range: TILE_SIZE * 3,
       recoil: 100,
+      numBullets: 7,
       projectileSize: 4,
       projectileColor: "black",
       ammo: 20,
-      skills: [],
+      skills: ShotgunSkills,
     });
   }
 
   shoot(target: Point) {
     const direction = calculateDirection(player.getPosition(), target);
 
-    const numBullets = 7;
-
-    for (let i = 0; i < numBullets; i++) {
-      const newAngle = (i * this.recoil) / (numBullets - 1) - this.recoil / 2;
+    for (let i = 0; i < this.numBullets; i++) {
+      const newAngle = Math.random() * this.recoil - this.recoil / 2;
       const newDirection = changeDirection(direction, newAngle);
 
       // const position = player.getPosition();

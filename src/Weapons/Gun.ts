@@ -16,6 +16,7 @@ export interface GunConfig {
   recoil: number;
   range: number;
   critChance: number;
+  numBullets: number;
   projectileSize: number;
   projectileColor: string;
   ammo: number;
@@ -45,12 +46,14 @@ export abstract class Gun {
   protected critChance: number;
   protected baseRange: number;
   protected range: number;
+  protected baseNumBullets: number;
+  protected numBullets: number;
   protected projectileSize: number;
   protected projectileColor: string;
   protected shouldReload = false;
   protected name: string;
   protected skillSheet: SkillSheet = {};
-  protected unusedSkillPoints = 27;
+  protected unusedSkillPoints = 6;
 
   constructor(config: GunConfig) {
     this.name = config.name;
@@ -69,6 +72,8 @@ export abstract class Gun {
     this.baseRange = config.range;
     this.critChance = config.critChance;
     this.baseCritChance = config.critChance;
+    this.numBullets = config.numBullets;
+    this.baseNumBullets = config.numBullets;
     this.velocity = config.velocity;
     this.baseVelocity = config.velocity;
     this.projectileSize = config.projectileSize;
@@ -180,6 +185,10 @@ export abstract class Gun {
     return base ? this.baseMagazineSize : this.magazineSize;
   }
 
+  getNumBullets(base?: boolean) {
+    return base ? this.baseNumBullets : this.numBullets;
+  }
+
   getCritChance(base?: boolean) {
     return base ? this.baseCritChance : this.critChance;
   }
@@ -216,6 +225,10 @@ export abstract class Gun {
 
   getMagazineAmmo() {
     return this.magazineAmmo;
+  }
+
+  getDamage(base?: boolean) {
+    return base ? this.baseDamage : this.damage;
   }
 
   getFireRate(base?: boolean) {

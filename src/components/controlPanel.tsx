@@ -1,6 +1,8 @@
 import { CANVAS_HEIGHT, experienceThresholdsNormal, experienceThresholdsPlayer } from "../lib/definitions";
+import { player } from "../Shooter";
 import { Magazine } from "./controlPanelElements/magazine";
 import { ProgressBar } from "./controlPanelElements/progressBar";
+import { GunIcon } from "./gunIcon";
 
 interface ControlPanelProps {
   hp: number;
@@ -19,6 +21,10 @@ interface ControlPanelProps {
   reloadProgress: number;
   reloadTime: number;
   money: number;
+  damage: number;
+  recoil: number;
+  range: number;
+  numBullets: number;
 }
 
 export function ControlPanel(props: ControlPanelProps) {
@@ -64,7 +70,6 @@ export function ControlPanel(props: ControlPanelProps) {
             width={260}
           />
         </div>
-
         <div>
           <div style={{ marginBottom: 4, fontSize: 16, marginLeft: 2 }}>Experience</div>
           <ProgressBar
@@ -76,25 +81,18 @@ export function ControlPanel(props: ControlPanelProps) {
             width={260}
           />
         </div>
-        <div style={{ fontSize: 24, marginBottom: 8, marginTop: 32 }}>Weapon</div>
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "min-content min-content",
-            columnGap: 16,
-            rowGap: 2,
-            fontSize: 18,
-            marginBottom: 8,
-          }}
-        >
-          <div style={{ gridColumn: "span 2" }}>{props.weaponName}</div>
-          <div>Level</div>
-          <div style={{ textAlign: "end" }}>{props.weaponLevel}</div>
-          <div style={{ whiteSpace: "nowrap" }}>Fire rate</div>
-          <div style={{ textAlign: "end" }}>{props.fireRate}</div>
-          <div>Velocity</div>
-          <div style={{ textAlign: "end" }}>{props.weaponVelocity}</div>
+        <div style={{ fontSize: 24, marginBottom: 8, marginTop: 32 }}>Weapons</div>
+        <div style={{ display: "flex", columnGap: 12, marginBottom: 12 }}>
+          {player.getWeapons().map((gun, i) => (
+            <GunIcon
+              key={gun.getName()}
+              gunName={gun.getName()}
+              selectionKey={i + 1}
+              selected={player.getCurrentWeapon().getName() === gun.getName()}
+            />
+          ))}
         </div>
+        <div style={{ fontSize: 20, marginBottom: 8 }}>{props.weaponName}</div>
         <div style={{ marginBottom: 8 }}>
           <div style={{ marginBottom: 4, fontSize: 16, marginLeft: 2 }}>Ammo</div>
           <div style={{ marginBottom: 4, fontSize: 20 }}>{props.magAmmo + "/" + (props.ammo - props.magAmmo)}</div>
@@ -105,7 +103,7 @@ export function ControlPanel(props: ControlPanelProps) {
             reloadTime={props.reloadTime}
           />
         </div>
-        <div>
+        <div style={{ marginBottom: 12 }}>
           <div style={{ marginBottom: 4, fontSize: 16, marginLeft: 2 }}>Experience</div>
           <ProgressBar
             percentage={props.weaponExp / experienceThresholdsNormal[props.weaponLevel - 1]}
@@ -115,6 +113,35 @@ export function ControlPanel(props: ControlPanelProps) {
             height={20}
             width={260}
           />
+        </div>
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "auto min-content",
+            columnGap: 16,
+            rowGap: 2,
+            marginBottom: 8,
+          }}
+        >
+          <div>Level</div>
+          <div style={{ textAlign: "end" }}>{props.weaponLevel}</div>
+          <div style={{ gridColumn: "span 2" }} />
+          <div>Damage</div>
+          <div style={{ textAlign: "end" }}>{props.damage}</div>
+          <div>Magazine size</div>
+          <div style={{ textAlign: "end" }}>{props.magSize}</div>
+          <div>Reload time</div>
+          <div style={{ textAlign: "end" }}>{props.reloadTime}</div>
+          <div style={{ whiteSpace: "nowrap" }}>Fire rate</div>
+          <div style={{ textAlign: "end" }}>{props.fireRate}</div>
+          <div>Velocity</div>
+          <div style={{ textAlign: "end" }}>{props.velocity}</div>
+          <div>Recoil</div>
+          <div style={{ textAlign: "end" }}>{props.recoil}</div>
+          <div>Range</div>
+          <div style={{ textAlign: "end" }}>{props.range}</div>
+          <div>Projectiles</div>
+          <div style={{ textAlign: "end" }}>{props.numBullets}</div>
         </div>
       </div>
     </div>

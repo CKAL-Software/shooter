@@ -6,6 +6,8 @@ interface GunIconProps {
   selected?: boolean;
   level?: number;
   unusedSkillPoints?: number;
+  selectionKey?: number;
+  onClick?(): void;
 }
 
 export function GunIcon(props: GunIconProps) {
@@ -13,6 +15,7 @@ export function GunIcon(props: GunIconProps) {
 
   return (
     <div
+      onClick={props.onClick}
       style={{
         fontSize: 30,
         display: "flex",
@@ -25,6 +28,7 @@ export function GunIcon(props: GunIconProps) {
         borderRadius: 2,
         color: props.selected ? COLOR_GUN_SELECTED : undefined,
         position: "relative",
+        cursor: props.onClick ? "pointer" : undefined,
       }}
     >
       {icon}
@@ -53,6 +57,31 @@ export function GunIcon(props: GunIconProps) {
             }}
           >
             {props.unusedSkillPoints}
+          </div>
+        </div>
+      )}
+      {props.selectionKey && (
+        <div
+          style={{
+            position: "absolute",
+            background: "white",
+            border: `1px solid ${props.selected ? COLOR_SELECTED : "gray"}`,
+            borderRadius: 2,
+            fontWeight: "bold",
+            fontSize: 12,
+            left: -8,
+            bottom: -8,
+            textAlign: "center",
+            width: 14,
+            height: 14,
+          }}
+        >
+          <div
+            style={{
+              marginTop: -1,
+            }}
+          >
+            {props.selectionKey}
           </div>
         </div>
       )}

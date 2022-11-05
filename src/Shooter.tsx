@@ -77,6 +77,10 @@ export function Shooter() {
   const [weaponVelocity, setWeaponVelocity] = useState(0);
   const [weaponName, setWeaponName] = useState("");
   const [reloadProgress, setReloadProgress] = useState(0);
+  const [damage, setDamage] = useState(0);
+  const [range, setRange] = useState(0);
+  const [recoil, setRecoil] = useState(0);
+  const [numBullets, setNumBullets] = useState(0);
   const [reloadTime, setReloadTime] = useState(0);
   const [tint, setTint] = useState(0);
   const [tintColor, setTintColor] = useState("0,0,0");
@@ -206,23 +210,29 @@ export function Shooter() {
 
         setAnims([...numberAnimations]);
 
+        const currWeap = player.getCurrentWeapon();
+
         setHp(player.getHealth());
-        setAmmo(player.getCurrentWeapon().getAmmo());
-        setMagSize(player.getCurrentWeapon().getMagazineSize());
-        setMagAmmo(player.getCurrentWeapon().getMagazineAmmo());
+        setAmmo(currWeap.getAmmo());
+        setMagSize(currWeap.getMagazineSize());
+        setMagAmmo(currWeap.getMagazineAmmo());
         setPlayerExp(player.getExperience());
         setPlayerLevel(player.getLevel());
         setMaxHp(player.getMaxHealth());
-        setWeaponExp(player.getCurrentWeapon().getExperience());
-        setWeaponLevel(player.getCurrentWeapon().getLevel());
-        setWeaponVelocity(player.getCurrentWeapon().getVelocity());
+        setWeaponExp(currWeap.getExperience());
+        setWeaponLevel(currWeap.getLevel());
+        setWeaponVelocity(currWeap.getVelocity());
         setVelocity(player.getVelocity());
-        setFireRate(player.getCurrentWeapon().getFireRate());
-        setWeaponName(player.getCurrentWeapon().getName());
-        setReloadProgress(player.getCurrentWeapon().getReloadProgress());
+        setFireRate(currWeap.getFireRate());
+        setWeaponName(currWeap.getName());
+        setReloadProgress(currWeap.getReloadProgress());
         setTint(player.getTintIntencity());
         setTintColor(player.getTintColor());
-        setReloadTime(player.getCurrentWeapon().getReloadTime());
+        setReloadTime(currWeap.getReloadTime());
+        setRange(currWeap.getRange());
+        setRecoil(currWeap.getRecoil());
+        setDamage(currWeap.getDamage());
+        setNumBullets(currWeap.getNumBullets());
         setCurrentMapPosition(currentMap.position);
         setAllMaps(new Map(maps));
         setMoney(player.getMoney());
@@ -306,6 +316,10 @@ export function Shooter() {
             </div>
             <ControlPanel
               hp={hp}
+              range={range}
+              recoil={recoil}
+              damage={damage}
+              numBullets={numBullets}
               maxHp={maxHp}
               money={money}
               magSize={magSize}

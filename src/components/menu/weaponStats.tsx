@@ -1,4 +1,4 @@
-import { experienceThresholdsNormal, TICK_DURATION_S } from "../../lib/definitions";
+import { COLOR_STAT_BONUS_BLUE, experienceThresholdsNormal, TICK_DURATION_S } from "../../lib/definitions";
 import { SkillType } from "../../lib/skillDefinitions";
 import { Gun } from "../../Weapons/Gun";
 import { ProgressBar } from "../controlPanelElements/progressBar";
@@ -12,16 +12,27 @@ export function WeaponStats(props: WeaponStatsProps) {
   function getStatText(stat: SkillType, base: number, total: number, formatter?: (val: number) => string | number) {
     return (
       <div style={{ textAlign: "end" }}>
-        {base === total ? "" : formatter ? formatter(base) : base}
+        <span>{formatter ? formatter(base) : base}</span>
         {getBonusStatText(stat, formatter)}
-        {formatter ? formatter(total) : total}
+        <span style={{ color: COLOR_STAT_BONUS_BLUE }}>
+          {base === total ? "" : formatter ? formatter(total) : total}
+        </span>
       </div>
     );
   }
 
   function getBonusStatText(stat: SkillType, conversion?: (val: number) => string | number) {
     const effect = props.weapon.getCurrentEffect(stat);
-    return effect === 0 ? "" : (effect > 0 ? "+" : "") + (conversion ? conversion(effect) : effect) + "=";
+    return effect === 0 ? (
+      ""
+    ) : (
+      <span>
+        <span style={{ color: COLOR_STAT_BONUS_BLUE }}>
+          {(effect > 0 ? "+" : "") + (conversion ? conversion(effect) : effect)}
+        </span>
+        =
+      </span>
+    );
   }
 
   return (
@@ -47,7 +58,7 @@ export function WeaponStats(props: WeaponStatsProps) {
       <div>Ammo</div>
       <div style={{ textAlign: "end" }}>{props.weapon.getAmmo()}</div>
       <div>Damage</div>
-      <div style={{ textAlign: "end" }}>{3}</div>
+      {getStatText("damage", props.weapon.getDamage(true), props.weapon.getDamage())}
       <div>Magazine size</div>
       {getStatText("magSize", props.weapon.getMagazineSize(true), props.weapon.getMagazineSize())}
       <div>Reload time</div>
@@ -62,9 +73,11 @@ export function WeaponStats(props: WeaponStatsProps) {
       <div>Velocity</div>
       {getStatText("velocity", props.weapon.getVelocity(true), props.weapon.getVelocity(), (v) => v / TICK_DURATION_S)}
       <div>Recoil</div>
-      {getStatText("recoil", props.weapon.getRecoil(true), props.weapon.getMagazineSize())}
+      {getStatText("recoil", props.weapon.getRecoil(true), props.weapon.getRecoil())}
       <div>Range</div>
-      {getStatText("range", props.weapon.getRange(true), props.weapon.getMagazineSize())}
+      {getStatText("range", props.weapon.getRange(true), props.weapon.getRange())}
+      <div>Projectiles</div>
+      {getStatText("multiShot", props.weapon.getNumBullets(true), props.weapon.getNumBullets())}
     </>
   );
 }

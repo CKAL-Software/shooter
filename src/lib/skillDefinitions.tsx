@@ -161,6 +161,21 @@ export const PistolSkills: GunSkill[] = [
   MagSizeSkill((p) => p),
 ];
 
+export const ShotgunSkills: GunSkill[] = [
+  BurnSkill((points) => points * 10),
+  PenetrationSkill((points) => points * 10),
+  CritChanceSkill((points) => points * 10),
+  AmmoCostSkill((points) => points * 10),
+  DropChangeSkill((points) => points * 10),
+  FireRateSkill((points) => -points * 3),
+  RecoilSkill((points) => -points * 3),
+  RangeSkill((points) => points * 10),
+  ReloadSkill((points, gun) => -points * 0.1 * gun.getReloadTime(true)),
+  MagSizeSkill((p) => p),
+  DamageSkill((points) => points * 10),
+  MultiShotSkill((points) => points * 10),
+];
+
 // export const PistolNiceSkillSheet: SkillSheet = {
 //   "damage": Dama {skillTreeIndex:0,
 // skillTreeIndex: skillTreeIndex, get DamageSkill(p => p)}

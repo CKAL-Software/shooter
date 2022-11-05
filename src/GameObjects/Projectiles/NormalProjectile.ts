@@ -40,6 +40,7 @@ export class NormalProjectile extends Projectile {
   }
 
   tick() {
+    this.clearIfCollision();
     this.move();
     if (this.shotByPlayer) {
       this.hitEnemyIfCollision();
@@ -47,6 +48,5 @@ export class NormalProjectile extends Projectile {
       this.hitPlayerIfCollision();
     }
     this.checkIfVisible();
-    this.clearIfCollision();
   }
 }

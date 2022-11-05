@@ -39,7 +39,7 @@ export abstract class Projectile extends MovingObject {
     }
   }
 
-  clearIfCollision() {
+  protected clearIfCollision() {
     this.updateSurroundingObstacles();
     const [isColliding] = this.checkCollision(this.position);
     if (isColliding) {
