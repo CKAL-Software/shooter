@@ -1,8 +1,9 @@
+import { AiOutlineUser } from "react-icons/ai";
 import { GiPistolGun, GiSawedOffShotgun } from "react-icons/gi";
 import { COLOR_GUN_SELECTED, COLOR_SELECTED, COLOR_SKILLPOINT } from "../lib/definitions";
 
 interface GunIconProps {
-  gunName: string;
+  entityName: string;
   selected?: boolean;
   level?: number;
   unusedSkillPoints?: number;
@@ -11,7 +12,14 @@ interface GunIconProps {
 }
 
 export function GunIcon(props: GunIconProps) {
-  const icon = props.gunName === "Pistol" ? <GiPistolGun /> : <GiSawedOffShotgun />;
+  const icon =
+    props.entityName === "Player" ? (
+      <AiOutlineUser />
+    ) : props.entityName === "Pistol" ? (
+      <GiPistolGun />
+    ) : (
+      <GiSawedOffShotgun />
+    );
 
   return (
     <div

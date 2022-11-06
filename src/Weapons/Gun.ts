@@ -3,7 +3,7 @@ import { calculateDirection } from "../lib/canvasFunctions";
 import { experienceThresholdsNormal, Point, TICK_DURATION_S } from "../lib/definitions";
 import { changeDirection } from "../lib/functions";
 import { SkillSheet } from "../lib/models";
-import { createSkillSheet, GunSkill, SkillType } from "../lib/skillDefinitions";
+import { createSkillSheet, Skill, SkillType } from "../lib/skillDefinitions";
 import { player, projectiles } from "../Shooter";
 
 export interface GunConfig {
@@ -20,7 +20,7 @@ export interface GunConfig {
   projectileSize: number;
   projectileColor: string;
   ammo: number;
-  skills: GunSkill[];
+  skills: Skill[];
 }
 
 export abstract class Gun {

@@ -86,7 +86,7 @@ export function ControlPanel(props: ControlPanelProps) {
           {player.getWeapons().map((gun, i) => (
             <GunIcon
               key={gun.getName()}
-              gunName={gun.getName()}
+              entityName={gun.getName()}
               selectionKey={i + 1}
               selected={player.getCurrentWeapon().getName() === gun.getName()}
             />

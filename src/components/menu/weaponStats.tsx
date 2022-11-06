@@ -39,7 +39,7 @@ export function WeaponStats(props: WeaponStatsProps) {
     <>
       <div style={{ display: "flex", alignItems: "center", gridColumn: "span 2", margin: "24px 0 8px" }}>
         <GunIcon
-          gunName={props.weapon.getName()}
+          entityName={props.weapon.getName()}
           level={props.weapon.getLevel()}
           unusedSkillPoints={props.weapon.getUnusedSkillPoints()}
         />

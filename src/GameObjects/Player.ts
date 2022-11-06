@@ -14,6 +14,7 @@ import {
 } from "../lib/definitions";
 import { toUnitVector } from "../lib/functions";
 import { Direction } from "../lib/models";
+import { createSkillSheet, PlayerSkills, SkillType } from "../lib/skillDefinitions";
 import { currentMap, mousePos, numberAnimations as animations } from "../Shooter";
 import { Gun } from "../Weapons/Gun";
 import { Pistol } from "../Weapons/Pistol";
@@ -40,6 +41,8 @@ export class Player extends MovingObject {
   private lastMoneyAnimTimeLeft = 0;
   private lastDmgAnim: RisingText | undefined = undefined;
   private lastDmgAnimTimeLeft = 0;
+  private unusedSkillPoints = 2;
+  private skillSheet = createSkillSheet(PlayerSkills);
 
   constructor() {
     super({ position: { x: 180, y: 280 }, size: 13, velocity: 2.5, color: COLOR_PLAYER });
@@ -228,12 +231,26 @@ export class Player extends MovingObject {
     this.updateSurroundingObstacles();
   }
 
+  upgrade() {}
+
   getTintColor() {
     return this.tintColor;
   }
 
   getExperience() {
     return this.experience;
+  }
+
+  getTotalSkillPointsUsed() {
+    return Object.values(this.skillSheet).reduce((total, curr) => total + curr.points, 0);
+  }
+
+  getSkillPointsUsed(stat: SkillType) {
+    return this.skillSheet[stat]?.points || 0;
+  }
+
+  getSkillSheet() {
+    return this.skillSheet;
   }
 
   getTeleportSide() {
@@ -245,6 +262,10 @@ export class Player extends MovingObject {
       if (y === 0) return "up";
     }
     return "none";
+  }
+
+  getName() {
+    return "Player";
   }
 
   getLevel() {
@@ -261,6 +282,10 @@ export class Player extends MovingObject {
 
   getMoney() {
     return this.money;
+  }
+
+  getUnusedSkillPoints() {
+    return this.unusedSkillPoints;
   }
 
   getDirection() {

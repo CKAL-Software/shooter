@@ -2,6 +2,7 @@ import {
   COLOR_HP_BAR_GREEN,
   COLOR_HP_BAR_RED,
   COLOR_PLAYER,
+  COLOR_SKILLPOINT,
   experienceThresholdsPlayer,
   TICK_DURATION_S,
 } from "../../lib/definitions";
@@ -32,7 +33,38 @@ export function PlayerSection() {
           />
         </div>
 
-        <div style={{ width: 52, height: 52, borderRadius: "50%", backgroundColor: COLOR_PLAYER }} />
+        <div
+          style={{ width: 52, height: 52, borderRadius: "50%", backgroundColor: COLOR_PLAYER, position: "relative" }}
+        >
+          {player.getUnusedSkillPoints() && (
+            <div
+              style={{
+                position: "absolute",
+                background: COLOR_SKILLPOINT,
+                borderRadius: "50%",
+                fontWeight: "bold",
+                fontSize: 14,
+                right: -2,
+                top: -2,
+                width: 18,
+                height: 18,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                color: "white",
+              }}
+            >
+              <div
+                style={{
+                  marginTop: -1,
+                  whiteSpace: "nowrap",
+                }}
+              >
+                {player.getUnusedSkillPoints()}
+              </div>
+            </div>
+          )}
+        </div>
       </div>
 
       <div style={{ marginBottom: 8 }}>
