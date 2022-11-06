@@ -21,7 +21,7 @@ export class Shotgun extends Gun {
       numBullets: 7,
       projectileSize: 4,
       projectileColor: "black",
-      ammo: 20,
+      ammo: 2000,
       skills: ShotgunSkills,
     });
   }
@@ -47,8 +47,20 @@ export class Shotgun extends Gun {
           size: this.projectileSize,
           color: this.projectileColor,
           shotByPlayer: true,
+          ownerGun: this,
         })
       );
     }
+  }
+
+  onLevelUp(levelIndex: number): void {
+    this.baseDamage += [1, 0, 1, 0, 1, 0, 1, 0, 1][levelIndex];
+    this.baseMagazineSize += [0, 0, 1, 0, 0, 1, 0, 0, 1][levelIndex];
+    this.baseReloadTime -= 0.12;
+    this.baseRecoil -= 3;
+    this.baseVelocity += 0.15;
+    this.baseFireRate += 3;
+    this.baseRange += 5;
+    this.baseNumBullets += [0, 1, 0, 1, 0, 1, 0, 1, 1][levelIndex];
   }
 }

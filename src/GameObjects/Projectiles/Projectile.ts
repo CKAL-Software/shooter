@@ -1,5 +1,6 @@
 import { drawBall } from "../../lib/canvasFunctions";
 import { Point } from "../../lib/definitions";
+import { Gun } from "../../Weapons/Gun";
 import { Enemy } from "../Enemies/Enemy";
 import { MovingObject, MovingObjectConfig } from "../MovingObject";
 import { Player } from "../Player";
@@ -9,6 +10,7 @@ export interface ProjectileConfiguration extends MovingObjectConfig {
   damage: number;
   shotByPlayer: boolean;
   range: number;
+  ownerGun?: Gun;
 }
 
 export abstract class Projectile extends MovingObject {
@@ -16,6 +18,7 @@ export abstract class Projectile extends MovingObject {
   protected direction: Point;
   protected shotByPlayer = false;
   protected rangeLeft = 0;
+  protected ownerGun: Gun | undefined;
 
   constructor(config: ProjectileConfiguration) {
     super(config);
@@ -23,6 +26,7 @@ export abstract class Projectile extends MovingObject {
     this.shotByPlayer = config.shotByPlayer;
     this.direction = config.direction;
     this.rangeLeft = config.range;
+    this.ownerGun = config.ownerGun;
   }
 
   abstract hitEnemyIfCollision(): void;
@@ -52,7 +56,7 @@ export abstract class Projectile extends MovingObject {
   }
 
   hitEnemy(enemyHit: Enemy | Player) {
-    enemyHit.inflictDamage(this.damage);
+    enemyHit.inflictDamage(this.damage, this.ownerGun);
     this.shouldDraw = false;
   }
 }

@@ -40,7 +40,7 @@ export function GunIcon(props: GunIconProps) {
       }}
     >
       {icon}
-      {props.unusedSkillPoints && (
+      {(props.unusedSkillPoints || 0) > 0 && (
         <div
           style={{
             position: "absolute",

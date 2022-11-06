@@ -33,10 +33,10 @@ input {
     transform: translate(-50%, 0);
   }
   100% {
-    transform: translate(-50%, -80px);
+    transform: translate(-50%, -800px);
   }
 }
 
 .number-flow {
-  animation: MoveUp 1.3s linear;
+  animation: MoveUp 13s linear;
 }

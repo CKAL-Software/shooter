@@ -1,19 +1,17 @@
-import { calculateDistance, drawBall } from "../../lib/canvasFunctions";
-import { COLOR_MONEY, Point } from "../../lib/definitions";
+import { calculateDirection, calculateDistance, drawBall } from "../../lib/canvasFunctions";
+import { COLOR_EXP, Point } from "../../lib/definitions";
+import { changeDirection } from "../../lib/functions";
 import { player } from "../../Shooter";
 import { MovingObject } from "../MovingObject";
 
-export class Money extends MovingObject {
-  private money: number;
+export abstract class Orb extends MovingObject {
   private direction: Point;
   private hasFlownToPosition = false;
 
-  constructor(money: number, position: Point, direction: Point) {
-    const size = Math.min(12, Math.max(3, money));
-    super({ position, size, velocity: Math.random(), color: COLOR_MONEY });
+  constructor(position: Point, size: number, color: string) {
+    super({ position, size, velocity: Math.random() * 1 + 1.5, color });
 
-    this.money = money;
-    this.direction = direction;
+    this.direction = changeDirection({ x: 0, y: 1 }, Math.round(Math.random() * 360));
   }
 
   draw(ctx: CanvasRenderingContext2D): void {
@@ -21,26 +19,33 @@ export class Money extends MovingObject {
   }
 
   tick(): void {
+    this.move();
     this.updateSurroundingObstacles();
 
     if (calculateDistance(player.getPosition(), this.position) < player.getSize() + this.size) {
       this.shouldDraw = false;
-      player.changeMoney(this.money);
-      player.setTint(237, 213, 0);
+      this.onPickup();
     }
   }
 
+  abstract onPickup(): void;
+
   move(): void {
     if (this.hasFlownToPosition) {
-      return;
-    }
+      const distanceToPlayer = calculateDistance(this.position, player.getPosition());
 
-    this.velocity -= 0.05;
+      if (distanceToPlayer < 60) {
+        this.direction = calculateDirection(this.position, player.getPosition());
+        this.velocity = Math.min(Math.pow((60 - distanceToPlayer) / 15, 2), 2);
+      }
+    } else {
+      this.velocity -= 0.05;
 
-    if (this.velocity <= 0) {
-      this.velocity = 0;
-      this.hasFlownToPosition = true;
-      return;
+      if (this.velocity <= 0) {
+        this.velocity = 0;
+        this.hasFlownToPosition = true;
+        return;
+      }
     }
 
     let changeX = this.direction.x * this.velocity;

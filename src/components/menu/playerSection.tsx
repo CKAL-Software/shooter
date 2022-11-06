@@ -66,7 +66,6 @@ export function PlayerSection() {
           )}
         </div>
       </div>
-
       <div style={{ marginBottom: 8 }}>
         <div style={{ marginBottom: 4, fontSize: 16, marginLeft: 2 }}>Health</div>
         <ProgressBar

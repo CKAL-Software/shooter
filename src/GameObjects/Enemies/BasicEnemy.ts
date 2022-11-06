@@ -1,16 +1,17 @@
 import { Point } from "../../lib/definitions";
 import { Enemy } from "../Enemies/Enemy";
 
+export interface ActualEnemyConfig {
+  position: Point;
+  hp: number;
+  velocity: number;
+  damage: number;
+  reward: number;
+}
+
 export class BasicEnemy extends Enemy {
-  constructor(position: Point) {
-    super({
-      position,
-      hp: 50,
-      size: 12,
-      color: "#aaaaaa",
-      velocity: 1.5,
-      damage: 5,
-      reward: 10,
-    });
+  // eslint-disable-next-line @typescript-eslint/no-useless-constructor
+  constructor(config: ActualEnemyConfig) {
+    super({ ...config, color: "#aaaaaa", size: 12 });
   }
 }

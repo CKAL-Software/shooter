@@ -5,6 +5,7 @@ import {
   COLOR_EXP,
   COLOR_HP_BAR_GREEN,
   COLOR_HP_BAR_RED,
+  COLOR_HP_GREEN,
   COLOR_MONEY,
   COLOR_PLAYER,
   experienceThresholdsPlayer,
@@ -15,7 +16,7 @@ import {
 import { toUnitVector } from "../lib/functions";
 import { Direction } from "../lib/models";
 import { createSkillSheet, PlayerSkills, SkillType } from "../lib/skillDefinitions";
-import { currentMap, mousePos, numberAnimations as animations } from "../Shooter";
+import { currentMap, mousePos, numberAnimations } from "../Shooter";
 import { Gun } from "../Weapons/Gun";
 import { Pistol } from "../Weapons/Pistol";
 import { Shotgun } from "../Weapons/Shotgun";
@@ -23,8 +24,8 @@ import { MovingObject } from "./MovingObject";
 import { RisingText } from "./RisingText";
 
 export class Player extends MovingObject {
-  private health = 100;
-  private maxHealth = 100;
+  private health = 10;
+  private maxHealth = 10;
   private money = 0;
   private weapons: Gun[] = [new Pistol(), new Shotgun()];
   private currentWeapon = this.weapons[0];
@@ -41,7 +42,9 @@ export class Player extends MovingObject {
   private lastMoneyAnimTimeLeft = 0;
   private lastDmgAnim: RisingText | undefined = undefined;
   private lastDmgAnimTimeLeft = 0;
-  private unusedSkillPoints = 2;
+  private lastHealthAnim: RisingText | undefined = undefined;
+  private lastHealthAnimTimeLeft = 0;
+  private unusedSkillPoints = 0;
   private skillSheet = createSkillSheet(PlayerSkills);
 
   constructor() {
@@ -98,6 +101,8 @@ export class Player extends MovingObject {
     }
 
     this.lastExpAnimTimeLeft = Math.max(0, this.lastExpAnimTimeLeft - TICK_DURATION_S);
+    this.lastDmgAnimTimeLeft = Math.max(0, this.lastDmgAnimTimeLeft - TICK_DURATION_S);
+    this.lastMoneyAnimTimeLeft = Math.max(0, this.lastMoneyAnimTimeLeft - TICK_DURATION_S);
   }
 
   changeWeapon(weaponSlot: number) {
@@ -186,7 +191,7 @@ export class Player extends MovingObject {
       this.lastExpAnim?.setText(Number(this.lastExpAnim.getText()) + experience);
     } else {
       const newAnim = new RisingText(this.position, experience, COLOR_EXP);
-      animations.push(newAnim);
+      numberAnimations.push(newAnim);
       this.lastExpAnim = newAnim;
     }
     this.lastExpAnimTimeLeft = ANIM_COLLECT_TIME;
@@ -194,7 +199,9 @@ export class Player extends MovingObject {
     while (this.experience >= experienceThresholdsPlayer[this.level - 1]) {
       this.experience -= experienceThresholdsPlayer[this.level - 1];
       this.level++;
-      animations.push(new RisingText(this.position, "Level up!", COLOR_EXP));
+      this.unusedSkillPoints++;
+      this.onLevelUp(this.level - 1);
+      numberAnimations.push(new RisingText(this.position, "Weapon level up!", COLOR_EXP));
     }
   }
 
@@ -203,10 +210,9 @@ export class Player extends MovingObject {
       this.lastMoneyAnim?.setText(Number(this.lastMoneyAnim.getText()) + change);
     } else {
       const newAnim = new RisingText(this.position, change, COLOR_MONEY);
-      animations.push(newAnim);
+      numberAnimations.push(newAnim);
       this.lastMoneyAnim = newAnim;
     }
-
     this.lastMoneyAnimTimeLeft = ANIM_COLLECT_TIME;
 
     this.money += change;
@@ -214,6 +220,14 @@ export class Player extends MovingObject {
 
   getTotalExperience() {
     return this.totalExperience;
+  }
+
+  onLevelUp(levelIndex: number) {
+    const healthIncrease = [5, 5, 5, 5, 5, 5, 5, 5, 5, 5][levelIndex];
+    this.maxHealth += healthIncrease;
+    this.health += healthIncrease;
+
+    this.velocity += [0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1][levelIndex];
   }
 
   enterTeleporter(side: MapSide) {
@@ -341,6 +355,30 @@ export class Player extends MovingObject {
     this.tintColor = newTintColor;
   }
 
+  addHealth(health: number) {
+    this.health = Math.min(this.maxHealth, this.health + health);
+    this.setTint(0, 255, 0);
+
+    if (this.lastHealthAnimTimeLeft > 0) {
+      this.lastHealthAnim?.setText(Number(this.lastHealthAnim.getText()) + health);
+    } else {
+      const newAnim = new RisingText(this.position, health, COLOR_HP_GREEN);
+      numberAnimations.push(newAnim);
+      this.lastHealthAnim = newAnim;
+    }
+    this.lastHealthAnimTimeLeft = ANIM_COLLECT_TIME;
+  }
+
+  addAmmo(ammo: number, weapon: string) {
+    const gun = this.weapons.find((w) => w.getName() === weapon);
+
+    if (!gun) {
+      throw new Error("Tried to add ammo to a weapon the player doesn't have");
+    }
+
+    gun.addAmmo(ammo);
+  }
+
   inflictDamage(damage: number) {
     this.health = Math.max(0, this.health - damage);
     this.setTint(255, 0, 0);
@@ -349,10 +387,9 @@ export class Player extends MovingObject {
       this.lastDmgAnim?.setText(Number(this.lastDmgAnim.getText()) + damage);
     } else {
       const newAnim = new RisingText(this.position, damage, COLOR_DMG);
-      animations.push(newAnim);
+      numberAnimations.push(newAnim);
       this.lastDmgAnim = newAnim;
     }
-
     this.lastDmgAnimTimeLeft = ANIM_COLLECT_TIME;
   }
 }

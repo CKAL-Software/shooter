@@ -20,7 +20,6 @@ import { Enemy } from "./GameObjects/Enemies/Enemy";
 import { Player } from "./GameObjects/Player";
 import { RisingText } from "./GameObjects/RisingText";
 import { ControlPanel } from "./components/controlPanel";
-import { BasicEnemy } from "./GameObjects/Enemies/BasicEnemy";
 import { Direction } from "./lib/models";
 import { GameObject } from "./GameObjects/GameObject";
 import {
@@ -35,6 +34,7 @@ import { Minimap } from "./components/minimap";
 import { AiOutlineAim } from "react-icons/ai";
 import { MenuContainer } from "./components/menu/menuContainer";
 import { TriggerRenderContext } from "./lib/contexts";
+import { BasicEnemy } from "./GameObjects/Enemies/BasicEnemy";
 
 const moveDirections = new Set<Direction>();
 const r = getSeededRandomGenerator(getRandomInt(0, 100));
@@ -51,12 +51,21 @@ export const player = new Player();
 export const enemies: Enemy[] = [
   // new BasicEnemy({ x: 200, y: 400 })
 ];
-export let timeUntilNextSpawn = 3;
+export let timeUntilNextSpawn = 0;
+export let enemiesCounter = 1;
+export let enemiesLeft = 1;
 export const miscellaneous: GameObject[] = [];
 export const numberAnimations: RisingText[] = [];
 export const projectiles: ActualProjectile[] = [];
 export let mousePos: Point = { x: 0, y: 0 };
 export let menuOpen = false;
+
+let enemyStat = {
+  hp: 40,
+  velocity: 0.5,
+  damage: 1,
+  reward: 1,
+};
 
 let hasTeleported = 0;
 
@@ -174,7 +183,7 @@ export function Shooter() {
         }
 
         const teleportSide = player.getTeleportSide();
-        if (teleportSide !== "none" && hasTeleported <= 0) {
+        if (teleportSide !== "none" && hasTeleported <= 0 && enemies.length === 0) {
           const newMapPosition = {
             x: currentMap.position.x + (teleportSide === "left" ? -1 : teleportSide === "right" ? 1 : 0),
             y: currentMap.position.y + (teleportSide === "up" ? -1 : teleportSide === "down" ? 1 : 0),
@@ -194,6 +203,12 @@ export function Shooter() {
               teleporters: teleporters,
             });
             maps.set(posToKey(currentMap.position), currentMap);
+            enemiesCounter++;
+            enemiesLeft = enemiesCounter;
+            enemyStat.damage++;
+            enemyStat.hp++;
+            enemyStat.reward++;
+            enemyStat.velocity += 0.1;
           }
           player.enterTeleporter(teleportSide);
           hasTeleported = 2;
@@ -201,11 +216,12 @@ export function Shooter() {
 
         hasTeleported -= TICK_DURATION_S;
 
-        // timeUntilNextSpawn -= TICK_DURATION_S;
+        timeUntilNextSpawn -= TICK_DURATION_S;
 
-        if (timeUntilNextSpawn < 0) {
+        if (timeUntilNextSpawn < 0 && enemiesLeft > 0) {
           timeUntilNextSpawn = 3;
-          enemies.push(new BasicEnemy(findRandomLocation(currentMap.layout)));
+          enemiesLeft--;
+          enemies.push(new BasicEnemy({ ...enemyStat, position: findRandomLocation(currentMap.layout) }));
         }
 
         setAnims([...numberAnimations]);

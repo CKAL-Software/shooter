@@ -45,7 +45,7 @@ type SkillConstructor = (getEffect: EffectFunction) => Skill;
 
 export const DamageSkill: SkillConstructor = (getEffect: EffectFunction) => ({
   type: "damage",
-  description: "Increase bullet damage",
+  description: "Increase bullet damage from <before> to <after>",
   content: <GiBlaster style={skillIconStyle} />,
   getEffect,
 });
@@ -53,7 +53,7 @@ export const DamageSkill: SkillConstructor = (getEffect: EffectFunction) => ({
 export const CritChanceSkill: SkillConstructor = (getEffect: EffectFunction) => ({
   type: "critChange",
   content: <GiHeadshot style={skillIconStyle} />,
-  description: "Increase critical hit chance",
+  description: "Increase critical hit chance from <before> to <after>",
   getEffect,
 });
 
@@ -67,49 +67,49 @@ export const MagSizeSkill: SkillConstructor = (getEffect: EffectFunction) => ({
 export const RangeSkill: SkillConstructor = (getEffect: EffectFunction) => ({
   type: "range",
   content: <GiBeamWake style={skillIconStyle} />,
-  description: "Increase range of projectile travel",
+  description: "Increase range of projectile travel from <before> to <after>",
   getEffect,
 });
 
 export const RecoilSkill: SkillConstructor = (getEffect: EffectFunction) => ({
   type: "recoil",
   content: <GiBullseye style={skillIconStyle} />,
-  description: "Decrease recoil",
+  description: "Decrease recoil from <before> to <after>",
   getEffect,
 });
 
 export const FireRateSkill: SkillConstructor = (getEffect: EffectFunction) => ({
   type: "fireRate",
   content: <GiBullets style={skillIconStyle} />,
-  description: "Increase fire rate",
+  description: "Increase fire rate from <before> to <after>",
   getEffect,
 });
 
 export const AmmoCostSkill: SkillConstructor = (getEffect: EffectFunction) => ({
   type: "ammoCost",
   content: <FaDollarSign style={skillIconStyle} />,
-  description: "Decrease cost of ammo",
+  description: "Decrease cost of ammo from <before> to <after>",
   getEffect,
 });
 
 export const VelocitySkill: SkillConstructor = (getEffect: EffectFunction) => ({
   type: "velocity",
   content: <GiSupersonicBullet style={skillIconStyle} />,
-  description: "Increase bullet velocity",
+  description: "Increase bullet velocity from <before> to <after>",
   getEffect,
 });
 
 export const DropChangeSkill: SkillConstructor = (getEffect: EffectFunction) => ({
   type: "dropChange",
   content: <GiOpenTreasureChest style={skillIconStyle} />,
-  description: "Increase drop chance from kills",
+  description: "Increase drop chance from kills from <before> to <after>",
   getEffect,
 });
 
 export const ReloadSkill: SkillConstructor = (getEffect: EffectFunction) => ({
   type: "reloadSpeed",
   content: <GiReloadGunBarrel style={skillIconStyle} />,
-  description: "Decrease reload speed",
+  description: "Decrease reload speed from <before> to <after>",
   getEffect,
 });
 

@@ -1,10 +1,11 @@
 import { NormalProjectile } from "../GameObjects/Projectiles/NormalProjectile";
+import { RisingText } from "../GameObjects/RisingText";
 import { calculateDirection } from "../lib/canvasFunctions";
-import { experienceThresholdsNormal, Point, TICK_DURATION_S } from "../lib/definitions";
+import { COLOR_EXP, experienceThresholdsNormal, Point, TICK_DURATION_S } from "../lib/definitions";
 import { changeDirection } from "../lib/functions";
 import { SkillSheet } from "../lib/models";
 import { createSkillSheet, Skill, SkillType } from "../lib/skillDefinitions";
-import { player, projectiles } from "../Shooter";
+import { numberAnimations, player, projectiles } from "../Shooter";
 
 export interface GunConfig {
   name: string;
@@ -53,7 +54,7 @@ export abstract class Gun {
   protected shouldReload = false;
   protected name: string;
   protected skillSheet: SkillSheet = {};
-  protected unusedSkillPoints = 6;
+  protected unusedSkillPoints = 0;
 
   constructor(config: GunConfig) {
     this.name = config.name;
@@ -151,7 +152,13 @@ export abstract class Gun {
       this.experience -= experienceThresholdsNormal[this.level - 1];
       this.level++;
       this.unusedSkillPoints++;
+      this.onLevelUp(this.level - 1);
+      numberAnimations.push(new RisingText(player.getPosition(), "Level up!", COLOR_EXP));
     }
+  }
+
+  addAmmo(ammo: number) {
+    this.ammo += ammo;
   }
 
   getExperience() {
@@ -274,7 +281,10 @@ export abstract class Gun {
         size: this.projectileSize,
         color: this.projectileColor,
         shotByPlayer: true,
+        ownerGun: this,
       })
     );
   }
+
+  abstract onLevelUp(levelIndex: number): void;
 }

@@ -6,10 +6,10 @@ export class Pistol extends Gun {
   constructor() {
     super({
       name: "Pistol",
-      damage: 7,
-      magazineSize: 100,
-      reloadTime: 1.2,
-      fireRate: 2400,
+      damage: 4,
+      magazineSize: 6,
+      reloadTime: 1.6,
+      fireRate: 120,
       velocity: 3,
       recoil: 30,
       critChance: 0,
@@ -17,8 +17,18 @@ export class Pistol extends Gun {
       numBullets: 1,
       projectileSize: 5,
       projectileColor: "black",
-      ammo: 300,
+      ammo: 30000,
       skills: PistolSkills,
     });
+  }
+
+  onLevelUp(levelIndex: number): void {
+    this.baseDamage += 1;
+    this.baseMagazineSize += [0, 0, 1, 0, 0, 1, 0, 0, 2][levelIndex];
+    this.baseReloadTime -= 0.05;
+    this.baseRecoil -= 1;
+    this.baseVelocity += 0.15;
+    this.baseFireRate += 5;
+    this.baseRange += 10;
   }
 }

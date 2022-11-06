@@ -1,13 +1,22 @@
 import { enemies, currentMap, miscellaneous, numberAnimations, player, projectiles } from "../../Shooter";
-import { COLOR_HP_BAR_GREEN, COLOR_HP_BAR_RED, TICK_DURATION_S } from "../../lib/definitions";
+import {
+  ANIM_COLLECT_TIME,
+  COLOR_HP_BAR_GREEN,
+  COLOR_HP_BAR_RED,
+  TICK_DURATION_S,
+  TILE_SIZE,
+} from "../../lib/definitions";
 import { MovingObject, MovingObjectConfig } from "../MovingObject";
 import { calculateDirection, calculateDistance, drawBall, getObstacles, pathToPoint } from "../../lib/canvasFunctions";
 import { RisingText } from "../RisingText";
 import { SNode } from "../../lib/models";
-import { changeDirection, intercept, intersects, toUnitVector } from "../../lib/functions";
+import { intercept, intersects, toUnitVector } from "../../lib/functions";
 import { NormalProjectile } from "../Projectiles/NormalProjectile";
 import { ExperienceOrb } from "../Items/ExperienceOrb";
-import { Money } from "../Items/Money";
+import { Gun } from "../../Weapons/Gun";
+import { HealthOrb } from "../Items/HealthOrb";
+import { AmmoOrb } from "../Items/AmmoOrb";
+import { MoneyOrb } from "../Items/MoneyOrb";
 
 export interface EnemyConfig extends MovingObjectConfig {
   hp: number;
@@ -26,6 +35,8 @@ export abstract class Enemy extends MovingObject {
   private timeUntilShot = this.getTimeUntilNextShot();
   private canSeePlayer = false;
   private spawnTimeLeft = 4;
+  private lastDmgAnim: RisingText | undefined = undefined;
+  private lastDmgAnimTimeLeft = 0;
 
   constructor(config: EnemyConfig) {
     super(config);
@@ -95,6 +106,8 @@ export abstract class Enemy extends MovingObject {
       return;
     }
 
+    this.lastDmgAnimTimeLeft = Math.max(0, this.lastDmgAnimTimeLeft - TICK_DURATION_S);
+
     this.updateCanSeePlayer();
     this.updateSurroundingObstacles();
     this.updatePath();
@@ -124,9 +137,9 @@ export abstract class Enemy extends MovingObject {
             position: this.position,
             direction: calculateDirection(this.position, leadShotDirection || player.getPosition()),
             velocity: 1.5,
-            damage: 5,
+            damage: this.damage,
             size: 5,
-            range: 10,
+            range: TILE_SIZE * 10,
             color: "red",
             shotByPlayer: false,
           })
@@ -238,32 +251,53 @@ export abstract class Enemy extends MovingObject {
     this.canSeePlayer = true;
   }
 
-  inflictDamage(damage: number) {
+  inflictDamage(damage: number, ownerGun?: Gun) {
     this.currentHp = Math.max(0, this.currentHp - damage);
 
-    numberAnimations.push(
-      new RisingText({ x: this.position.x - this.size, y: this.position.y - this.size }, damage, "black")
-    );
+    if (this.lastDmgAnimTimeLeft > 0) {
+      this.lastDmgAnim?.setText(Number(this.lastDmgAnim.getText()) + damage);
+    } else {
+      const newAnim = new RisingText(this.position, damage, "black");
+      numberAnimations.push(newAnim);
+      this.lastDmgAnim = newAnim;
+    }
+    this.lastDmgAnimTimeLeft = ANIM_COLLECT_TIME;
 
     if (this.currentHp <= 0) {
-      this.die();
+      this.die(ownerGun);
     }
   }
 
-  private die() {
+  private die(ownerGun?: Gun) {
     this.shouldDraw = false;
     player.addExperience(this.reward);
-    player.getCurrentWeapon().addExperience(this.reward);
 
-    const numExpOrbs = Math.floor(Math.random() * 6) + 1;
-    for (let i = 0; i < numExpOrbs; i++) {
-      const exp = Math.round(Math.random() * 20);
-      const randomDirection = changeDirection({ x: 0, y: 1 }, Math.round(Math.random() * 360));
-      miscellaneous.push(new ExperienceOrb(exp, this.position, randomDirection));
+    ownerGun?.addExperience(this.reward);
+
+    if (Math.random() < 0.05) {
+      // const numExpOrbs = Math.floor(Math.random() * 6) + 1;
+      const numExpOrbs = 1;
+      for (let i = 0; i < numExpOrbs; i++) {
+        const exp = Math.round(Math.random() * this.reward * 4);
+
+        miscellaneous.push(new ExperienceOrb(this.position, exp));
+      }
     }
 
-    const randomDirection = changeDirection({ x: 0, y: 1 }, Math.round(Math.random() * 360));
-    miscellaneous.push(new Money(this.reward, this.position, randomDirection));
+    if (Math.random() < 0.03) {
+      miscellaneous.push(new HealthOrb(this.position, 3));
+    }
+
+    if (ownerGun && Math.random() < 0.1) {
+      miscellaneous.push(new AmmoOrb(this.position, 10, ownerGun.getName()));
+    }
+
+    if (Math.random() < 0.1) {
+      miscellaneous.push(new MoneyOrb(this.position, 10));
+    }
+
+    // const randomDirection = changeDirection({ x: 0, y: 1 }, Math.round(Math.random() * 360));
+    // miscellaneous.push(new Money(this.reward, this.position, randomDirection));
   }
 
   hasSpawned() {
