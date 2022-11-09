@@ -10,6 +10,7 @@ export interface ProjectileConfiguration extends MovingObjectConfig {
   damage: number;
   shotByPlayer: boolean;
   range: number;
+  isCriticalHit: boolean;
   ownerGun?: Gun;
 }
 
@@ -19,6 +20,7 @@ export abstract class Projectile extends MovingObject {
   protected shotByPlayer = false;
   protected rangeLeft = 0;
   protected ownerGun: Gun | undefined;
+  protected isCriticalHit: boolean;
 
   constructor(config: ProjectileConfiguration) {
     super(config);
@@ -27,6 +29,7 @@ export abstract class Projectile extends MovingObject {
     this.direction = config.direction;
     this.rangeLeft = config.range;
     this.ownerGun = config.ownerGun;
+    this.isCriticalHit = config.isCriticalHit;
   }
 
   abstract hitEnemyIfCollision(): void;
@@ -56,7 +59,7 @@ export abstract class Projectile extends MovingObject {
   }
 
   hitEnemy(enemyHit: Enemy | Player) {
-    enemyHit.inflictDamage(this.damage, this.ownerGun);
+    enemyHit.inflictDamage(this.damage, this.isCriticalHit, this.ownerGun);
     this.shouldDraw = false;
   }
 }

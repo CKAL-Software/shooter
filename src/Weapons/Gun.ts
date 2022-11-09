@@ -21,6 +21,7 @@ export interface GunConfig {
   projectileSize: number;
   projectileColor: string;
   ammo: number;
+  price: number;
   skills: Skill[];
 }
 
@@ -55,6 +56,7 @@ export abstract class Gun {
   protected name: string;
   protected skillSheet: SkillSheet = {};
   protected unusedSkillPoints = 0;
+  protected price: number;
 
   constructor(config: GunConfig) {
     this.name = config.name;
@@ -75,10 +77,11 @@ export abstract class Gun {
     this.baseCritChance = config.critChance;
     this.numBullets = config.numBullets;
     this.baseNumBullets = config.numBullets;
-    this.velocity = config.velocity;
-    this.baseVelocity = config.velocity;
+    this.velocity = config.velocity * TICK_DURATION_S;
+    this.baseVelocity = config.velocity * TICK_DURATION_S;
     this.projectileSize = config.projectileSize;
     this.projectileColor = config.projectileColor;
+    this.price = config.price;
 
     this.skillSheet = createSkillSheet(config.skills);
 
@@ -234,6 +237,10 @@ export abstract class Gun {
     return this.magazineAmmo;
   }
 
+  getPrice() {
+    return this.price;
+  }
+
   getDamage(base?: boolean) {
     return base ? this.baseDamage : this.damage;
   }
@@ -270,18 +277,29 @@ export abstract class Gun {
     return this.fireTimeRemaining > 0;
   }
 
+  protected getDamageForNextBullet() {
+    if (Math.random() < this.critChance) {
+      return this.damage * 3;
+    }
+
+    return this.damage;
+  }
+
   shoot(target: Point) {
+    const damage = this.getDamageForNextBullet();
+
     projectiles.push(
       new NormalProjectile({
         position: player.getPosition(),
         direction: this.getNewDirectionAfterRecoil(target),
         velocity: this.velocity,
-        damage: this.damage,
+        damage: damage,
         range: this.range,
         size: this.projectileSize,
         color: this.projectileColor,
         shotByPlayer: true,
         ownerGun: this,
+        isCriticalHit: damage > this.damage,
       })
     );
   }

@@ -271,7 +271,7 @@ export function generateRandomMap(config: {
     teleporters[side] = { size: tpInfo.size, startPosition: startPosition };
   });
 
-  const structures: number[][][] = [
+  const obstacles: number[][][] = [
     [
       [0, 0],
       [1, 0],
@@ -332,7 +332,7 @@ export function generateRandomMap(config: {
   ];
 
   for (let i = 0; i < config.numStructures; i++) {
-    const structure = structures[getRandomInt(0, structures.length - 1, config.rng)];
+    const structure = obstacles[getRandomInt(0, obstacles.length - 1, config.rng)];
     const flipOne = getRandomInt(0, 1, config.rng) === 0;
     const flipTwo = getRandomInt(0, 1, config.rng) === 0;
     for (let tries = 0; tries < 5; tries++) {
@@ -352,6 +352,37 @@ export function generateRandomMap(config: {
         for (const [preX, preY] of structure) {
           const [x, y] = flipCoords(preX, preY, flipOne, flipTwo);
           map[row + y][col + x] = "x";
+        }
+        break;
+      }
+    }
+  }
+
+  if (config.rng() < 1.0) {
+    const shop = [
+      [0, 0],
+      [1, 0],
+      [0, 1],
+      [1, 1],
+    ];
+
+    while (true) {
+      const row = getRandomInt(0, MAP_SIZE - 1, config.rng);
+      const col = getRandomInt(0, MAP_SIZE - 1, config.rng);
+
+      let canPlace = true;
+      for (const [preX, preY] of shop) {
+        const [x, y] = flipCoords(preX, preY, false, false);
+        if (!map[row + y] || map[row + y][col + x] !== " ") {
+          canPlace = false;
+          break;
+        }
+      }
+
+      if (canPlace) {
+        for (const [preX, preY] of shop) {
+          const [x, y] = flipCoords(preX, preY, false, false);
+          map[row + y][col + x] = "s";
         }
         break;
       }

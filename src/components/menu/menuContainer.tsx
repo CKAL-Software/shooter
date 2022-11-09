@@ -6,22 +6,41 @@ import { WeaponsSection } from "./weaponsSection";
 export function MenuContainer() {
   return (
     <div
-      style={{ position: "absolute", top: 48, width: "100vw", zIndex: 999, display: "flex", justifyContent: "center" }}
+      style={{
+        position: "absolute",
+        top: 0,
+        left: 0,
+        width: "100vw",
+        height: "100vh",
+        zIndex: 998,
+        background: "rgba(0,0,0,0.5)",
+      }}
     >
       <div
         style={{
-          background: COLOR_MENU_BACKGROUND,
-          height: 600,
-          border: "2px solid gray",
-          borderRadius: 4,
+          position: "absolute",
+          top: 48,
+          width: "100vw",
+          zIndex: 999,
           display: "flex",
-          columnGap: 48,
-          padding: "20px 40px",
+          justifyContent: "center",
         }}
       >
-        <PlayerSection />
-        <WeaponsSection />
-        <SkillTreeSection />
+        <div
+          style={{
+            background: COLOR_MENU_BACKGROUND,
+            height: 600,
+            border: "2px solid gray",
+            borderRadius: 4,
+            display: "flex",
+            columnGap: 48,
+            padding: "20px 40px",
+          }}
+        >
+          <PlayerSection />
+          <WeaponsSection />
+          <SkillTreeSection />
+        </div>
       </div>
     </div>
   );

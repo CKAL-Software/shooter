@@ -35,6 +35,11 @@ import { AiOutlineAim } from "react-icons/ai";
 import { MenuContainer } from "./components/menu/menuContainer";
 import { TriggerRenderContext } from "./lib/contexts";
 import { BasicEnemy } from "./GameObjects/Enemies/BasicEnemy";
+import { ShopContainer } from "./components/shop/shopContainer";
+import { Gun } from "./Weapons/Gun";
+import { Shotgun } from "./Weapons/Shotgun";
+import { Sniper } from "./Weapons/Sniper";
+import { GiSpikyExplosion } from "react-icons/gi";
 
 const moveDirections = new Set<Direction>();
 const r = getSeededRandomGenerator(getRandomInt(0, 100));
@@ -53,21 +58,24 @@ export const enemies: Enemy[] = [
 ];
 export let timeUntilNextSpawn = 0;
 export let enemiesCounter = 1;
-export let enemiesLeft = 1;
+export let enemiesLeft = 10;
 export const miscellaneous: GameObject[] = [];
 export const numberAnimations: RisingText[] = [];
 export const projectiles: ActualProjectile[] = [];
 export let mousePos: Point = { x: 0, y: 0 };
 export let menuOpen = false;
+export let shopOpen = false;
+export const shopItems: Gun[] = [new Shotgun(), new Sniper()];
 
 let enemyStat = {
-  hp: 40,
+  hp: 4000,
   velocity: 0.5,
   damage: 1,
   reward: 1,
 };
 
 let hasTeleported = 0;
+let canOpenShop = true;
 
 export function Shooter() {
   const [anims, setAnims] = useState<RisingText[]>([]);
@@ -96,6 +104,7 @@ export function Shooter() {
   const [currentMapPosition, setCurrentMapPosition] = useState(currentMap.position);
   const [allMaps, setAllMaps] = useState(maps);
   const [menuOpenState, setMenuOpenState] = useState(false);
+  const [shopOpenState, setShopOpenState] = useState(false);
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [_, setRerenderFlip] = useState(false);
 
@@ -128,8 +137,13 @@ export function Shooter() {
       }
 
       if (["Escape", "p"].includes(keyEvent.key)) {
-        menuOpen = !menuOpen;
-        setMenuOpenState((open) => !open);
+        if (shopOpen) {
+          shopOpen = !shopOpen;
+          setShopOpenState(false);
+        } else {
+          menuOpen = !menuOpen;
+          setMenuOpenState((open) => !open);
+        }
       }
     };
 
@@ -159,7 +173,7 @@ export function Shooter() {
 
     if (game) {
       id = setInterval(() => {
-        if (menuOpen) return;
+        if (menuOpen || shopOpen) return;
 
         game.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -182,11 +196,12 @@ export function Shooter() {
           crosshair.style.width = size + "px";
         }
 
-        const teleportSide = player.getTeleportSide();
-        if (teleportSide !== "none" && hasTeleported <= 0 && enemies.length === 0) {
+        const tileState = player.getTileState();
+        if (tileState.includes("tp") && hasTeleported <= 0 && enemies.length === 0) {
+          const tpSide = tileState.replace("tp-", "") as MapSide;
           const newMapPosition = {
-            x: currentMap.position.x + (teleportSide === "left" ? -1 : teleportSide === "right" ? 1 : 0),
-            y: currentMap.position.y + (teleportSide === "up" ? -1 : teleportSide === "down" ? 1 : 0),
+            x: currentMap.position.x + (tileState === "tp-left" ? -1 : tileState === "tp-right" ? 1 : 0),
+            y: currentMap.position.y + (tileState === "tp-up" ? -1 : tileState === "tp-down" ? 1 : 0),
           };
           const existingMap = maps.get(posToKey(newMapPosition));
           if (existingMap) {
@@ -195,7 +210,7 @@ export function Shooter() {
             const teleporters = { up: { size: 1 }, right: { size: 2 }, down: { size: 3 }, left: { size: 4 } };
             const predefinedTeleporters = getPredefinedTeleporters(maps, newMapPosition);
             Object.entries(predefinedTeleporters).forEach(([side, tpInfo]) => (teleporters[side as MapSide] = tpInfo));
-            teleporters[flipSide(teleportSide)] = currentMap.teleporters[teleportSide];
+            teleporters[flipSide(tpSide)] = currentMap.teleporters[tileState];
             currentMap = generateRandomMap({
               position: newMapPosition,
               rng: r,
@@ -210,8 +225,14 @@ export function Shooter() {
             enemyStat.reward++;
             enemyStat.velocity += 0.1;
           }
-          player.enterTeleporter(teleportSide);
+          player.enterTeleporter(tpSide);
           hasTeleported = 2;
+        } else if (tileState === "shop" && canOpenShop) {
+          setShopOpenState(true);
+          shopOpen = true;
+          canOpenShop = false;
+        } else if (tileState === "none") {
+          canOpenShop = true;
         }
 
         hasTeleported -= TICK_DURATION_S;
@@ -221,7 +242,9 @@ export function Shooter() {
         if (timeUntilNextSpawn < 0 && enemiesLeft > 0) {
           timeUntilNextSpawn = 3;
           enemiesLeft--;
-          enemies.push(new BasicEnemy({ ...enemyStat, position: findRandomLocation(currentMap.layout) }));
+          enemies.push(
+            new BasicEnemy({ ...enemyStat, position: findRandomLocation(currentMap.layout, player.getPosition()) })
+          );
         }
 
         setAnims([...numberAnimations]);
@@ -266,6 +289,7 @@ export function Shooter() {
     <TriggerRenderContext.Provider value={() => setRerenderFlip((flip) => !flip)}>
       <div style={{ position: "relative" }}>
         {menuOpenState && <MenuContainer />}
+        {shopOpenState && <ShopContainer />}
         <div
           style={{
             display: "flex",
@@ -313,6 +337,9 @@ export function Shooter() {
                       className="number-flow"
                     >
                       {anim.getText()}
+                      {anim.getIsCriticalHit() && (
+                        <GiSpikyExplosion style={{ marginBottom: -4, marginLeft: 4, fontSize: 20 }} />
+                      )}
                     </div>
                   ))}
                 </div>

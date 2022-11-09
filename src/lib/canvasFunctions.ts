@@ -61,12 +61,15 @@ export function drawBall(ctx: CanvasRenderingContext2D, position: Point, size: n
 export function drawMap(ctx: CanvasRenderingContext2D, mapLayout: string[][]) {
   for (let x = 0; x < mapLayout[0].length; x++) {
     for (let y = 0; y < mapLayout.length; y++) {
-      if (mapLayout[y][x] === "x") {
+      const tile = mapLayout[y][x];
+      if (tile === "x") {
         drawTile(ctx, x, y, "#444444");
-      } else if (mapLayout[y][x] === "~") {
+      } else if (tile === "~") {
         drawTile(ctx, x, y, "#006fff");
-      } else if (mapLayout[y][x] === "^") {
+      } else if (tile === "^") {
         drawTile(ctx, x, y, "lightgray");
+      } else if (tile === "s") {
+        drawTile(ctx, x, y, "green");
       }
     }
   }
@@ -127,7 +130,7 @@ export function getMousePos(canvas: HTMLCanvasElement, mouseEvent: MouseEvent) {
   };
 }
 
-export function tileToPixels(tilePos: Point) {
+export function tileCenterToPixels(tilePos: Point) {
   return {
     x: tilePos.x * TILE_SIZE + TILE_SIZE / 2,
     y: tilePos.y * TILE_SIZE + TILE_SIZE / 2,
@@ -171,13 +174,13 @@ export function drawAndCleanupObjects(ctx: CanvasRenderingContext2D, objects: Ga
   }
 }
 
-export function pathToPoint(mapLayout: string[][], fromPosition: Point, toPosition: Point): SNode[] {
+export function pathToPoint(mapLayout: string[][], fromPositionPixels: Point, toPositionPixels: Point): SNode[] {
   function h(node: SNode) {
-    return calculateDistance(node.pos, toPosition);
+    return calculateDistance(node.pos, toPositionPixels);
   }
 
   function createNode(tilePos: Point): SNode {
-    const { x, y } = tileToPixels(tilePos);
+    const { x, y } = tileCenterToPixels(tilePos);
     return { key: tilePos.x + ";" + tilePos.y, pos: { x: x, y: y }, tilePos: tilePos };
   }
 
@@ -195,13 +198,13 @@ export function pathToPoint(mapLayout: string[][], fromPosition: Point, toPositi
     return totalPath;
   }
 
-  const goalNode = createNode(pixelsToTile(toPosition));
+  const goalNode = createNode(pixelsToTile(toPositionPixels));
 
   const fScore: { [key in string]: number } = {};
 
   const openSet = new MinHeap([], fScore);
 
-  const startNode = createNode(pixelsToTile(fromPosition));
+  const startNode = createNode(pixelsToTile(fromPositionPixels));
   openSet.add(startNode);
 
   const cameFrom: { [key in string]: SNode } = {};
@@ -263,14 +266,18 @@ export function pathToPoint(mapLayout: string[][], fromPosition: Point, toPositi
   return [];
 }
 
-export function findRandomLocation(mapLayout: string[][]) {
+export function findRandomLocation(mapLayout: string[][], pathTo?: Point) {
   let randomRow = Math.floor(Math.random() * CANVAS_ROWS);
   let randomColumn = Math.floor(Math.random() * CANVAS_COLUMNS);
+  let pathFulfilled =
+    !pathTo || pathToPoint(mapLayout, tileCenterToPixels({ x: randomColumn, y: randomRow }), pathTo).length > 0;
 
-  while (mapLayout[randomRow][randomColumn] !== " ") {
+  while (mapLayout[randomRow][randomColumn] !== " " || !pathFulfilled) {
     randomRow = Math.floor(Math.random() * CANVAS_ROWS);
     randomColumn = Math.floor(Math.random() * CANVAS_COLUMNS);
+    pathFulfilled =
+      !pathTo || pathToPoint(mapLayout, tileCenterToPixels({ x: randomColumn, y: randomRow }), pathTo).length > 0;
   }
 
-  return { x: randomColumn * TILE_SIZE + TILE_SIZE / 2, y: randomRow * TILE_SIZE + TILE_SIZE / 2 };
+  return tileCenterToPixels({ x: randomColumn, y: randomRow });
 }

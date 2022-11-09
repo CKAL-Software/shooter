@@ -142,6 +142,7 @@ export abstract class Enemy extends MovingObject {
             range: TILE_SIZE * 10,
             color: "red",
             shotByPlayer: false,
+            isCriticalHit: false,
           })
         );
       }
@@ -251,13 +252,16 @@ export abstract class Enemy extends MovingObject {
     this.canSeePlayer = true;
   }
 
-  inflictDamage(damage: number, ownerGun?: Gun) {
-    this.currentHp = Math.max(0, this.currentHp - damage);
+  inflictDamage(damage: number, isCriticalHit: boolean, ownerGun?: Gun) {
+    const chanceOfHighHit = damage - Math.floor(damage);
+    const actualDamage = Math.random() < chanceOfHighHit ? Math.ceil(damage) : Math.floor(damage);
+
+    this.currentHp = Math.max(0, this.currentHp - actualDamage);
 
     if (this.lastDmgAnimTimeLeft > 0) {
-      this.lastDmgAnim?.setText(Number(this.lastDmgAnim.getText()) + damage);
+      this.lastDmgAnim?.setText(Number(this.lastDmgAnim.getText()) + actualDamage);
     } else {
-      const newAnim = new RisingText(this.position, damage, "black");
+      const newAnim = new RisingText(this.position, actualDamage, "black", isCriticalHit);
       numberAnimations.push(newAnim);
       this.lastDmgAnim = newAnim;
     }

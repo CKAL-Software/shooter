@@ -19,7 +19,7 @@ import { createSkillSheet, PlayerSkills, SkillType } from "../lib/skillDefinitio
 import { currentMap, mousePos, numberAnimations } from "../Shooter";
 import { Gun } from "../Weapons/Gun";
 import { Pistol } from "../Weapons/Pistol";
-import { Shotgun } from "../Weapons/Shotgun";
+import { Sniper } from "../Weapons/Sniper";
 import { MovingObject } from "./MovingObject";
 import { RisingText } from "./RisingText";
 
@@ -27,7 +27,7 @@ export class Player extends MovingObject {
   private health = 10;
   private maxHealth = 10;
   private money = 0;
-  private weapons: Gun[] = [new Pistol(), new Shotgun()];
+  private weapons: Gun[] = [new Pistol(), new Sniper()];
   private currentWeapon = this.weapons[0];
   private moveDirections: Set<Direction> = new Set();
   private wantFire = false;
@@ -267,14 +267,18 @@ export class Player extends MovingObject {
     return this.skillSheet;
   }
 
-  getTeleportSide() {
+  getTileState() {
     const { x, y } = this.tile;
-    if (currentMap.layout[y][x] === "~") {
-      if (x === 0) return "left";
-      if (x === MAP_SIZE - 1) return "right";
-      if (y === MAP_SIZE - 1) return "down";
-      if (y === 0) return "up";
+    const tile = currentMap.layout[y][x];
+    if (tile === "~") {
+      if (x === 0) return "tp-left";
+      if (x === MAP_SIZE - 1) return "tp-right";
+      if (y === MAP_SIZE - 1) return "tp-down";
+      if (y === 0) return "tp-up";
+    } else if (tile === "s") {
+      return "shop";
     }
+
     return "none";
   }
 
@@ -380,13 +384,16 @@ export class Player extends MovingObject {
   }
 
   inflictDamage(damage: number) {
-    this.health = Math.max(0, this.health - damage);
+    const chanceOfHighHit = damage - Math.floor(damage);
+    const actualDamage = Math.random() < chanceOfHighHit ? Math.ceil(damage) : Math.floor(damage);
+
+    this.health = Math.max(0, this.health - actualDamage);
     this.setTint(255, 0, 0);
 
     if (this.lastDmgAnimTimeLeft > 0) {
-      this.lastDmgAnim?.setText(Number(this.lastDmgAnim.getText()) + damage);
+      this.lastDmgAnim?.setText(Number(this.lastDmgAnim.getText()) + actualDamage);
     } else {
-      const newAnim = new RisingText(this.position, damage, COLOR_DMG);
+      const newAnim = new RisingText(this.position, actualDamage, COLOR_DMG);
       numberAnimations.push(newAnim);
       this.lastDmgAnim = newAnim;
     }

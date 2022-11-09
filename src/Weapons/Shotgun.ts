@@ -13,7 +13,7 @@ export class Shotgun extends Gun {
       magazineSize: 2,
       reloadTime: 3,
       fireRate: 60,
-      velocity: 2.5,
+      velocity: 100,
       damage: 5,
       critChance: 0,
       range: TILE_SIZE * 3,
@@ -22,6 +22,7 @@ export class Shotgun extends Gun {
       projectileSize: 4,
       projectileColor: "black",
       ammo: 2000,
+      price: 5,
       skills: ShotgunSkills,
     });
   }
@@ -36,18 +37,21 @@ export class Shotgun extends Gun {
       // const position = player.getPosition();
       // const delta = changeDirection({ x: player.getSize(), y: 0 }, Math.random() * 360);
 
+      const damage = this.getDamageForNextBullet();
+
       projectiles.push(
         new NormalProjectile({
           // position: { x: position.x + delta.x, y: position.y + delta.y },
           position: player.getPosition(),
           direction: newDirection,
           velocity: this.velocity,
-          damage: this.damage,
+          damage: damage,
           range: this.range,
           size: this.projectileSize,
           color: this.projectileColor,
           shotByPlayer: true,
           ownerGun: this,
+          isCriticalHit: damage > this.damage,
         })
       );
     }

@@ -5,12 +5,14 @@ export class RisingText extends GameObject {
   private id = "";
   private timeLeft = ANIM_TIME;
   private value: string | number;
+  private isCriticalHit: boolean;
 
-  constructor(position: Point, value: string | number, color: string) {
+  constructor(position: Point, value: string | number, color: string, isCriticalHit?: boolean) {
     super({ position, size: 0, color });
 
     this.value = value;
     this.id = (Math.random() * 1000000).toString();
+    this.isCriticalHit = !!isCriticalHit;
   }
 
   draw(ctx: CanvasRenderingContext2D): void {}
@@ -30,6 +32,10 @@ export class RisingText extends GameObject {
 
   getText() {
     return this.value;
+  }
+
+  getIsCriticalHit() {
+    return this.isCriticalHit;
   }
 
   getX() {
