@@ -4,7 +4,7 @@ import { calculateDirection } from "../lib/canvasFunctions";
 import { COLOR_EXP, experienceThresholdsNormal, Point, TICK_DURATION_S } from "../lib/definitions";
 import { changeDirection } from "../lib/functions";
 import { SkillSheet } from "../lib/models";
-import { createSkillSheet, Skill, SkillType } from "../lib/skillDefinitions";
+import { createSkillSheet, Skill, SkillType, WeaponStat } from "../lib/skillDefinitions";
 import { numberAnimations, player, projectiles } from "../Shooter";
 
 export interface GunConfig {
@@ -77,8 +77,8 @@ export abstract class Gun {
     this.baseCritChance = config.critChance;
     this.numBullets = config.numBullets;
     this.baseNumBullets = config.numBullets;
-    this.velocity = config.velocity * TICK_DURATION_S;
-    this.baseVelocity = config.velocity * TICK_DURATION_S;
+    this.velocity = config.velocity;
+    this.baseVelocity = config.velocity;
     this.projectileSize = config.projectileSize;
     this.projectileColor = config.projectileColor;
     this.price = config.price;
@@ -292,7 +292,7 @@ export abstract class Gun {
       new NormalProjectile({
         position: player.getPosition(),
         direction: this.getNewDirectionAfterRecoil(target),
-        velocity: this.velocity,
+        velocity: this.velocity * TICK_DURATION_S,
         damage: damage,
         range: this.range,
         size: this.projectileSize,
@@ -304,5 +304,17 @@ export abstract class Gun {
     );
   }
 
-  abstract onLevelUp(levelIndex: number): void;
+  onLevelUp(levelIndex: number) {
+    const upgrade = this.getLevelBonusStats(levelIndex);
+
+    this.baseDamage += upgrade.damage;
+    this.baseMagazineSize += upgrade.magSize;
+    this.baseReloadTime -= upgrade.reloadTime;
+    this.baseRecoil -= upgrade.recoil;
+    this.baseVelocity += upgrade.velocity;
+    this.baseFireRate += upgrade.fireRate;
+    this.baseRange += upgrade.range;
+  }
+
+  abstract getLevelBonusStats(levelIndex: number): { [stat in WeaponStat]: number };
 }

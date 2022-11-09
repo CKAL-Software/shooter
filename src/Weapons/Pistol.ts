@@ -23,13 +23,19 @@ export class Pistol extends Gun {
     });
   }
 
-  onLevelUp(levelIndex: number): void {
-    this.baseDamage *= 1.5;
-    this.baseMagazineSize += [0, 0, 1, 0, 0, 1, 0, 0, 2][levelIndex];
-    this.baseReloadTime -= 0.05;
-    this.baseRecoil -= 1;
-    this.baseVelocity += 0.15;
-    this.baseFireRate += 5;
-    this.baseRange += 10;
+  getLevelBonusStats(levelIndex: number) {
+    return {
+      damage: this.baseDamage * 0.2,
+      magSize: [0, 0, 1, 0, 0, 1, 0, 0, 2][levelIndex],
+      reloadTime: -0.05,
+      recoil: -1,
+      velocity: 5,
+      fireRate: 3,
+      range: 10,
+      projectiles: 0,
+      penetration: 0,
+      ammoCost: 0,
+      critChance: 0,
+    };
   }
 }

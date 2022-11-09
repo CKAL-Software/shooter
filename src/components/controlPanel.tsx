@@ -24,10 +24,23 @@ interface ControlPanelProps {
   damage: number;
   recoil: number;
   range: number;
-  numBullets: number;
+  projectiles: number;
 }
 
 export function ControlPanel(props: ControlPanelProps) {
+  const nextLevelStats = player.getCurrentWeapon().getLevelBonusStats(props.weaponLevel);
+
+  function displayNextLevelBonus(bonus: number) {
+    return bonus === 0 ? (
+      <div />
+    ) : (
+      <div style={{ color: "green", textAlign: "end" }}>
+        {bonus > 0 ? "+" : ""}
+        {bonus}
+      </div>
+    );
+  }
+
   return (
     <div
       style={{
@@ -40,22 +53,9 @@ export function ControlPanel(props: ControlPanelProps) {
     >
       <div style={{ padding: 20 }}>
         <div style={{ fontSize: 24, marginBottom: 8 }}>Player</div>
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "min-content min-content",
-            columnGap: 16,
-            rowGap: 2,
-            fontSize: 18,
-            marginBottom: 8,
-          }}
-        >
-          <div>Level</div>
-          <div style={{ textAlign: "end" }}>{props.playerLevel}</div>
-          <div style={{ whiteSpace: "nowrap" }}>Move speed</div>
-          <div style={{ textAlign: "end" }}>{props.velocity}</div>
-          <div style={{ whiteSpace: "nowrap" }}>Money</div>
-          <div style={{ textAlign: "end" }}>{props.money}</div>
+        <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 8, fontSize: 20 }}>
+          <div>Level {player.getLevel()}</div>
+          <div>Money: ${player.getMoney()}</div>
         </div>
         <div style={{ marginBottom: 8 }}>
           <div style={{ marginBottom: 4, fontSize: 16, marginLeft: 2 }}>Health</div>
@@ -117,7 +117,7 @@ export function ControlPanel(props: ControlPanelProps) {
         <div
           style={{
             display: "grid",
-            gridTemplateColumns: "auto min-content",
+            gridTemplateColumns: "auto min-content min-content",
             columnGap: 16,
             rowGap: 2,
             marginBottom: 8,
@@ -125,23 +125,35 @@ export function ControlPanel(props: ControlPanelProps) {
         >
           <div>Level</div>
           <div style={{ textAlign: "end" }}>{props.weaponLevel}</div>
-          <div style={{ gridColumn: "span 2" }} />
+          <div />
+          <div style={{ gridColumn: "span 3", marginBottom: 8 }} />
+          <div></div>
+          <div style={{ textAlign: "end" }}>Curr</div>
+          <div style={{ textAlign: "end" }}>Next</div>
           <div>Damage</div>
           <div style={{ textAlign: "end" }}>{props.damage}</div>
+          {displayNextLevelBonus(nextLevelStats.damage)}
           <div>Magazine size</div>
           <div style={{ textAlign: "end" }}>{props.magSize}</div>
+          {displayNextLevelBonus(nextLevelStats.magSize)}
           <div>Reload time</div>
           <div style={{ textAlign: "end" }}>{props.reloadTime}</div>
+          {displayNextLevelBonus(nextLevelStats.reloadTime)}
           <div style={{ whiteSpace: "nowrap" }}>Fire rate</div>
           <div style={{ textAlign: "end" }}>{props.fireRate}</div>
+          {displayNextLevelBonus(nextLevelStats.fireRate)}
           <div>Velocity</div>
-          <div style={{ textAlign: "end" }}>{props.velocity}</div>
+          <div style={{ textAlign: "end" }}>{props.weaponVelocity}</div>
+          {displayNextLevelBonus(nextLevelStats.velocity)}
           <div>Recoil</div>
           <div style={{ textAlign: "end" }}>{props.recoil}</div>
+          {displayNextLevelBonus(nextLevelStats.recoil)}
           <div>Range</div>
           <div style={{ textAlign: "end" }}>{props.range}</div>
+          {displayNextLevelBonus(nextLevelStats.range)}
           <div>Projectiles</div>
-          <div style={{ textAlign: "end" }}>{props.numBullets}</div>
+          <div style={{ textAlign: "end" }}>{props.projectiles}</div>
+          {displayNextLevelBonus(nextLevelStats.projectiles)}
         </div>
       </div>
     </div>

@@ -71,13 +71,13 @@ export function WeaponStats(props: WeaponStatsProps) {
       <div style={{ whiteSpace: "nowrap" }}>Fire rate</div>
       {getStatText("fireRate", props.weapon.getFireRate(true), props.weapon.getFireRate())}
       <div>Velocity</div>
-      {getStatText("velocity", props.weapon.getVelocity(true), props.weapon.getVelocity(), (v) => v / TICK_DURATION_S)}
+      {getStatText("velocity", props.weapon.getVelocity(true), props.weapon.getVelocity())}
       <div>Recoil</div>
       {getStatText("recoil", props.weapon.getRecoil(true), props.weapon.getRecoil())}
       <div>Range</div>
       {getStatText("range", props.weapon.getRange(true), props.weapon.getRange())}
       <div>Projectiles</div>
-      {getStatText("multiShot", props.weapon.getNumBullets(true), props.weapon.getNumBullets())}
+      {getStatText("projectiles", props.weapon.getNumBullets(true), props.weapon.getNumBullets())}
     </>
   );
 }

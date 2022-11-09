@@ -13,7 +13,7 @@ export class Sniper extends Gun {
       fireRate: 40,
       velocity: 400,
       recoil: 5,
-      critChance: 1.2,
+      critChance: 0.2,
       range: TILE_SIZE * MAP_SIZE,
       numBullets: 1,
       projectileSize: 4,
@@ -24,13 +24,19 @@ export class Sniper extends Gun {
     });
   }
 
-  onLevelUp(levelIndex: number): void {
-    this.baseDamage *= 1.5;
-    this.baseMagazineSize += [0, 0, 1, 0, 0, 1, 0, 0, 2][levelIndex];
-    this.baseReloadTime -= 0.05;
-    this.baseRecoil -= 1;
-    this.baseVelocity += 0.15;
-    this.baseFireRate += 5;
-    this.baseRange += 10;
+  getLevelBonusStats(levelIndex: number) {
+    return {
+      damage: this.baseDamage * 0.2,
+      magSize: [0, 0, 1, 0, 0, 1, 0, 0, 2][levelIndex],
+      reloadTime: -0.05,
+      recoil: -0.5,
+      velocity: 20,
+      fireRate: 5,
+      range: 0,
+      critChance: 0,
+      penetration: 0,
+      ammoCost: 0,
+      projectiles: 0,
+    };
   }
 }

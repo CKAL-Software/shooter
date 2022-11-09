@@ -57,14 +57,19 @@ export class Shotgun extends Gun {
     }
   }
 
-  onLevelUp(levelIndex: number): void {
-    this.baseDamage += [1, 0, 1, 0, 1, 0, 1, 0, 1][levelIndex];
-    this.baseMagazineSize += [0, 0, 1, 0, 0, 1, 0, 0, 1][levelIndex];
-    this.baseReloadTime -= 0.12;
-    this.baseRecoil -= 3;
-    this.baseVelocity += 0.15;
-    this.baseFireRate += 3;
-    this.baseRange += 5;
-    this.baseNumBullets += [0, 1, 0, 1, 0, 1, 0, 1, 1][levelIndex];
+  getLevelBonusStats(levelIndex: number) {
+    return {
+      damage: this.baseDamage * 0.2,
+      magSize: [0, 0, 1, 0, 0, 1, 0, 0, 2][levelIndex],
+      reloadTime: -0.12,
+      recoil: -3,
+      velocity: 5,
+      fireRate: 3,
+      range: 5,
+      projectiles: [0, 1, 0, 1, 0, 1, 0, 1, 1][levelIndex],
+      critChance: 0,
+      penetration: 0,
+      ammoCost: 0,
+    };
   }
 }

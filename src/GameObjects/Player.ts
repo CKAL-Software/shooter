@@ -48,7 +48,7 @@ export class Player extends MovingObject {
   private skillSheet = createSkillSheet(PlayerSkills);
 
   constructor() {
-    super({ position: { x: 180, y: 280 }, size: 13, velocity: 2.5, color: COLOR_PLAYER });
+    super({ position: { x: 180, y: 280 }, size: 13, velocity: 120, color: COLOR_PLAYER });
   }
 
   draw(ctx: CanvasRenderingContext2D): void {
@@ -125,7 +125,8 @@ export class Player extends MovingObject {
     let newX = this.position.x;
     let newY = this.position.y;
 
-    const actualVelocity = this.moveDirections.size > 1 ? this.velocity / Math.SQRT2 : this.velocity;
+    const actualVelocity =
+      this.moveDirections.size > 1 ? (this.velocity * TICK_DURATION_S) / Math.SQRT2 : this.velocity * TICK_DURATION_S;
 
     if (direction === "w") {
       newY -= actualVelocity;
@@ -146,9 +147,9 @@ export class Player extends MovingObject {
       }
 
       if (direction === "a" || direction === "d") {
-        if (!this.checkCollision({ x: newX, y: newY - this.velocity })[0]) {
+        if (!this.checkCollision({ x: newX, y: newY - this.velocity * TICK_DURATION_S })[0]) {
           newY -= actualVelocity;
-        } else if (!this.checkCollision({ x: newX, y: newY + this.velocity })[0]) {
+        } else if (!this.checkCollision({ x: newX, y: newY + this.velocity * TICK_DURATION_S })[0]) {
           newY += actualVelocity;
         } else {
           return;
@@ -156,9 +157,9 @@ export class Player extends MovingObject {
       }
 
       if (direction === "w" || direction === "s") {
-        if (!this.checkCollision({ x: newX - this.velocity, y: newY })[0]) {
+        if (!this.checkCollision({ x: newX - this.velocity * TICK_DURATION_S, y: newY })[0]) {
           newX -= actualVelocity;
-        } else if (!this.checkCollision({ x: newX + this.velocity, y: newY })[0]) {
+        } else if (!this.checkCollision({ x: newX + this.velocity * TICK_DURATION_S, y: newY })[0]) {
           newX += actualVelocity;
         } else {
           return;

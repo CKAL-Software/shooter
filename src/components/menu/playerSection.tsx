@@ -36,7 +36,7 @@ export function PlayerSection() {
         <div
           style={{ width: 52, height: 52, borderRadius: "50%", backgroundColor: COLOR_PLAYER, position: "relative" }}
         >
-          {player.getUnusedSkillPoints() && (
+          {player.getUnusedSkillPoints() > 0 && (
             <div
               style={{
                 position: "absolute",

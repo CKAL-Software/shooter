@@ -362,7 +362,7 @@ export function Shooter() {
               range={range}
               recoil={recoil}
               damage={damage}
-              numBullets={numBullets}
+              projectiles={numBullets}
               maxHp={maxHp}
               money={money}
               magSize={magSize}

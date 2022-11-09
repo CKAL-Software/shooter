@@ -19,6 +19,19 @@ import { Gun } from "../Weapons/Gun";
 
 const skillIconStyle: CSSProperties = { fontSize: 30 };
 
+export type WeaponStat =
+  | "damage"
+  | "reloadTime"
+  | "magSize"
+  | "critChance"
+  | "range"
+  | "recoil"
+  | "fireRate"
+  | "ammoCost"
+  | "velocity"
+  | "penetration"
+  | "projectiles";
+
 export type SkillType =
   | "damage"
   | "reloadSpeed"
@@ -30,7 +43,7 @@ export type SkillType =
   | "ammoCost"
   | "velocity"
   | "dropChange"
-  | "multiShot"
+  | "projectiles"
   | "burn"
   | "pentration";
 
@@ -114,7 +127,7 @@ export const ReloadSkill: SkillConstructor = (getEffect: EffectFunction) => ({
 });
 
 export const MultiShotSkill: SkillConstructor = (getEffect: EffectFunction) => ({
-  type: "multiShot",
+  type: "projectiles",
   content: <GiStrikingBalls style={skillIconStyle} />,
   description: "Shoot 3 bullets instead of 1",
   getEffect,

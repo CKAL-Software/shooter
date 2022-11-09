@@ -1,1 +1,6 @@
+bugs:
+når man skifter map kan man ende i obstacles ortogonalt til tp direction
+pathing af enemies igennem shops og tp (forskel på pathfinding og line of sight movement)
+
+features:
 mulighed for at kunne sætte tønder man kan sprænge
