@@ -1,4 +1,4 @@
-import { COLOR_STAT_BONUS_BLUE, experienceThresholdsNormal, TICK_DURATION_S } from "../../lib/definitions";
+import { COLOR_STAT_BONUS_BLUE, experienceThresholdsNormal } from "../../lib/definitions";
 import { SkillType } from "../../lib/skillDefinitions";
 import { Gun } from "../../Weapons/Gun";
 import { ProgressBar } from "../controlPanelElements/progressBar";

@@ -21,6 +21,7 @@ const skillIconStyle: CSSProperties = { fontSize: 30 };
 
 export type PlayerStat =
   | "maxHealth"
+  | "moveSpeed"
   | "damageMultiplier"
   | "reloadTimeMultiplier"
   | "magSizeMultiplier"

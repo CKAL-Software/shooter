@@ -56,6 +56,7 @@ export class Player extends MovingObject {
   private dropChanceMultiplier = 0;
   private critChanceMultiplier = 0;
   private skillPointsUsed: { [k in PlayerStat]: number } = {
+    moveSpeed: 0,
     damageMultiplier: 0,
     critChanceMultiplier: 0,
     dropChanceMultiplier: 0,
@@ -274,6 +275,7 @@ export class Player extends MovingObject {
     const effect = this.getEffect(type, this.skillPointsUsed[type]);
 
     if (type === "maxHealth") this.maxHealth += effect;
+    else if (type === "moveSpeed") this.velocity += effect;
     else if (type === "damageMultiplier") this.damageMultiplier += effect;
     else if (type === "critChanceMultiplier") this.critChanceMultiplier += effect;
     else if (type === "dropChanceMultiplier") this.dropChanceMultiplier += effect;
@@ -286,8 +288,9 @@ export class Player extends MovingObject {
     else if (type === "velocityMultiplier") this.projectileSpeedMultiplier += effect;
   }
 
-  getEffect(type: PlayerStat, points: number): number {
+  getEffect(type: PlayerStat, pointsIndex: number): number {
     if (type === "maxHealth") return 5;
+    else if (type === "moveSpeed") return 15;
     else if (type === "damageMultiplier") return 0.05;
     else if (type === "critChanceMultiplier") return 0.03;
     else if (type === "dropChanceMultiplier") return 0.02;
@@ -296,7 +299,7 @@ export class Player extends MovingObject {
     else if (type === "penetrationMultiplier") return 0;
     else if (type === "rangeMultiplier") return 0.1;
     else if (type === "recoilMultiplier") return 0.2;
-    else if (type === "reloadTimeMultiplier") return 0.2 * Math.pow(0.7, points);
+    else if (type === "reloadTimeMultiplier") return -0.15 * Math.pow(0.7, pointsIndex);
     else if (type === "velocityMultiplier") return 0.2;
 
     throw new Error("Called getEffect on a stat that was not provided in method");
@@ -355,6 +358,10 @@ export class Player extends MovingObject {
 
   getMoney() {
     return this.money;
+  }
+
+  getSkillPointsForStat(stat: PlayerStat) {
+    return this.skillPointsUsed[stat];
   }
 
   getUnusedSkillPoints() {
@@ -458,7 +465,7 @@ export class Player extends MovingObject {
     return this.fireRateMultiplier;
   }
 
-  getMagasineeSizeMultiplier() {
+  getMagasineSizeMultiplier() {
     return this.magasizeSizeMultiplier;
   }
 

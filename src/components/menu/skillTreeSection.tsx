@@ -1,12 +1,10 @@
 import { useState } from "react";
-import { Player } from "../../GameObjects/Player";
 import { player } from "../../Shooter";
-import { Gun } from "../../Weapons/Gun";
 import { GunIcon } from "../gunIcon";
 import { SkillTree } from "./skillTree";
 
 export function SkillTreeSection() {
-  const [selectedEntity, setSelectedEntity] = useState<Gun | Player>(player.getCurrentWeapon());
+  const [selectedWeapon, setSelectedWeapon] = useState(player.getCurrentWeapon());
 
   return (
     <div style={{ userSelect: "none" }}>
@@ -17,15 +15,15 @@ export function SkillTreeSection() {
             <GunIcon
               key={gun.getName()}
               entityName={gun.getName()}
-              selected={selectedEntity.getName() === gun.getName()}
+              selected={selectedWeapon.getName() === gun.getName()}
               level={gun.getLevel()}
               unusedSkillPoints={gun.getUnusedSkillPoints()}
-              onClick={() => setSelectedEntity(gun)}
+              onClick={() => setSelectedWeapon(gun)}
             />
           ))}
         </div>
 
-        <SkillTree entity={selectedEntity} />
+        <SkillTree gun={selectedWeapon} />
       </div>
     </div>
   );

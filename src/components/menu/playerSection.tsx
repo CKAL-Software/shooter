@@ -1,18 +1,22 @@
 import {
-  COLOR_EXP,
-  COLOR_GUN_SELECTED,
   COLOR_HP_BAR_GREEN,
   COLOR_HP_BAR_RED,
-  COLOR_LEVEL,
   COLOR_PLAYER,
   COLOR_SKILLPOINT,
   experienceThresholdsPlayer,
-  TICK_DURATION_S,
 } from "../../lib/definitions";
+import { PlayerStat } from "../../lib/skillDefinitions";
 import { player } from "../../Shooter";
 import { ProgressBar } from "../controlPanelElements/progressBar";
 
 export function PlayerSection() {
+  function getUpgradeButton(stat: PlayerStat, formatter?: (value: number) => any) {
+    const num = player.getEffect(stat, player.getSkillPointsForStat(stat));
+    const rounded = Math.round(num * 100) / 100;
+    const formatted = formatter ? formatter(rounded) : rounded;
+    return <button disabled={player.getUnusedSkillPoints() === 0}>{rounded > 0 ? "+" + formatted : formatted}</button>;
+  }
+
   return (
     <div style={{ width: "min-content" }}>
       <div style={{ fontSize: 28, fontWeight: "bold" }}>Player</div>
@@ -116,31 +120,31 @@ export function PlayerSection() {
         <div style={{ gridColumn: "span 3", marginBottom: 8 }} />
         <div style={{ whiteSpace: "nowrap" }}>Max health</div>
         <div style={{ textAlign: "end" }}>{player.getMaxHealth()}</div>
-        <button disabled={player.getUnusedSkillPoints() === 0}>+3</button>
+        {getUpgradeButton("maxHealth")}
         <div style={{ whiteSpace: "nowrap" }}>Move speed</div>
         <div style={{ textAlign: "end" }}>{player.getVelocity()}</div>
-        <button disabled={player.getUnusedSkillPoints() === 0}>+3</button>
+        {getUpgradeButton("moveSpeed")}
         <div style={{ whiteSpace: "nowrap" }}>Damage multiplier</div>
-        <div style={{ textAlign: "end" }}>{player.getDamageMultiplier()}</div>
-        <button disabled={player.getUnusedSkillPoints() === 0}>+3</button>
+        <div style={{ textAlign: "end" }}>{player.getDamageMultiplier()}%</div>
+        {getUpgradeButton("damageMultiplier", (v) => v * 100 + "%")}
         <div style={{ whiteSpace: "nowrap" }}>Reload multiplier</div>
-        <div style={{ textAlign: "end" }}>{player.getReloadSpeedMultiplier()}</div>
-        <button disabled={player.getUnusedSkillPoints() === 0}>+3</button>
+        <div style={{ textAlign: "end" }}>{player.getReloadSpeedMultiplier()}%</div>
+        {getUpgradeButton("reloadTimeMultiplier", (v) => v * 100 + "%")}
         <div style={{ whiteSpace: "nowrap" }}>Range multiplier</div>
-        <div style={{ textAlign: "end" }}>{player.getRangeMultiplier()}</div>
-        <button disabled={player.getUnusedSkillPoints() === 0}>+3</button>
+        <div style={{ textAlign: "end" }}>{player.getRangeMultiplier()}%</div>
+        {getUpgradeButton("rangeMultiplier", (v) => v * 100 + "%")}
         <div style={{ whiteSpace: "nowrap" }}>Recoil multiplier</div>
-        <div style={{ textAlign: "end" }}>{player.getRecoilMultiplier()}</div>
-        <button disabled={player.getUnusedSkillPoints() === 0}>+3</button>
+        <div style={{ textAlign: "end" }}>{player.getRecoilMultiplier()}%</div>
+        {getUpgradeButton("recoilMultiplier", (v) => v * 100 + "%")}
         <div style={{ whiteSpace: "nowrap" }}>Bullet velocity multiplier</div>
-        <div style={{ textAlign: "end" }}>{player.getProjectileSpeedMultiplier()}</div>
-        <button disabled={player.getUnusedSkillPoints() === 0}>+3</button>
+        <div style={{ textAlign: "end" }}>{player.getProjectileSpeedMultiplier()}%</div>
+        {getUpgradeButton("velocityMultiplier", (v) => v * 100 + "%")}
         <div style={{ whiteSpace: "nowrap" }}>Crit chance multiplier</div>
-        <div style={{ textAlign: "end" }}>{player.getCritChanceMultiplier()}</div>
-        <button disabled={player.getUnusedSkillPoints() === 0}>+3</button>
+        <div style={{ textAlign: "end" }}>{player.getCritChanceMultiplier()}%</div>
+        {getUpgradeButton("critChanceMultiplier", (v) => v * 100 + "%")}
         <div style={{ whiteSpace: "nowrap" }}>Drop chance multiplier</div>
-        <div style={{ textAlign: "end" }}>{player.getDropChanceMultiplier()}</div>
-        <button disabled={player.getUnusedSkillPoints() === 0}>+3</button>
+        <div style={{ textAlign: "end" }}>{player.getDropChanceMultiplier()}%</div>
+        {getUpgradeButton("dropChanceMultiplier", (v) => v * 100 + "%")}
       </div>
     </div>
   );

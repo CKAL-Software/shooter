@@ -1,26 +1,25 @@
 import { useContext } from "react";
-import { Player } from "../../GameObjects/Player";
 import { TriggerRenderContext } from "../../lib/contexts";
 import { Gun } from "../../Weapons/Gun";
 import { Skill } from "./skill";
 
 interface SkillTreeProps {
-  entity: Gun | Player;
+  gun: Gun;
 }
 
 export function SkillTree(props: SkillTreeProps) {
   const rerender = useContext(TriggerRenderContext);
 
-  const skillPointsUsed = props.entity.getTotalSkillPointsUsed();
+  const skillPointsUsed = props.gun.getTotalSkillPointsUsed();
 
   return (
     <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 16 }}>
-      {Object.values(props.entity.getSkillSheet())
+      {Object.values(props.gun.getSkillSheet())
         .sort((a, b) => a.skillTreeIndex - b.skillTreeIndex)
         .map((gs, i) => {
           const isMaxLevel = gs.points === 3;
-          const beforeValue = gs.getEffect(isMaxLevel ? gs.points - 1 : gs.points, props.entity);
-          const afterValue = gs.getEffect(isMaxLevel ? gs.points : gs.points + 1, props.entity);
+          const beforeValue = gs.getEffect(isMaxLevel ? gs.points - 1 : gs.points, props.gun);
+          const afterValue = gs.getEffect(isMaxLevel ? gs.points : gs.points + 1, props.gun);
           let text = gs.description.replace("<before>", beforeValue + "").replace("<after>", afterValue + "");
           if (isMaxLevel) {
             text = text.replace("Increase", "Increased").replace("Decrease", "Decreased");
@@ -36,7 +35,7 @@ export function SkillTree(props: SkillTreeProps) {
             : false;
 
           const disableCursor =
-            props.entity.getUnusedSkillPoints() === 0 || unavailable || (isSpecial ? gs.points === 1 : gs.points === 3);
+            props.gun.getUnusedSkillPoints() === 0 || unavailable || (isSpecial ? gs.points === 1 : gs.points === 3);
 
           return (
             <Skill
@@ -56,7 +55,7 @@ export function SkillTree(props: SkillTreeProps) {
               }
               currentLevel={gs.points}
               onClick={() => {
-                props.entity.upgrade(gs.type);
+                props.gun.upgrade(gs.type);
                 rerender();
               }}
               disableCursor={disableCursor}
