@@ -66,6 +66,7 @@ export const COLOR_STAT_BONUS_BLUE = "#0091df";
 // export const COLOR_SELECTED = "#70baf6";
 export const COLOR_SELECTED = "#4f97d1";
 export const COLOR_GUN_SELECTED = "#4f97d1";
+export const COLOR_LEVEL = "#62abe6";
 
 export const ANIM_COLLECT_TIME = 0.4;
 export const ANIM_TIME = 1.0;

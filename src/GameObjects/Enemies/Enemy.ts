@@ -3,6 +3,7 @@ import {
   ANIM_COLLECT_TIME,
   COLOR_HP_BAR_GREEN,
   COLOR_HP_BAR_RED,
+  COLOR_SKILLPOINT,
   TICK_DURATION_S,
   TILE_SIZE,
 } from "../../lib/definitions";
@@ -17,6 +18,7 @@ import { Gun } from "../../Weapons/Gun";
 import { HealthOrb } from "../Items/HealthOrb";
 import { AmmoOrb } from "../Items/AmmoOrb";
 import { MoneyOrb } from "../Items/MoneyOrb";
+import { ContactsFilled } from "@ant-design/icons";
 
 export interface EnemyConfig extends MovingObjectConfig {
   hp: number;

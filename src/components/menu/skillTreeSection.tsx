@@ -13,15 +13,6 @@ export function SkillTreeSection() {
       <div style={{ fontSize: 28, fontWeight: "bold", marginBottom: 24 }}>Skill tree</div>
       <div style={{ display: "flex" }}>
         <div style={{ marginRight: 30, display: "grid", rowGap: 20, height: "min-content" }}>
-          <div>
-            <GunIcon
-              entityName="Player"
-              selected={selectedEntity instanceof Player}
-              level={player.getLevel()}
-              unusedSkillPoints={player.getUnusedSkillPoints()}
-              onClick={() => setSelectedEntity(player)}
-            />
-          </div>
           {player.getWeapons().map((gun) => (
             <GunIcon
               key={gun.getName()}

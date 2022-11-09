@@ -1,6 +1,9 @@
 import {
+  COLOR_EXP,
+  COLOR_GUN_SELECTED,
   COLOR_HP_BAR_GREEN,
   COLOR_HP_BAR_RED,
+  COLOR_LEVEL,
   COLOR_PLAYER,
   COLOR_SKILLPOINT,
   experienceThresholdsPlayer,
@@ -99,20 +102,45 @@ export function PlayerSection() {
       <div
         style={{
           display: "grid",
-          gridTemplateColumns: "auto min-content",
+          gridTemplateColumns: "auto min-content min-content",
           columnGap: 16,
           rowGap: 2,
-          fontSize: 18,
           marginBottom: 8,
           marginTop: 24,
         }}
       >
-        <div>Level</div>
-        <div style={{ textAlign: "end" }}>{player.getLevel()}</div>
+        <div style={{ fontSize: 18, gridColumn: "span 2" }}>Level</div>
+        <div style={{ textAlign: "end", fontSize: 18 }}>{player.getLevel()}</div>
+        <div style={{ whiteSpace: "nowrap", fontSize: 18, gridColumn: "span 2" }}>Money</div>
+        <div style={{ textAlign: "end", fontSize: 18 }}>{"$" + (215 + player.getMoney())}</div>
+        <div style={{ gridColumn: "span 3", marginBottom: 8 }} />
+        <div style={{ whiteSpace: "nowrap" }}>Max health</div>
+        <div style={{ textAlign: "end" }}>{player.getMaxHealth()}</div>
+        <button disabled={player.getUnusedSkillPoints() === 0}>+3</button>
         <div style={{ whiteSpace: "nowrap" }}>Move speed</div>
-        <div style={{ textAlign: "end" }}>{player.getVelocity() / TICK_DURATION_S}</div>
-        <div style={{ whiteSpace: "nowrap" }}>Money</div>
-        <div style={{ textAlign: "end" }}>{"$" + (215 + player.getMoney())}</div>
+        <div style={{ textAlign: "end" }}>{player.getVelocity()}</div>
+        <button disabled={player.getUnusedSkillPoints() === 0}>+3</button>
+        <div style={{ whiteSpace: "nowrap" }}>Damage multiplier</div>
+        <div style={{ textAlign: "end" }}>{player.getDamageMultiplier()}</div>
+        <button disabled={player.getUnusedSkillPoints() === 0}>+3</button>
+        <div style={{ whiteSpace: "nowrap" }}>Reload multiplier</div>
+        <div style={{ textAlign: "end" }}>{player.getReloadSpeedMultiplier()}</div>
+        <button disabled={player.getUnusedSkillPoints() === 0}>+3</button>
+        <div style={{ whiteSpace: "nowrap" }}>Range multiplier</div>
+        <div style={{ textAlign: "end" }}>{player.getRangeMultiplier()}</div>
+        <button disabled={player.getUnusedSkillPoints() === 0}>+3</button>
+        <div style={{ whiteSpace: "nowrap" }}>Recoil multiplier</div>
+        <div style={{ textAlign: "end" }}>{player.getRecoilMultiplier()}</div>
+        <button disabled={player.getUnusedSkillPoints() === 0}>+3</button>
+        <div style={{ whiteSpace: "nowrap" }}>Bullet velocity multiplier</div>
+        <div style={{ textAlign: "end" }}>{player.getProjectileSpeedMultiplier()}</div>
+        <button disabled={player.getUnusedSkillPoints() === 0}>+3</button>
+        <div style={{ whiteSpace: "nowrap" }}>Crit chance multiplier</div>
+        <div style={{ textAlign: "end" }}>{player.getCritChanceMultiplier()}</div>
+        <button disabled={player.getUnusedSkillPoints() === 0}>+3</button>
+        <div style={{ whiteSpace: "nowrap" }}>Drop chance multiplier</div>
+        <div style={{ textAlign: "end" }}>{player.getDropChanceMultiplier()}</div>
+        <button disabled={player.getUnusedSkillPoints() === 0}>+3</button>
       </div>
     </div>
   );

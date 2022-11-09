@@ -15,7 +15,7 @@ import {
 } from "../lib/definitions";
 import { toUnitVector } from "../lib/functions";
 import { Direction } from "../lib/models";
-import { createSkillSheet, PlayerSkills, SkillType } from "../lib/skillDefinitions";
+import { createSkillSheet, PlayerSkills, PlayerStat, SkillType } from "../lib/skillDefinitions";
 import { currentMap, mousePos, numberAnimations } from "../Shooter";
 import { Gun } from "../Weapons/Gun";
 import { Pistol } from "../Weapons/Pistol";
@@ -46,6 +46,28 @@ export class Player extends MovingObject {
   private lastHealthAnimTimeLeft = 0;
   private unusedSkillPoints = 0;
   private skillSheet = createSkillSheet(PlayerSkills);
+  private damageMultiplier = 0;
+  private reloadMultiplier = 0;
+  private recoilMultiplier = 0;
+  private rangeMultiplier = 0;
+  private fireRateMultiplier = 0;
+  private magasizeSizeMultiplier = 0;
+  private projectileSpeedMultiplier = 0;
+  private dropChanceMultiplier = 0;
+  private critChanceMultiplier = 0;
+  private skillPointsUsed: { [k in PlayerStat]: number } = {
+    damageMultiplier: 0,
+    critChanceMultiplier: 0,
+    dropChanceMultiplier: 0,
+    fireRateMultiplier: 0,
+    magSizeMultiplier: 0,
+    penetrationMultiplier: 0,
+    rangeMultiplier: 0,
+    recoilMultiplier: 0,
+    reloadTimeMultiplier: 0,
+    velocityMultiplier: 0,
+    maxHealth: 0,
+  };
 
   constructor() {
     super({ position: { x: 180, y: 280 }, size: 13, velocity: 120, color: COLOR_PLAYER });
@@ -246,7 +268,39 @@ export class Player extends MovingObject {
     this.updateSurroundingObstacles();
   }
 
-  upgrade() {}
+  upgrade(type: PlayerStat) {
+    this.skillPointsUsed[type]++;
+
+    const effect = this.getEffect(type, this.skillPointsUsed[type]);
+
+    if (type === "maxHealth") this.maxHealth += effect;
+    else if (type === "damageMultiplier") this.damageMultiplier += effect;
+    else if (type === "critChanceMultiplier") this.critChanceMultiplier += effect;
+    else if (type === "dropChanceMultiplier") this.dropChanceMultiplier += effect;
+    else if (type === "fireRateMultiplier") this.fireRateMultiplier += effect;
+    else if (type === "magSizeMultiplier") this.magasizeSizeMultiplier += effect;
+    else if (type === "penetrationMultiplier") {
+    } else if (type === "rangeMultiplier") this.rangeMultiplier += effect;
+    else if (type === "recoilMultiplier") this.recoilMultiplier += effect;
+    else if (type === "reloadTimeMultiplier") this.reloadMultiplier += effect;
+    else if (type === "velocityMultiplier") this.projectileSpeedMultiplier += effect;
+  }
+
+  getEffect(type: PlayerStat, points: number): number {
+    if (type === "maxHealth") return 5;
+    else if (type === "damageMultiplier") return 0.05;
+    else if (type === "critChanceMultiplier") return 0.03;
+    else if (type === "dropChanceMultiplier") return 0.02;
+    else if (type === "fireRateMultiplier") return 0.1;
+    else if (type === "magSizeMultiplier") return 0.2;
+    else if (type === "penetrationMultiplier") return 0;
+    else if (type === "rangeMultiplier") return 0.1;
+    else if (type === "recoilMultiplier") return 0.2;
+    else if (type === "reloadTimeMultiplier") return 0.2 * Math.pow(0.7, points);
+    else if (type === "velocityMultiplier") return 0.2;
+
+    throw new Error("Called getEffect on a stat that was not provided in method");
+  }
 
   getTintColor() {
     return this.tintColor;
@@ -382,6 +436,42 @@ export class Player extends MovingObject {
     }
 
     gun.addAmmo(ammo);
+  }
+
+  getReloadSpeedMultiplier() {
+    return this.reloadMultiplier;
+  }
+
+  getDamageMultiplier() {
+    return this.damageMultiplier;
+  }
+
+  getRecoilMultiplier() {
+    return this.recoilMultiplier;
+  }
+
+  getRangeMultiplier() {
+    return this.rangeMultiplier;
+  }
+
+  getFireRateMultiplier() {
+    return this.fireRateMultiplier;
+  }
+
+  getMagasineeSizeMultiplier() {
+    return this.magasizeSizeMultiplier;
+  }
+
+  getProjectileSpeedMultiplier() {
+    return this.projectileSpeedMultiplier;
+  }
+
+  getDropChanceMultiplier() {
+    return this.dropChanceMultiplier;
+  }
+
+  getCritChanceMultiplier() {
+    return this.critChanceMultiplier;
   }
 
   inflictDamage(damage: number) {

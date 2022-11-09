@@ -19,6 +19,19 @@ import { Gun } from "../Weapons/Gun";
 
 const skillIconStyle: CSSProperties = { fontSize: 30 };
 
+export type PlayerStat =
+  | "maxHealth"
+  | "damageMultiplier"
+  | "reloadTimeMultiplier"
+  | "magSizeMultiplier"
+  | "critChanceMultiplier"
+  | "rangeMultiplier"
+  | "recoilMultiplier"
+  | "fireRateMultiplier"
+  | "velocityMultiplier"
+  | "penetrationMultiplier"
+  | "dropChanceMultiplier";
+
 export type WeaponStat =
   | "damage"
   | "reloadTime"

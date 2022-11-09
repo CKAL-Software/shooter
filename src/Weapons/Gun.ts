@@ -222,7 +222,7 @@ export abstract class Gun {
 
     const skill = this.skillSheet[stat];
     if (!skill) {
-      throw new Error("An upgrade was request for skill that didn't exist in the gun");
+      throw new Error("An upgrade was requested for skill that didn't exist in the gun");
     }
 
     skill.points++;

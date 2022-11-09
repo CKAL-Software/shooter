@@ -128,7 +128,7 @@ export function ControlPanel(props: ControlPanelProps) {
           <div />
           <div style={{ gridColumn: "span 3", marginBottom: 8 }} />
           <div></div>
-          <div style={{ textAlign: "end" }}>Curr</div>
+          <div style={{ textAlign: "end" }}>Current</div>
           <div style={{ textAlign: "end" }}>Next</div>
           <div>Damage</div>
           <div style={{ textAlign: "end" }}>{props.damage}</div>
