@@ -126,7 +126,7 @@ export const VelocitySkill: SkillConstructor = (getEffect: EffectFunction) => ({
   getEffect,
 });
 
-export const DropChangeSkill: SkillConstructor = (getEffect: EffectFunction) => ({
+export const DropChanceSkill: SkillConstructor = (getEffect: EffectFunction) => ({
   type: "dropChange",
   content: <GiOpenTreasureChest style={skillIconStyle} />,
   description: "Increase drop chance from kills from <before> to <after>",
@@ -161,28 +161,13 @@ export const PenetrationSkill: SkillConstructor = (getEffect: EffectFunction) =>
   getEffect,
 });
 
-export const PlayerSkills: Skill[] = [
-  MultiShotSkill((points) => points * 10),
-  BurnSkill((points) => points * 10),
-  PenetrationSkill((points) => points * 10),
-  CritChanceSkill((points) => points * 10),
-  AmmoCostSkill((points) => points * 10),
-  DropChangeSkill((points) => points * 10),
-  FireRateSkill((points) => -points * 3),
-  RecoilSkill((points) => -points * 3),
-  RangeSkill((points) => points * 10),
-  DamageSkill((points) => points * 10),
-  ReloadSkill((points) => -points * 0.1),
-  MagSizeSkill((p) => p),
-];
-
 export const PistolSkills: Skill[] = [
   MultiShotSkill((points) => points * 10),
   BurnSkill((points) => points * 10),
   PenetrationSkill((points) => points * 10),
   CritChanceSkill((points) => points * 10),
   AmmoCostSkill((points) => points * 10),
-  DropChangeSkill((points) => points * 10),
+  DropChanceSkill((points) => points * 10),
   FireRateSkill((points) => -points * 3),
   RecoilSkill((points) => -points * 3),
   RangeSkill((points) => points * 10),
@@ -196,7 +181,7 @@ export const ShotgunSkills: Skill[] = [
   PenetrationSkill((points) => points * 10),
   CritChanceSkill((points) => points * 10),
   AmmoCostSkill((points) => points * 10),
-  DropChangeSkill((points) => points * 10),
+  DropChanceSkill((points) => points * 10),
   FireRateSkill((points) => -points * 3),
   RecoilSkill((points) => -points * 3),
   RangeSkill((points) => points * 10),

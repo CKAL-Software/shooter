@@ -97,6 +97,7 @@ export function Shooter() {
   const [damage, setDamage] = useState(0);
   const [range, setRange] = useState(0);
   const [recoil, setRecoil] = useState(0);
+  const [critChance, setCritChance] = useState(0);
   const [numBullets, setNumBullets] = useState(0);
   const [reloadTime, setReloadTime] = useState(0);
   const [tint, setTint] = useState(0);
@@ -272,6 +273,7 @@ export function Shooter() {
         setRecoil(currWeap.getRecoil());
         setDamage(currWeap.getDamage());
         setNumBullets(currWeap.getNumBullets());
+        setCritChance(currWeap.getCritChance());
         setCurrentMapPosition(currentMap.position);
         setAllMaps(new Map(maps));
         setMoney(player.getMoney());
@@ -362,6 +364,7 @@ export function Shooter() {
               range={range}
               recoil={recoil}
               damage={damage}
+              critChance={critChance}
               projectiles={numBullets}
               maxHp={maxHp}
               money={money}

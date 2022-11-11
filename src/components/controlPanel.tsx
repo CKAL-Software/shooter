@@ -12,6 +12,7 @@ interface ControlPanelProps {
   ammo: number;
   playerExp: number;
   playerLevel: number;
+  critChance: number;
   weaponExp: number;
   weaponLevel: number;
   fireRate: number;
@@ -30,13 +31,13 @@ interface ControlPanelProps {
 export function ControlPanel(props: ControlPanelProps) {
   const nextLevelStats = player.getCurrentWeapon().getLevelBonusStats(props.weaponLevel);
 
-  function displayNextLevelBonus(bonus: number) {
+  function displayNextLevelBonus(bonus: number, formatter?: (num: number) => any) {
     return bonus === 0 ? (
       <div />
     ) : (
       <div style={{ color: "green", textAlign: "end" }}>
         {bonus > 0 ? "+" : ""}
-        {bonus}
+        {formatter ? formatter(bonus) : bonus}
       </div>
     );
   }
@@ -133,6 +134,9 @@ export function ControlPanel(props: ControlPanelProps) {
           <div>Damage</div>
           <div style={{ textAlign: "end" }}>{props.damage}</div>
           {displayNextLevelBonus(nextLevelStats.damage)}
+          <div>Crit chance</div>
+          <div style={{ textAlign: "end" }}>{props.critChance * 100 + "%"}</div>
+          {displayNextLevelBonus(nextLevelStats.critChance, (v) => v * 100 + "%")}
           <div>Magazine size</div>
           <div style={{ textAlign: "end" }}>{props.magSize}</div>
           {displayNextLevelBonus(nextLevelStats.magSize)}

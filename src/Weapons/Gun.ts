@@ -55,7 +55,7 @@ export abstract class Gun {
   protected shouldReload = false;
   protected name: string;
   protected skillSheet: SkillSheet = {};
-  protected unusedSkillPoints = 0;
+  protected unusedSkillPoints = 3;
   protected price: number;
 
   constructor(config: GunConfig) {

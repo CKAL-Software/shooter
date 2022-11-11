@@ -15,7 +15,7 @@ import {
 } from "../lib/definitions";
 import { toUnitVector } from "../lib/functions";
 import { Direction } from "../lib/models";
-import { createSkillSheet, PlayerSkills, PlayerStat, SkillType } from "../lib/skillDefinitions";
+import { PlayerStat } from "../lib/skillDefinitions";
 import { currentMap, mousePos, numberAnimations } from "../Shooter";
 import { Gun } from "../Weapons/Gun";
 import { Pistol } from "../Weapons/Pistol";
@@ -45,7 +45,6 @@ export class Player extends MovingObject {
   private lastHealthAnim: RisingText | undefined = undefined;
   private lastHealthAnimTimeLeft = 0;
   private unusedSkillPoints = 0;
-  private skillSheet = createSkillSheet(PlayerSkills);
   private damageMultiplier = 0;
   private reloadMultiplier = 0;
   private recoilMultiplier = 0;
@@ -270,9 +269,9 @@ export class Player extends MovingObject {
   }
 
   upgrade(type: PlayerStat) {
-    this.skillPointsUsed[type]++;
-
     const effect = this.getEffect(type, this.skillPointsUsed[type]);
+
+    this.skillPointsUsed[type]++;
 
     if (type === "maxHealth") this.maxHealth += effect;
     else if (type === "moveSpeed") this.velocity += effect;
@@ -298,7 +297,7 @@ export class Player extends MovingObject {
     else if (type === "magSizeMultiplier") return 0.2;
     else if (type === "penetrationMultiplier") return 0;
     else if (type === "rangeMultiplier") return 0.1;
-    else if (type === "recoilMultiplier") return 0.2;
+    else if (type === "recoilMultiplier") return -0.15 * Math.pow(0.7, pointsIndex);
     else if (type === "reloadTimeMultiplier") return -0.15 * Math.pow(0.7, pointsIndex);
     else if (type === "velocityMultiplier") return 0.2;
 
@@ -311,18 +310,6 @@ export class Player extends MovingObject {
 
   getExperience() {
     return this.experience;
-  }
-
-  getTotalSkillPointsUsed() {
-    return Object.values(this.skillSheet).reduce((total, curr) => total + curr.points, 0);
-  }
-
-  getSkillPointsUsed(stat: SkillType) {
-    return this.skillSheet[stat]?.points || 0;
-  }
-
-  getSkillSheet() {
-    return this.skillSheet;
   }
 
   getTileState() {

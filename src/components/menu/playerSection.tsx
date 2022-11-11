@@ -1,3 +1,5 @@
+import { useContext } from "react";
+import { TriggerRenderContext } from "../../lib/contexts";
 import {
   COLOR_HP_BAR_GREEN,
   COLOR_HP_BAR_RED,
@@ -10,11 +12,34 @@ import { player } from "../../Shooter";
 import { ProgressBar } from "../controlPanelElements/progressBar";
 
 export function PlayerSection() {
-  function getUpgradeButton(stat: PlayerStat, formatter?: (value: number) => any) {
-    const num = player.getEffect(stat, player.getSkillPointsForStat(stat));
-    const rounded = Math.round(num * 100) / 100;
-    const formatted = formatter ? formatter(rounded) : rounded;
-    return <button disabled={player.getUnusedSkillPoints() === 0}>{rounded > 0 ? "+" + formatted : formatted}</button>;
+  const rerender = useContext(TriggerRenderContext);
+
+  function getStatText(stat: PlayerStat, num: number, formatter?: (value: number) => any) {
+    const roundedNum = Math.round(num * 1000) / 1000;
+    const formattedNum = formatter ? formatter(roundedNum) : roundedNum;
+
+    const bonusNum = player.getEffect(stat, player.getSkillPointsForStat(stat));
+    const roundedBonusNum = Math.round(bonusNum * 1000) / 1000;
+    const formattedBonusNum = formatter ? formatter(roundedBonusNum) : roundedBonusNum;
+    return (
+      <>
+        <div style={{ textAlign: "end" }}>{formattedNum}</div>
+        <button
+          disabled={player.getUnusedSkillPoints() === 0}
+          onClick={() => {
+            player.upgrade(stat);
+            rerender();
+          }}
+        >
+          {bonusNum > 0 ? "+" + formattedBonusNum : formattedBonusNum}
+        </button>
+        <div style={{ textAlign: "end" }}>{player.getSkillPointsForStat(stat)}</div>
+      </>
+    );
+  }
+
+  function percentFormatter(num: number) {
+    return (num * 100).toFixed(1).replace(".0", "") + "%";
   }
 
   return (
@@ -73,78 +98,75 @@ export function PlayerSection() {
           )}
         </div>
       </div>
-      <div style={{ marginBottom: 8 }}>
-        <div style={{ marginBottom: 4, fontSize: 16, marginLeft: 2 }}>Health</div>
-        <ProgressBar
-          percentage={player.getHealth() / player.getMaxHealth()}
-          text={player.getHealth() + "/" + player.getMaxHealth()}
-          barColor={
-            player.getHealth() / player.getMaxHealth() <= 0.25
-              ? "#d50000"
-              : player.getHealth() / player.getMaxHealth() <= 0.5
-              ? "#d5c800"
-              : "#32d500"
-          }
-          backgroundColor={"rgba(0,0,0,0.15)"}
-          height={30}
-          width={260}
-        />
+      <div style={{ display: "flex", justifyContent: "center" }}>
+        <div>
+          <div style={{ marginBottom: 8 }}>
+            <div style={{ marginBottom: 4, fontSize: 16, marginLeft: 2 }}>Health</div>
+            <ProgressBar
+              percentage={player.getHealth() / player.getMaxHealth()}
+              text={player.getHealth() + "/" + player.getMaxHealth()}
+              barColor={
+                player.getHealth() / player.getMaxHealth() <= 0.25
+                  ? "#d50000"
+                  : player.getHealth() / player.getMaxHealth() <= 0.5
+                  ? "#d5c800"
+                  : "#32d500"
+              }
+              backgroundColor={"rgba(0,0,0,0.15)"}
+              height={30}
+              width={300}
+            />
+          </div>
+          <div>
+            <div style={{ marginBottom: 4, fontSize: 16, marginLeft: 2 }}>Experience</div>
+            <ProgressBar
+              percentage={player.getExperience() / experienceThresholdsPlayer[player.getLevel() - 1]}
+              text={player.getExperience() + "/" + experienceThresholdsPlayer[player.getLevel() - 1]}
+              barColor="#90caf9"
+              backgroundColor={"rgba(0,0,0,0.15)"}
+              height={30}
+              width={300}
+            />
+          </div>
+        </div>
       </div>
-
-      <div>
-        <div style={{ marginBottom: 4, fontSize: 16, marginLeft: 2 }}>Experience</div>
-        <ProgressBar
-          percentage={player.getExperience() / experienceThresholdsPlayer[player.getLevel() - 1]}
-          text={player.getExperience() + "/" + experienceThresholdsPlayer[player.getLevel() - 1]}
-          barColor="#90caf9"
-          backgroundColor={"rgba(0,0,0,0.15)"}
-          height={30}
-          width={260}
-        />
-      </div>
-
       <div
         style={{
           display: "grid",
-          gridTemplateColumns: "auto min-content min-content",
+          gridTemplateColumns: "auto 55px 60px min-content",
           columnGap: 16,
           rowGap: 2,
           marginBottom: 8,
           marginTop: 24,
         }}
       >
-        <div style={{ fontSize: 18, gridColumn: "span 2" }}>Level</div>
-        <div style={{ textAlign: "end", fontSize: 18 }}>{player.getLevel()}</div>
-        <div style={{ whiteSpace: "nowrap", fontSize: 18, gridColumn: "span 2" }}>Money</div>
-        <div style={{ textAlign: "end", fontSize: 18 }}>{"$" + (215 + player.getMoney())}</div>
-        <div style={{ gridColumn: "span 3", marginBottom: 8 }} />
+        <div style={{ display: "flex", justifyContent: "space-between", fontSize: 18, gridColumn: "span 4" }}>
+          <div>Level</div>
+          <div>{player.getLevel()}</div>
+        </div>
+        <div style={{ display: "flex", justifyContent: "space-between", fontSize: 18, gridColumn: "span 4" }}>
+          <div>Money</div>
+          <div>${player.getMoney()}</div>
+        </div>
+        <div style={{ gridColumn: "span 4", marginBottom: 8 }} />
         <div style={{ whiteSpace: "nowrap" }}>Max health</div>
-        <div style={{ textAlign: "end" }}>{player.getMaxHealth()}</div>
-        {getUpgradeButton("maxHealth")}
+        {getStatText("maxHealth", player.getMaxHealth())}
         <div style={{ whiteSpace: "nowrap" }}>Move speed</div>
-        <div style={{ textAlign: "end" }}>{player.getVelocity()}</div>
-        {getUpgradeButton("moveSpeed")}
-        <div style={{ whiteSpace: "nowrap" }}>Damage multiplier</div>
-        <div style={{ textAlign: "end" }}>{player.getDamageMultiplier()}%</div>
-        {getUpgradeButton("damageMultiplier", (v) => v * 100 + "%")}
-        <div style={{ whiteSpace: "nowrap" }}>Reload multiplier</div>
-        <div style={{ textAlign: "end" }}>{player.getReloadSpeedMultiplier()}%</div>
-        {getUpgradeButton("reloadTimeMultiplier", (v) => v * 100 + "%")}
-        <div style={{ whiteSpace: "nowrap" }}>Range multiplier</div>
-        <div style={{ textAlign: "end" }}>{player.getRangeMultiplier()}%</div>
-        {getUpgradeButton("rangeMultiplier", (v) => v * 100 + "%")}
-        <div style={{ whiteSpace: "nowrap" }}>Recoil multiplier</div>
-        <div style={{ textAlign: "end" }}>{player.getRecoilMultiplier()}%</div>
-        {getUpgradeButton("recoilMultiplier", (v) => v * 100 + "%")}
-        <div style={{ whiteSpace: "nowrap" }}>Bullet velocity multiplier</div>
-        <div style={{ textAlign: "end" }}>{player.getProjectileSpeedMultiplier()}%</div>
-        {getUpgradeButton("velocityMultiplier", (v) => v * 100 + "%")}
-        <div style={{ whiteSpace: "nowrap" }}>Crit chance multiplier</div>
-        <div style={{ textAlign: "end" }}>{player.getCritChanceMultiplier()}%</div>
-        {getUpgradeButton("critChanceMultiplier", (v) => v * 100 + "%")}
-        <div style={{ whiteSpace: "nowrap" }}>Drop chance multiplier</div>
-        <div style={{ textAlign: "end" }}>{player.getDropChanceMultiplier()}%</div>
-        {getUpgradeButton("dropChanceMultiplier", (v) => v * 100 + "%")}
+        {getStatText("moveSpeed", player.getVelocity())}
+        <div style={{ whiteSpace: "nowrap" }}>Damage bonus</div>
+        {getStatText("damageMultiplier", player.getDamageMultiplier(), percentFormatter)}
+        <div style={{ whiteSpace: "nowrap" }}>Reload bonus</div>
+        {getStatText("reloadTimeMultiplier", player.getReloadSpeedMultiplier(), percentFormatter)}
+        <div style={{ whiteSpace: "nowrap" }}>Range bonus</div>
+        {getStatText("rangeMultiplier", player.getRangeMultiplier(), percentFormatter)}
+        <div style={{ whiteSpace: "nowrap" }}>Recoil bonus</div>
+        {getStatText("recoilMultiplier", player.getRecoilMultiplier(), percentFormatter)}
+        <div style={{ whiteSpace: "nowrap" }}>Bullet velocity bonus</div>
+        {getStatText("velocityMultiplier", player.getProjectileSpeedMultiplier(), percentFormatter)}
+        <div style={{ whiteSpace: "nowrap" }}>Crit chance bonus</div>
+        {getStatText("critChanceMultiplier", player.getCritChanceMultiplier(), percentFormatter)}
+        <div style={{ whiteSpace: "nowrap" }}>Drop chance bonus</div>
+        {getStatText("dropChanceMultiplier", player.getDropChanceMultiplier(), percentFormatter)}
       </div>
     </div>
   );
