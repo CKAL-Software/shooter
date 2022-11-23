@@ -2,12 +2,6 @@ import { CANVAS_COLUMNS, CANVAS_ROWS } from "../Definitions/Maps";
 import { BasicEnemy } from "../GameObjects/Enemies/BasicEnemy";
 import { NormalProjectile } from "../GameObjects/Projectiles/NormalProjectile";
 
-export const DOMAIN = "ckal.dk";
-export const BACKEND_URL = `https://api.${DOMAIN}/tower-defense/`;
-
-export const LF_CREDENTIALS = "tower-defense_creds";
-export const AWS_CLIENT_ID = "6nki0f24aj9hrvluekbmkea631";
-
 export const TILE_SIZE = 30;
 export const CANVAS_WIDTH = CANVAS_COLUMNS * TILE_SIZE;
 export const CANVAS_HEIGHT = CANVAS_ROWS * TILE_SIZE;
@@ -38,17 +32,6 @@ export enum APIResources {
 export type EnemyConstructor = typeof BasicEnemy;
 
 export type ActualProjectile = NormalProjectile;
-
-export type TargetingMode = "First" | "Last" | "Closest" | "Random" | "Farthest" | "Weakest" | "Toughest";
-export const TargetingModes: TargetingMode[] = [
-  "First",
-  "Last",
-  "Closest",
-  "Farthest",
-  "Weakest",
-  "Toughest",
-  "Random",
-];
 
 export const experienceThresholdsNormal = [10, 20, 30, 40, 50, 60, 70, 80, 90, 100];
 export const experienceThresholdsPlayer = [50, 100, 150, 200, 250, 300, 350, 400, 450, 500];

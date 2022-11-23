@@ -20,7 +20,7 @@ interface ControlPanelProps {
   weaponVelocity: number;
   weaponName: string;
   reloadProgress: number;
-  reloadTime: number;
+  reloadSpeed: number;
   money: number;
   damage: number;
   recoil: number;
@@ -101,7 +101,7 @@ export function ControlPanel(props: ControlPanelProps) {
             magSize={props.magSize}
             reloadProgress={props.reloadProgress}
             magAmmo={props.magAmmo}
-            reloadTime={props.reloadTime}
+            reloadSpeed={props.reloadSpeed}
           />
         </div>
         <div style={{ marginBottom: 12 }}>
@@ -141,8 +141,8 @@ export function ControlPanel(props: ControlPanelProps) {
           <div style={{ textAlign: "end" }}>{props.magSize}</div>
           {displayNextLevelBonus(nextLevelStats.magSize)}
           <div>Reload time</div>
-          <div style={{ textAlign: "end" }}>{props.reloadTime}</div>
-          {displayNextLevelBonus(nextLevelStats.reloadTime)}
+          <div style={{ textAlign: "end" }}>{props.reloadSpeed}</div>
+          {displayNextLevelBonus(nextLevelStats.reloadSpeed)}
           <div style={{ whiteSpace: "nowrap" }}>Fire rate</div>
           <div style={{ textAlign: "end" }}>{props.fireRate}</div>
           {displayNextLevelBonus(nextLevelStats.fireRate)}

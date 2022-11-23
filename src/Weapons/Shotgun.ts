@@ -10,15 +10,21 @@ export class Shotgun extends Gun {
   constructor() {
     super({
       name: "Shotgun",
-      magazineSize: 2,
-      reloadTime: 3,
-      fireRate: 60,
-      velocity: 100,
-      damage: 5,
-      critChance: 0,
-      range: TILE_SIZE * 3,
-      recoil: 100,
-      numBullets: 7,
+      baseStats: {
+        magSize: 2,
+        reloadSpeed: 3,
+        fireRate: 60,
+        velocity: 100,
+        damage: 5,
+        critChance: 0,
+        range: TILE_SIZE * 3,
+        recoil: 100,
+        projectiles: 7,
+        burn: 0,
+        penetration: 0,
+        dropChance: 0,
+        ammoCost: 10,
+      },
       projectileSize: 4,
       projectileColor: "black",
       ammo: 2000,
@@ -30,8 +36,8 @@ export class Shotgun extends Gun {
   shoot(target: Point) {
     const direction = calculateDirection(player.getPosition(), target);
 
-    for (let i = 0; i < this.numBullets; i++) {
-      const newAngle = Math.random() * this.recoil - this.recoil / 2;
+    for (let i = 0; i < this.stats.projectiles; i++) {
+      const newAngle = Math.random() * this.stats.recoil - this.stats.recoil / 2;
       const newDirection = changeDirection(direction, newAngle);
 
       // const position = player.getPosition();
@@ -44,14 +50,14 @@ export class Shotgun extends Gun {
           // position: { x: position.x + delta.x, y: position.y + delta.y },
           position: player.getPosition(),
           direction: newDirection,
-          velocity: this.velocity,
+          velocity: this.stats.velocity,
           damage: damage,
-          range: this.range,
+          range: this.stats.range,
           size: this.projectileSize,
           color: this.projectileColor,
           shotByPlayer: true,
           ownerGun: this,
-          isCriticalHit: damage > this.damage,
+          isCriticalHit: damage > this.stats.damage,
         })
       );
     }
@@ -59,9 +65,9 @@ export class Shotgun extends Gun {
 
   getLevelBonusStats(levelIndex: number) {
     return {
-      damage: this.baseDamage * 0.2,
+      damage: this.baseStats.damage * 0.2,
       magSize: [0, 0, 1, 0, 0, 1, 0, 0, 2][levelIndex],
-      reloadTime: -0.12,
+      reloadSpeed: -0.12,
       recoil: -3,
       velocity: 5,
       fireRate: 3,
@@ -70,6 +76,8 @@ export class Shotgun extends Gun {
       critChance: 0,
       penetration: 0,
       ammoCost: 0,
+      dropChance: 0,
+      burn: 0,
     };
   }
 }

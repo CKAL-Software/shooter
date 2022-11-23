@@ -40,6 +40,7 @@ import { Gun } from "./Weapons/Gun";
 import { Shotgun } from "./Weapons/Shotgun";
 import { Sniper } from "./Weapons/Sniper";
 import { GiSpikyExplosion } from "react-icons/gi";
+import { Stat } from "./lib/skillDefinitions";
 
 const moveDirections = new Set<Direction>();
 const r = getSeededRandomGenerator(getRandomInt(0, 100));
@@ -99,7 +100,7 @@ export function Shooter() {
   const [recoil, setRecoil] = useState(0);
   const [critChance, setCritChance] = useState(0);
   const [numBullets, setNumBullets] = useState(0);
-  const [reloadTime, setReloadTime] = useState(0);
+  const [reloadSpeed, setreloadSpeed] = useState(0);
   const [tint, setTint] = useState(0);
   const [tintColor, setTintColor] = useState("0,0,0");
   const [currentMapPosition, setCurrentMapPosition] = useState(currentMap.position);
@@ -192,7 +193,7 @@ export function Shooter() {
 
         const crosshair = document.getElementById("crosshair");
         if (crosshair) {
-          const size = Math.max(8, 3 * player.getCurrentWeapon().getRecoil());
+          const size = 8;
           crosshair.style.height = size + "px";
           crosshair.style.width = size + "px";
         }
@@ -250,33 +251,35 @@ export function Shooter() {
 
         setAnims([...numberAnimations]);
 
-        const currWeap = player.getCurrentWeapon();
-
         setHp(player.getHealth());
-        setAmmo(currWeap.getAmmo());
-        setMagSize(currWeap.getMagazineSize());
-        setMagAmmo(currWeap.getMagazineAmmo());
         setPlayerExp(player.getExperience());
         setPlayerLevel(player.getLevel());
         setMaxHp(player.getMaxHealth());
-        setWeaponExp(currWeap.getExperience());
-        setWeaponLevel(currWeap.getLevel());
-        setWeaponVelocity(currWeap.getVelocity());
-        setVelocity(player.getVelocity());
-        setFireRate(currWeap.getFireRate());
-        setWeaponName(currWeap.getName());
-        setReloadProgress(currWeap.getReloadProgress());
         setTint(player.getTintIntencity());
         setTintColor(player.getTintColor());
-        setReloadTime(currWeap.getReloadTime());
-        setRange(currWeap.getRange());
-        setRecoil(currWeap.getRecoil());
-        setDamage(currWeap.getDamage());
-        setNumBullets(currWeap.getNumBullets());
-        setCritChance(currWeap.getCritChance());
+        setMoney(player.getMoney());
+
+        const currWeap = player.getCurrentWeapon();
+
+        setWeaponExp(currWeap.getExperience());
+        setWeaponLevel(currWeap.getLevel());
+        setVelocity(player.getVelocity());
+        setWeaponName(currWeap.getName());
+        setReloadProgress(currWeap.getReloadProgress());
+        setAmmo(currWeap.getAmmo());
+        setMagSize(currWeap.getStat(Stat.MagSize));
+        setWeaponVelocity(currWeap.getStat(Stat.Velocity));
+        setFireRate(currWeap.getStat(Stat.FireRate));
+        setreloadSpeed(currWeap.getStat(Stat.ReloadSpeed));
+        setRange(currWeap.getStat(Stat.Range));
+        setRecoil(currWeap.getStat(Stat.Recoil));
+        setDamage(currWeap.getStat(Stat.Damage));
+        setNumBullets(currWeap.getStat(Stat.Projectiles));
+        setCritChance(currWeap.getStat(Stat.CritChance));
+        setMagAmmo(currWeap.getMagazineAmmo());
+
         setCurrentMapPosition(currentMap.position);
         setAllMaps(new Map(maps));
-        setMoney(player.getMoney());
       }, TICK_DURATION);
     }
 
@@ -380,7 +383,7 @@ export function Shooter() {
               fireRate={fireRate}
               weaponName={weaponName}
               reloadProgress={reloadProgress}
-              reloadTime={reloadTime}
+              reloadSpeed={reloadSpeed}
             />
           </div>
         </div>

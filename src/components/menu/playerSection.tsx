@@ -7,14 +7,15 @@ import {
   COLOR_SKILLPOINT,
   experienceThresholdsPlayer,
 } from "../../lib/definitions";
-import { PlayerStat } from "../../lib/skillDefinitions";
+import { PlayerStat, Stat } from "../../lib/skillDefinitions";
 import { player } from "../../Shooter";
 import { ProgressBar } from "../controlPanelElements/progressBar";
 
 export function PlayerSection() {
   const rerender = useContext(TriggerRenderContext);
 
-  function getStatText(stat: PlayerStat, num: number, formatter?: (value: number) => any) {
+  function getStatText(stat: PlayerStat, formatter?: (value: number) => any) {
+    const num = player.getStat(stat);
     const roundedNum = Math.round(num * 1000) / 1000;
     const formattedNum = formatter ? formatter(roundedNum) : roundedNum;
 
@@ -150,23 +151,23 @@ export function PlayerSection() {
         </div>
         <div style={{ gridColumn: "span 4", marginBottom: 8 }} />
         <div style={{ whiteSpace: "nowrap" }}>Max health</div>
-        {getStatText("maxHealth", player.getMaxHealth())}
+        {getStatText(Stat.MaxHealth)}
         <div style={{ whiteSpace: "nowrap" }}>Move speed</div>
-        {getStatText("moveSpeed", player.getVelocity())}
+        {getStatText(Stat.MoveSpeed)}
         <div style={{ whiteSpace: "nowrap" }}>Damage bonus</div>
-        {getStatText("damageMultiplier", player.getDamageMultiplier(), percentFormatter)}
+        {getStatText(Stat.Damage, percentFormatter)}
         <div style={{ whiteSpace: "nowrap" }}>Reload bonus</div>
-        {getStatText("reloadTimeMultiplier", player.getReloadSpeedMultiplier(), percentFormatter)}
+        {getStatText(Stat.ReloadSpeed, percentFormatter)}
         <div style={{ whiteSpace: "nowrap" }}>Range bonus</div>
-        {getStatText("rangeMultiplier", player.getRangeMultiplier(), percentFormatter)}
+        {getStatText(Stat.Range, percentFormatter)}
         <div style={{ whiteSpace: "nowrap" }}>Recoil bonus</div>
-        {getStatText("recoilMultiplier", player.getRecoilMultiplier(), percentFormatter)}
+        {getStatText(Stat.Recoil, percentFormatter)}
         <div style={{ whiteSpace: "nowrap" }}>Bullet velocity bonus</div>
-        {getStatText("velocityMultiplier", player.getProjectileSpeedMultiplier(), percentFormatter)}
+        {getStatText(Stat.Velocity, percentFormatter)}
         <div style={{ whiteSpace: "nowrap" }}>Crit chance bonus</div>
-        {getStatText("critChanceMultiplier", player.getCritChanceMultiplier(), percentFormatter)}
+        {getStatText(Stat.CritChance, percentFormatter)}
         <div style={{ whiteSpace: "nowrap" }}>Drop chance bonus</div>
-        {getStatText("dropChanceMultiplier", player.getDropChanceMultiplier(), percentFormatter)}
+        {getStatText(Stat.DropChance, percentFormatter)}
       </div>
     </div>
   );

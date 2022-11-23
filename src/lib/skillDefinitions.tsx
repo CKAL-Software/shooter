@@ -19,149 +19,145 @@ import { Gun } from "../Weapons/Gun";
 
 const skillIconStyle: CSSProperties = { fontSize: 30 };
 
-export type PlayerStat =
-  | "maxHealth"
-  | "moveSpeed"
-  | "damageMultiplier"
-  | "reloadTimeMultiplier"
-  | "magSizeMultiplier"
-  | "critChanceMultiplier"
-  | "rangeMultiplier"
-  | "recoilMultiplier"
-  | "fireRateMultiplier"
-  | "velocityMultiplier"
-  | "penetrationMultiplier"
-  | "dropChanceMultiplier";
+export enum Stat {
+  Damage = "damage",
+  ReloadSpeed = "reloadSpeed",
+  MagSize = "magSize",
+  CritChance = "critChance",
+  Range = "range",
+  Recoil = "recoil",
+  FireRate = "fireRate",
+  AmmoCost = "ammoCost",
+  Velocity = "velocity",
+  Penetration = "penetration",
+  Projectiles = "projectiles",
+  DropChance = "dropChance",
+  Burn = "burn",
+  MaxHealth = "maxHealth",
+  MoveSpeed = "moveSpeed",
+}
+
+export type WeaponStats = { [stat in WeaponStat]: number };
+export type PlayerStats = { [stat in PlayerStat]: number };
 
 export type WeaponStat =
-  | "damage"
-  | "reloadTime"
-  | "magSize"
-  | "critChance"
-  | "range"
-  | "recoil"
-  | "fireRate"
-  | "ammoCost"
-  | "velocity"
-  | "penetration"
-  | "projectiles";
+  | Stat.Damage
+  | Stat.ReloadSpeed
+  | Stat.MagSize
+  | Stat.CritChance
+  | Stat.Range
+  | Stat.Recoil
+  | Stat.FireRate
+  | Stat.AmmoCost
+  | Stat.Velocity
+  | Stat.Penetration
+  | Stat.Projectiles
+  | Stat.DropChance
+  | Stat.Burn;
 
-export type SkillType =
-  | "damage"
-  | "reloadSpeed"
-  | "magSize"
-  | "critChange"
-  | "range"
-  | "recoil"
-  | "fireRate"
-  | "ammoCost"
-  | "velocity"
-  | "dropChange"
-  | "projectiles"
-  | "burn"
-  | "pentration";
+export type PlayerStat = Stat.MaxHealth | Stat.MoveSpeed | WeaponStat;
 
-export interface Skill {
-  type: SkillType;
+export interface Skill<Stat> {
+  stat: Stat;
   description: string;
   content: React.ReactNode;
   getEffect: EffectFunction;
 }
 
-type SkillConstructor = (getEffect: EffectFunction) => Skill;
+type SkillConstructor<T> = (getEffect: EffectFunction) => Skill<T>;
 
-export const DamageSkill: SkillConstructor = (getEffect: EffectFunction) => ({
-  type: "damage",
+export const DamageSkill: SkillConstructor<WeaponStat> = (getEffect: EffectFunction) => ({
+  stat: Stat.Damage,
   description: "Increase bullet damage from <before> to <after>",
   content: <GiBlaster style={skillIconStyle} />,
   getEffect,
 });
 
-export const CritChanceSkill: SkillConstructor = (getEffect: EffectFunction) => ({
-  type: "critChange",
+export const CritChanceSkill: SkillConstructor<WeaponStat> = (getEffect: EffectFunction) => ({
+  stat: Stat.CritChance,
   content: <GiHeadshot style={skillIconStyle} />,
   description: "Increase critical hit chance from <before> to <after>",
   getEffect,
 });
 
-export const MagSizeSkill: SkillConstructor = (getEffect: EffectFunction) => ({
-  type: "magSize",
+export const MagSizeSkill: SkillConstructor<WeaponStat> = (getEffect: EffectFunction) => ({
+  stat: Stat.MagSize,
   content: <GiMachineGunMagazine style={skillIconStyle} />,
   description: "Increase magazine size from <before> to <after>",
   getEffect,
 });
 
-export const RangeSkill: SkillConstructor = (getEffect: EffectFunction) => ({
-  type: "range",
+export const RangeSkill: SkillConstructor<WeaponStat> = (getEffect: EffectFunction) => ({
+  stat: Stat.Range,
   content: <GiBeamWake style={skillIconStyle} />,
   description: "Increase range of projectile travel from <before> to <after>",
   getEffect,
 });
 
-export const RecoilSkill: SkillConstructor = (getEffect: EffectFunction) => ({
-  type: "recoil",
+export const RecoilSkill: SkillConstructor<WeaponStat> = (getEffect: EffectFunction) => ({
+  stat: Stat.Recoil,
   content: <GiBullseye style={skillIconStyle} />,
   description: "Decrease recoil from <before> to <after>",
   getEffect,
 });
 
-export const FireRateSkill: SkillConstructor = (getEffect: EffectFunction) => ({
-  type: "fireRate",
+export const FireRateSkill: SkillConstructor<WeaponStat> = (getEffect: EffectFunction) => ({
+  stat: Stat.FireRate,
   content: <GiBullets style={skillIconStyle} />,
   description: "Increase fire rate from <before> to <after>",
   getEffect,
 });
 
-export const AmmoCostSkill: SkillConstructor = (getEffect: EffectFunction) => ({
-  type: "ammoCost",
+export const AmmoCostSkill: SkillConstructor<WeaponStat> = (getEffect: EffectFunction) => ({
+  stat: Stat.AmmoCost,
   content: <FaDollarSign style={skillIconStyle} />,
   description: "Decrease cost of ammo from <before> to <after>",
   getEffect,
 });
 
-export const VelocitySkill: SkillConstructor = (getEffect: EffectFunction) => ({
-  type: "velocity",
+export const VelocitySkill: SkillConstructor<WeaponStat> = (getEffect: EffectFunction) => ({
+  stat: Stat.Velocity,
   content: <GiSupersonicBullet style={skillIconStyle} />,
   description: "Increase bullet velocity from <before> to <after>",
   getEffect,
 });
 
-export const DropChanceSkill: SkillConstructor = (getEffect: EffectFunction) => ({
-  type: "dropChange",
+export const DropChanceSkill: SkillConstructor<WeaponStat> = (getEffect: EffectFunction) => ({
+  stat: Stat.DropChance,
   content: <GiOpenTreasureChest style={skillIconStyle} />,
   description: "Increase drop chance from kills from <before> to <after>",
   getEffect,
 });
 
-export const ReloadSkill: SkillConstructor = (getEffect: EffectFunction) => ({
-  type: "reloadSpeed",
+export const ReloadSkill: SkillConstructor<WeaponStat> = (getEffect: EffectFunction) => ({
+  stat: Stat.ReloadSpeed,
   content: <GiReloadGunBarrel style={skillIconStyle} />,
   description: "Decrease reload speed from <before> to <after>",
   getEffect,
 });
 
-export const MultiShotSkill: SkillConstructor = (getEffect: EffectFunction) => ({
-  type: "projectiles",
+export const MultiShotSkill: SkillConstructor<WeaponStat> = (getEffect: EffectFunction) => ({
+  stat: Stat.Projectiles,
   content: <GiStrikingBalls style={skillIconStyle} />,
   description: "Shoot 3 bullets instead of 1",
   getEffect,
 });
 
-export const BurnSkill: SkillConstructor = (getEffect: EffectFunction) => ({
-  type: "burn",
+export const BurnSkill: SkillConstructor<WeaponStat> = (getEffect: EffectFunction) => ({
+  stat: Stat.Burn,
   content: <GiBurningDot style={skillIconStyle} />,
   description: "Bullets will burn enemies",
   getEffect,
 });
 
-export const PenetrationSkill: SkillConstructor = (getEffect: EffectFunction) => ({
-  type: "pentration",
+export const PenetrationSkill: SkillConstructor<WeaponStat> = (getEffect: EffectFunction) => ({
+  stat: Stat.Penetration,
   content: <GiPiercedBody style={skillIconStyle} />,
   description: "Bullets will penetrate enemies with damage dropoff",
   getEffect,
 });
 
-export const PistolSkills: Skill[] = [
+export const PistolSkills: Skill<WeaponStat>[] = [
   MultiShotSkill((points) => points * 10),
   BurnSkill((points) => points * 10),
   PenetrationSkill((points) => points * 10),
@@ -172,11 +168,11 @@ export const PistolSkills: Skill[] = [
   RecoilSkill((points) => -points * 3),
   RangeSkill((points) => points * 10),
   DamageSkill((points) => points * 10),
-  ReloadSkill((points, entity) => -points * 0.1 * (entity as Gun).getReloadTime(true)),
+  ReloadSkill((points, entity) => -points * 0.1 * (entity as Gun).getStat(Stat.ReloadSpeed, true)),
   MagSizeSkill((p) => p),
 ];
 
-export const ShotgunSkills: Skill[] = [
+export const ShotgunSkills: Skill<WeaponStat>[] = [
   BurnSkill((points) => points * 10),
   PenetrationSkill((points) => points * 10),
   CritChanceSkill((points) => points * 10),
@@ -185,7 +181,7 @@ export const ShotgunSkills: Skill[] = [
   FireRateSkill((points) => -points * 3),
   RecoilSkill((points) => -points * 3),
   RangeSkill((points) => points * 10),
-  ReloadSkill((points, entity) => -points * 0.1 * (entity as Gun).getReloadTime(true)),
+  ReloadSkill((points, entity) => -points * 0.1 * (entity as Gun).getStat(Stat.ReloadSpeed, true)),
   MagSizeSkill((p) => p),
   DamageSkill((points) => points * 10),
   MultiShotSkill((points) => points * 10),
@@ -196,10 +192,10 @@ export const ShotgunSkills: Skill[] = [
 // skillTreeIndex: skillTreeIndex, get DamageSkill(p => p)}
 // }
 
-export function createSkillSheet(skills: Skill[]): SkillSheet {
-  const skillSheet: SkillSheet = {};
+export function createSkillSheet<T extends Stat>(skills: Skill<T>[]): SkillSheet<T> {
+  const skillSheet: SkillSheet<T> = {};
 
-  skills.forEach((s, i) => (skillSheet[s.type] = { ...s, points: 0, skillTreeIndex: i }));
+  skills.forEach((s, i) => (skillSheet[s.stat] = { ...s, points: 0, skillTreeIndex: i }));
 
   return skillSheet;
 }

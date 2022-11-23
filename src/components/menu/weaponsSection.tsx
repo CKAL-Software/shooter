@@ -5,7 +5,7 @@ export function WeaponsSection() {
   return (
     <div>
       <div style={{ fontSize: 28, fontWeight: "bold" }}>Weapons</div>
-      <div style={{ display: "grid", gridTemplateColumns: "auto min-content" }}>
+      <div style={{ display: "grid", gridTemplateColumns: "auto repeat(5, min-content)", columnGap: 8, rowGap: 2 }}>
         {player.getWeapons().map((gun) => (
           <WeaponStats key={gun.getName()} weapon={gun} />
         ))}

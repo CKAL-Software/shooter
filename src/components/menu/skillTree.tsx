@@ -39,7 +39,7 @@ export function SkillTree(props: SkillTreeProps) {
 
           return (
             <Skill
-              key={gs.type}
+              key={gs.stat}
               text={text}
               special={isSpecial}
               state={
@@ -55,7 +55,7 @@ export function SkillTree(props: SkillTreeProps) {
               }
               currentLevel={gs.points}
               onClick={() => {
-                props.gun.upgrade(gs.type);
+                props.gun.upgrade(gs.stat);
                 rerender();
               }}
               disableCursor={disableCursor}

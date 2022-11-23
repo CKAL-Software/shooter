@@ -6,7 +6,7 @@ interface MagazineProps {
   reloadProgress: number;
   magSize: number;
   magAmmo: number;
-  reloadTime: number;
+  reloadSpeed: number;
 }
 
 export function Magazine(props: MagazineProps) {
@@ -62,7 +62,7 @@ export function Magazine(props: MagazineProps) {
             barColor="#333333"
             backgroundColor="darkgray"
             height={30}
-            text={((1 - props.reloadProgress) * props.reloadTime).toFixed(1) + "s"}
+            text={((1 - props.reloadProgress) * props.reloadSpeed).toFixed(1) + "s"}
             width={260}
             notSmooth
           />

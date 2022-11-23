@@ -1,5 +1,7 @@
+import { useMemo } from "react";
 import { COLOR_STAT_BONUS_BLUE, experienceThresholdsNormal } from "../../lib/definitions";
-import { SkillType } from "../../lib/skillDefinitions";
+import { Stat, WeaponStat } from "../../lib/skillDefinitions";
+import { player } from "../../Shooter";
 import { Gun } from "../../Weapons/Gun";
 import { ProgressBar } from "../controlPanelElements/progressBar";
 import { GunIcon } from "../gunIcon";
@@ -9,19 +11,31 @@ interface WeaponStatsProps {
 }
 
 export function WeaponStats(props: WeaponStatsProps) {
-  function getStatText(stat: SkillType, base: number, total: number, formatter?: (val: number) => string | number) {
+  const nextLevelBonuses = useMemo(() => props.weapon.getLevelBonusStats(props.weapon.getLevel()), [props.weapon]);
+
+  function getStatText(stat: WeaponStat, formatter?: (val: number) => string | number) {
+    const baseStat = props.weapon.getStat(stat, true);
+    const totalStat = props.weapon.getStat(stat);
+
     return (
-      <div style={{ textAlign: "end" }}>
-        <span>{formatter ? formatter(base) : base}</span>
-        {getBonusStatText(stat, formatter)}
-        <span style={{ color: COLOR_STAT_BONUS_BLUE }}>
-          {base === total ? "" : formatter ? formatter(total) : total}
-        </span>
-      </div>
+      <>
+        <div>{baseStat}</div>
+        <div>{baseStat + nextLevelBonuses[stat]}</div>
+        <div>{props.weapon.getCurrentEffect(stat)}</div>
+        <div>{player.getCurrentMultiplier(stat)}</div>
+        <div>{totalStat}</div>
+      </>
+      // <div style={{ textAlign: "end" }}>
+      //   <span>{formatter ? formatter(base) : base}</span>
+      //   {getBonusStatText(stat, formatter)}
+      //   <span style={{ color: COLOR_STAT_BONUS_BLUE }}>
+      //     {base === total ? "" : formatter ? formatter(total) : total}
+      //   </span>
+      // </div>
     );
   }
 
-  function getBonusStatText(stat: SkillType, conversion?: (val: number) => string | number) {
+  function getBonusStatText(stat: WeaponStat, conversion?: (val: number) => string | number) {
     const effect = props.weapon.getCurrentEffect(stat);
     return effect === 0 ? (
       ""
@@ -37,7 +51,7 @@ export function WeaponStats(props: WeaponStatsProps) {
 
   return (
     <>
-      <div style={{ display: "flex", alignItems: "center", gridColumn: "span 2", margin: "24px 0 8px" }}>
+      <div style={{ display: "flex", alignItems: "center", gridColumn: "span 6", margin: "24px 0 8px" }}>
         <GunIcon
           entityName={props.weapon.getName()}
           level={props.weapon.getLevel()}
@@ -45,7 +59,7 @@ export function WeaponStats(props: WeaponStatsProps) {
         />
         <div style={{ fontSize: 20, fontWeight: "bold", marginLeft: 20 }}>{props.weapon.getName()}</div>
       </div>
-      <div style={{ gridColumn: "span 2", margin: "4px 0" }}>
+      <div style={{ gridColumn: "span 6", margin: "4px 0" }}>
         <ProgressBar
           percentage={props.weapon.getExperience() / experienceThresholdsNormal[props.weapon.getLevel() - 1]}
           text={props.weapon.getExperience() + "/" + experienceThresholdsNormal[props.weapon.getLevel() - 1]}
@@ -55,29 +69,36 @@ export function WeaponStats(props: WeaponStatsProps) {
           width={260}
         />
       </div>
+      <div style={{ alignSelf: "center" }}>Stat</div>
+      <div style={{ alignSelf: "center" }}>Base</div>
+      <div style={{ alignSelf: "center" }}>Next</div>
+      <div style={{ alignSelf: "center" }}>Weapon bonus</div>
+      <div style={{ alignSelf: "center" }}>Player bonus</div>
+      <div style={{ alignSelf: "center" }}>Total</div>
+      <div style={{ gridColumn: "span 6" }} />
       <div>Ammo</div>
-      <div style={{ textAlign: "end" }}>{props.weapon.getAmmo()}</div>
+      <div style={{ textAlign: "end", gridColumn: "span 5" }}>{props.weapon.getAmmo()}</div>
+      <div style={{ gridColumn: "span 6" }} />
       <div>Damage</div>
-      {getStatText("damage", props.weapon.getDamage(true), props.weapon.getDamage())}
+      {getStatText(Stat.Damage)}
       <div>Magazine size</div>
-      {getStatText("magSize", props.weapon.getMagazineSize(true), props.weapon.getMagazineSize())}
+      {getStatText(Stat.MagSize)}
       <div>Reload time</div>
       {getStatText(
-        "reloadSpeed",
-        props.weapon.getReloadTime(true),
-        props.weapon.getReloadTime(),
+        Stat.ReloadSpeed,
+
         (t) => Math.round(t * 100) / 100
       )}
       <div style={{ whiteSpace: "nowrap" }}>Fire rate</div>
-      {getStatText("fireRate", props.weapon.getFireRate(true), props.weapon.getFireRate())}
+      {getStatText(Stat.FireRate)}
       <div>Velocity</div>
-      {getStatText("velocity", props.weapon.getVelocity(true), props.weapon.getVelocity())}
+      {getStatText(Stat.Velocity)}
       <div>Recoil</div>
-      {getStatText("recoil", props.weapon.getRecoil(true), props.weapon.getRecoil())}
+      {getStatText(Stat.Recoil)}
       <div>Range</div>
-      {getStatText("range", props.weapon.getRange(true), props.weapon.getRange())}
+      {getStatText(Stat.Range)}
       <div>Projectiles</div>
-      {getStatText("projectiles", props.weapon.getNumBullets(true), props.weapon.getNumBullets())}
+      {getStatText(Stat.Projectiles)}
     </>
   );
 }

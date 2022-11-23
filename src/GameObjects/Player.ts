@@ -15,7 +15,7 @@ import {
 } from "../lib/definitions";
 import { toUnitVector } from "../lib/functions";
 import { Direction } from "../lib/models";
-import { PlayerStat } from "../lib/skillDefinitions";
+import { PlayerStat, PlayerStats, Stat, WeaponStat } from "../lib/skillDefinitions";
 import { currentMap, mousePos, numberAnimations } from "../Shooter";
 import { Gun } from "../Weapons/Gun";
 import { Pistol } from "../Weapons/Pistol";
@@ -45,32 +45,46 @@ export class Player extends MovingObject {
   private lastHealthAnim: RisingText | undefined = undefined;
   private lastHealthAnimTimeLeft = 0;
   private unusedSkillPoints = 0;
-  private damageMultiplier = 0;
-  private reloadMultiplier = 0;
-  private recoilMultiplier = 0;
-  private rangeMultiplier = 0;
-  private fireRateMultiplier = 0;
-  private magasizeSizeMultiplier = 0;
-  private projectileSpeedMultiplier = 0;
-  private dropChanceMultiplier = 0;
-  private critChanceMultiplier = 0;
-  private skillPointsUsed: { [k in PlayerStat]: number } = {
-    moveSpeed: 0,
-    damageMultiplier: 0,
-    critChanceMultiplier: 0,
-    dropChanceMultiplier: 0,
-    fireRateMultiplier: 0,
-    magSizeMultiplier: 0,
-    penetrationMultiplier: 0,
-    rangeMultiplier: 0,
-    recoilMultiplier: 0,
-    reloadTimeMultiplier: 0,
-    velocityMultiplier: 0,
-    maxHealth: 0,
+
+  private baseStats: PlayerStats;
+  private stats: PlayerStats;
+
+  private multipliers = {
+    damage: 0,
+    reloadSpeed: 0,
+    recoil: 0,
+    range: 0,
+    fireRate: 0,
+    magSize: 0,
+    velocity: 0,
+    dropChance: 0,
+    critChance: 0,
   };
+
+  private skillPointsUsed: { [k in PlayerStat]?: number } = {};
 
   constructor() {
     super({ position: { x: 180, y: 280 }, size: 13, velocity: 120, color: COLOR_PLAYER });
+
+    this.baseStats = {
+      maxHealth: 100,
+      ammoCost: 10,
+      damage: 0,
+      dropChance: 0,
+      velocity: 0,
+      range: 0,
+      recoil: 0,
+      reloadSpeed: 0,
+      fireRate: 0,
+      burn: 0,
+      critChance: 0,
+      magSize: 0,
+      moveSpeed: 0,
+      penetration: 0,
+      projectiles: 0,
+    };
+
+    this.stats = { ...this.baseStats };
   }
 
   draw(ctx: CanvasRenderingContext2D): void {
@@ -268,40 +282,48 @@ export class Player extends MovingObject {
     this.updateSurroundingObstacles();
   }
 
-  upgrade(type: PlayerStat) {
-    const effect = this.getEffect(type, this.skillPointsUsed[type]);
+  upgrade(stat: PlayerStat) {
+    const effect = this.getEffect(stat, this.skillPointsUsed[stat] || 0);
 
-    this.skillPointsUsed[type]++;
+    if (!this.skillPointsUsed[stat]) {
+      this.skillPointsUsed[stat] = 0;
+    } else {
+      this.skillPointsUsed[stat]!++;
+    }
 
-    if (type === "maxHealth") this.maxHealth += effect;
-    else if (type === "moveSpeed") this.velocity += effect;
-    else if (type === "damageMultiplier") this.damageMultiplier += effect;
-    else if (type === "critChanceMultiplier") this.critChanceMultiplier += effect;
-    else if (type === "dropChanceMultiplier") this.dropChanceMultiplier += effect;
-    else if (type === "fireRateMultiplier") this.fireRateMultiplier += effect;
-    else if (type === "magSizeMultiplier") this.magasizeSizeMultiplier += effect;
-    else if (type === "penetrationMultiplier") {
-    } else if (type === "rangeMultiplier") this.rangeMultiplier += effect;
-    else if (type === "recoilMultiplier") this.recoilMultiplier += effect;
-    else if (type === "reloadTimeMultiplier") this.reloadMultiplier += effect;
-    else if (type === "velocityMultiplier") this.projectileSpeedMultiplier += effect;
+    if (stat === "maxHealth") this.maxHealth += effect;
+    else if (stat === "moveSpeed") this.velocity += effect;
+    else if (stat === "damage") this.multipliers.damage += effect;
+    else if (stat === "critChance") this.multipliers.critChance += effect;
+    else if (stat === "dropChance") this.multipliers.dropChance += effect;
+    else if (stat === "fireRate") this.multipliers.fireRate += effect;
+    else if (stat === "magSize") this.multipliers.magSize += effect;
+    else if (stat === "penetration") {
+    } else if (stat === "range") this.multipliers.range += effect;
+    else if (stat === "recoil") this.multipliers.recoil += effect;
+    else if (stat === "reloadSpeed") this.multipliers.reloadSpeed += effect;
+    else if (stat === "velocity") this.multipliers.velocity += effect;
   }
 
   getEffect(type: PlayerStat, pointsIndex: number): number {
     if (type === "maxHealth") return 5;
     else if (type === "moveSpeed") return 15;
-    else if (type === "damageMultiplier") return 0.05;
-    else if (type === "critChanceMultiplier") return 0.03;
-    else if (type === "dropChanceMultiplier") return 0.02;
-    else if (type === "fireRateMultiplier") return 0.1;
-    else if (type === "magSizeMultiplier") return 0.2;
-    else if (type === "penetrationMultiplier") return 0;
-    else if (type === "rangeMultiplier") return 0.1;
-    else if (type === "recoilMultiplier") return -0.15 * Math.pow(0.7, pointsIndex);
-    else if (type === "reloadTimeMultiplier") return -0.15 * Math.pow(0.7, pointsIndex);
-    else if (type === "velocityMultiplier") return 0.2;
+    else if (type === "damage") return 0.05;
+    else if (type === "critChance") return 0.03;
+    else if (type === "dropChance") return 0.02;
+    else if (type === "fireRate") return 0.1;
+    else if (type === "magSize") return 0.2;
+    else if (type === "penetration") return 0;
+    else if (type === "range") return 0.1;
+    else if (type === "recoil") return -0.15 * Math.pow(0.7, pointsIndex);
+    else if (type === "reloadSpeed") return -0.15 * Math.pow(0.7, pointsIndex);
+    else if (type === "velocity") return 0.2;
 
     throw new Error("Called getEffect on a stat that was not provided in method");
+  }
+
+  getStat(type: PlayerStat) {
+    return this.stats[type];
   }
 
   getTintColor() {
@@ -310,6 +332,10 @@ export class Player extends MovingObject {
 
   getExperience() {
     return this.experience;
+  }
+
+  getCurrentMultiplier(stat: WeaponStat) {
+    return;
   }
 
   getTileState() {
@@ -348,7 +374,7 @@ export class Player extends MovingObject {
   }
 
   getSkillPointsForStat(stat: PlayerStat) {
-    return this.skillPointsUsed[stat];
+    return this.skillPointsUsed[stat] || 0;
   }
 
   getUnusedSkillPoints() {
@@ -432,40 +458,8 @@ export class Player extends MovingObject {
     gun.addAmmo(ammo);
   }
 
-  getReloadSpeedMultiplier() {
-    return this.reloadMultiplier;
-  }
-
-  getDamageMultiplier() {
-    return this.damageMultiplier;
-  }
-
-  getRecoilMultiplier() {
-    return this.recoilMultiplier;
-  }
-
-  getRangeMultiplier() {
-    return this.rangeMultiplier;
-  }
-
-  getFireRateMultiplier() {
-    return this.fireRateMultiplier;
-  }
-
-  getMagasineSizeMultiplier() {
-    return this.magasizeSizeMultiplier;
-  }
-
-  getProjectileSpeedMultiplier() {
-    return this.projectileSpeedMultiplier;
-  }
-
-  getDropChanceMultiplier() {
-    return this.dropChanceMultiplier;
-  }
-
-  getCritChanceMultiplier() {
-    return this.critChanceMultiplier;
+  getMultiplier(stat: keyof typeof this.multipliers) {
+    return this.multipliers[stat];
   }
 
   inflictDamage(damage: number) {

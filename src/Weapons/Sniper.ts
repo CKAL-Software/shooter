@@ -7,15 +7,21 @@ export class Sniper extends Gun {
   constructor() {
     super({
       name: "Sniper",
-      damage: 15,
-      magazineSize: 3,
-      reloadTime: 2,
-      fireRate: 40,
-      velocity: 400,
-      recoil: 5,
-      critChance: 0.2,
-      range: TILE_SIZE * MAP_SIZE,
-      numBullets: 1,
+      baseStats: {
+        damage: 15,
+        magSize: 3,
+        reloadSpeed: 2,
+        fireRate: 40,
+        velocity: 400,
+        recoil: 5,
+        critChance: 0.2,
+        range: TILE_SIZE * MAP_SIZE,
+        projectiles: 1,
+        penetration: 0,
+        burn: 0,
+        dropChance: 0,
+        ammoCost: 10,
+      },
       projectileSize: 4,
       projectileColor: "black",
       ammo: 20,
@@ -26,17 +32,19 @@ export class Sniper extends Gun {
 
   getLevelBonusStats(levelIndex: number) {
     return {
-      damage: this.baseDamage * 0.2,
+      damage: this.baseStats.damage * 0.2,
       magSize: [0, 0, 1, 0, 0, 1, 0, 0, 2][levelIndex],
-      reloadTime: -0.05,
+      reloadSpeed: -0.05,
       recoil: -0.5,
       velocity: 20,
       fireRate: 5,
       range: 0,
+      projectiles: 0,
       critChance: 0,
       penetration: 0,
       ammoCost: 0,
-      projectiles: 0,
+      burn: 0,
+      dropChance: 0,
     };
   }
 }

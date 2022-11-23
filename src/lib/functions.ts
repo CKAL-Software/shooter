@@ -1,21 +1,19 @@
 import { CANVAS_COLUMNS, CANVAS_ROWS, MAP_SIZE } from "../Definitions/Maps";
 import { calculateDistance } from "./canvasFunctions";
-import { getAccessToken } from "./credentialsHandler";
-import { BACKEND_URL, MapInfo, MapSide, Point, Teleporters, TICK_DURATION } from "./definitions";
+import { MapInfo, MapSide, Point, Teleporters, TICK_DURATION } from "./definitions";
 import { LeaderboardEntry } from "./models";
 import { getRandomInt } from "./utils";
 
 export async function doFetch(
   httpMethod: "GET" | "POST" | "PUT" | "DELETE",
-  path: string,
+  url: string,
   onOK: (json: any) => void,
   onNotOK: (json: any) => void,
   finallyCallback?: () => void,
-  body?: any,
-  customUrl?: boolean
+  body?: any
 ) {
   try {
-    const response = await fetch(`${customUrl ? path : BACKEND_URL + path}`, {
+    const response = await fetch(url, {
       headers: await getHeaders(),
       method: httpMethod,
       body: body ? JSON.stringify(body) : undefined,
@@ -46,7 +44,6 @@ export async function doFetch(
 export async function getHeaders(extraHeaders?: any) {
   const headers = new Headers();
   headers.append("Content-Type", "application/json");
-  headers.append("Authorization", await getAccessToken());
 
   if (extraHeaders) {
     Object.entries(extraHeaders).forEach(([key, val]) => headers.append(key, val + ""));

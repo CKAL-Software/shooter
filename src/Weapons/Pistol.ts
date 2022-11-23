@@ -6,15 +6,21 @@ export class Pistol extends Gun {
   constructor() {
     super({
       name: "Pistol",
-      damage: 1,
-      magazineSize: 6,
-      reloadTime: 1.6,
-      fireRate: 120,
-      velocity: 120,
-      recoil: 30,
-      critChance: 0,
-      range: TILE_SIZE * 5,
-      numBullets: 1,
+      baseStats: {
+        damage: 1,
+        magSize: 6,
+        reloadSpeed: 1.6,
+        fireRate: 120,
+        velocity: 120,
+        recoil: 30,
+        critChance: 0,
+        range: TILE_SIZE * 5,
+        projectiles: 1,
+        penetration: 0,
+        dropChance: 0,
+        burn: 0,
+        ammoCost: 10,
+      },
       projectileSize: 5,
       projectileColor: "black",
       ammo: 30000,
@@ -25,9 +31,9 @@ export class Pistol extends Gun {
 
   getLevelBonusStats(levelIndex: number) {
     return {
-      damage: this.baseDamage * 0.2,
+      damage: this.baseStats.damage * 0.2,
       magSize: [0, 0, 1, 0, 0, 1, 0, 0, 2][levelIndex],
-      reloadTime: -0.05,
+      reloadSpeed: -0.05,
       recoil: -1,
       velocity: 5,
       fireRate: 3,
@@ -36,6 +42,8 @@ export class Pistol extends Gun {
       penetration: 0,
       ammoCost: 0,
       critChance: 0,
+      dropChance: 0,
+      burn: 0,
     };
   }
 }
