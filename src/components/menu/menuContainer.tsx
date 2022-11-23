@@ -35,6 +35,7 @@ export function MenuContainer() {
             display: "flex",
             columnGap: 48,
             padding: "20px 40px",
+            overflow: "hidden",
           }}
         >
           <PlayerSection />

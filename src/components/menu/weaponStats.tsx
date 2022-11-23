@@ -1,5 +1,6 @@
+import { PlusOutlined } from "@ant-design/icons";
 import { useMemo } from "react";
-import { COLOR_STAT_BONUS_BLUE, experienceThresholdsNormal } from "../../lib/definitions";
+import { COLOR_STAT_BONUS_BLUE, COLOR_STAT_BONUS_ORANGE, experienceThresholdsNormal } from "../../lib/definitions";
 import { Stat, WeaponStat } from "../../lib/skillDefinitions";
 import { player } from "../../Shooter";
 import { Gun } from "../../Weapons/Gun";
@@ -17,13 +18,21 @@ export function WeaponStats(props: WeaponStatsProps) {
     const baseStat = props.weapon.getStat(stat, true);
     const totalStat = props.weapon.getStat(stat);
 
+    const weaponBonus = props.weapon.getCurrentEffect(stat);
+    const playerBonus = player.getStat(stat);
+
     return (
       <>
-        <div>{baseStat}</div>
-        <div>{baseStat + nextLevelBonuses[stat]}</div>
-        <div>{props.weapon.getCurrentEffect(stat)}</div>
-        <div>{player.getCurrentMultiplier(stat)}</div>
-        <div>{totalStat}</div>
+        <div style={{ textAlign: "end" }}>{baseStat}</div>
+        <div style={{ textAlign: "end", color: "rgba(0,0,0,0.4)" }}>{baseStat + nextLevelBonuses[stat]}</div>
+        <div>{weaponBonus ? "+" : ""}</div>
+        <div style={{ textAlign: "end", color: COLOR_STAT_BONUS_BLUE }}>{weaponBonus || ""}</div>
+        <div>{playerBonus ? "+" : ""}</div>
+        <div style={{ textAlign: "end", color: COLOR_STAT_BONUS_ORANGE }}>
+          {playerBonus ? playerBonus * 100 + "%" : ""}
+        </div>
+        <div style={{ textAlign: "end" }}>=</div>
+        <div style={{ textAlign: "end" }}>{totalStat}</div>
       </>
       // <div style={{ textAlign: "end" }}>
       //   <span>{formatter ? formatter(base) : base}</span>
@@ -35,23 +44,9 @@ export function WeaponStats(props: WeaponStatsProps) {
     );
   }
 
-  function getBonusStatText(stat: WeaponStat, conversion?: (val: number) => string | number) {
-    const effect = props.weapon.getCurrentEffect(stat);
-    return effect === 0 ? (
-      ""
-    ) : (
-      <span>
-        <span style={{ color: COLOR_STAT_BONUS_BLUE }}>
-          {(effect > 0 ? "+" : "") + (conversion ? conversion(effect) : effect)}
-        </span>
-        =
-      </span>
-    );
-  }
-
   return (
     <>
-      <div style={{ display: "flex", alignItems: "center", gridColumn: "span 6", margin: "24px 0 8px" }}>
+      <div style={{ display: "flex", alignItems: "center", gridColumn: "span 9", margin: "24px 0 8px" }}>
         <GunIcon
           entityName={props.weapon.getName()}
           level={props.weapon.getLevel()}
@@ -59,7 +54,7 @@ export function WeaponStats(props: WeaponStatsProps) {
         />
         <div style={{ fontSize: 20, fontWeight: "bold", marginLeft: 20 }}>{props.weapon.getName()}</div>
       </div>
-      <div style={{ gridColumn: "span 6", margin: "4px 0" }}>
+      <div style={{ gridColumn: "span 9", margin: "4px 0" }}>
         <ProgressBar
           percentage={props.weapon.getExperience() / experienceThresholdsNormal[props.weapon.getLevel() - 1]}
           text={props.weapon.getExperience() + "/" + experienceThresholdsNormal[props.weapon.getLevel() - 1]}
@@ -69,16 +64,18 @@ export function WeaponStats(props: WeaponStatsProps) {
           width={260}
         />
       </div>
-      <div style={{ alignSelf: "center" }}>Stat</div>
-      <div style={{ alignSelf: "center" }}>Base</div>
-      <div style={{ alignSelf: "center" }}>Next</div>
-      <div style={{ alignSelf: "center" }}>Weapon bonus</div>
-      <div style={{ alignSelf: "center" }}>Player bonus</div>
-      <div style={{ alignSelf: "center" }}>Total</div>
-      <div style={{ gridColumn: "span 6" }} />
       <div>Ammo</div>
-      <div style={{ textAlign: "end", gridColumn: "span 5" }}>{props.weapon.getAmmo()}</div>
-      <div style={{ gridColumn: "span 6" }} />
+      <div style={{ textAlign: "end", gridColumn: "span 8", margin: "8px 0" }}>{props.weapon.getAmmo()}</div>
+      <div>Stat</div>
+      <div>Base</div>
+      <div>Next</div>
+      <div />
+      <PlusOutlined style={{ alignSelf: "center", justifySelf: "center", color: COLOR_STAT_BONUS_BLUE }} />
+      <div />
+      <PlusOutlined style={{ alignSelf: "center", justifySelf: "center", color: COLOR_STAT_BONUS_ORANGE }} />
+      <div />
+      <div>Total</div>
+      <div style={{ gridColumn: "span 9" }} />
       <div>Damage</div>
       {getStatText(Stat.Damage)}
       <div>Magazine size</div>

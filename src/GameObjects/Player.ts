@@ -15,7 +15,7 @@ import {
 } from "../lib/definitions";
 import { toUnitVector } from "../lib/functions";
 import { Direction } from "../lib/models";
-import { PlayerStat, PlayerStats, Stat, WeaponStat } from "../lib/skillDefinitions";
+import { PlayerStat, PlayerStats, Stat } from "../lib/skillDefinitions";
 import { currentMap, mousePos, numberAnimations } from "../Shooter";
 import { Gun } from "../Weapons/Gun";
 import { Pistol } from "../Weapons/Pistol";
@@ -44,22 +44,10 @@ export class Player extends MovingObject {
   private lastDmgAnimTimeLeft = 0;
   private lastHealthAnim: RisingText | undefined = undefined;
   private lastHealthAnimTimeLeft = 0;
-  private unusedSkillPoints = 0;
+  private unusedSkillPoints = 3;
 
   private baseStats: PlayerStats;
   private stats: PlayerStats;
-
-  private multipliers = {
-    damage: 0,
-    reloadSpeed: 0,
-    recoil: 0,
-    range: 0,
-    fireRate: 0,
-    magSize: 0,
-    velocity: 0,
-    dropChance: 0,
-    critChance: 0,
-  };
 
   private skillPointsUsed: { [k in PlayerStat]?: number } = {};
 
@@ -291,33 +279,26 @@ export class Player extends MovingObject {
       this.skillPointsUsed[stat]!++;
     }
 
-    if (stat === "maxHealth") this.maxHealth += effect;
-    else if (stat === "moveSpeed") this.velocity += effect;
-    else if (stat === "damage") this.multipliers.damage += effect;
-    else if (stat === "critChance") this.multipliers.critChance += effect;
-    else if (stat === "dropChance") this.multipliers.dropChance += effect;
-    else if (stat === "fireRate") this.multipliers.fireRate += effect;
-    else if (stat === "magSize") this.multipliers.magSize += effect;
-    else if (stat === "penetration") {
-    } else if (stat === "range") this.multipliers.range += effect;
-    else if (stat === "recoil") this.multipliers.recoil += effect;
-    else if (stat === "reloadSpeed") this.multipliers.reloadSpeed += effect;
-    else if (stat === "velocity") this.multipliers.velocity += effect;
+    if (stat === "magSize") {
+      this.stats[stat] = Math.round(this.baseStats[stat] + effect);
+    } else {
+      this.stats[stat] = this.baseStats[stat] + effect;
+    }
   }
 
-  getEffect(type: PlayerStat, pointsIndex: number): number {
-    if (type === "maxHealth") return 5;
-    else if (type === "moveSpeed") return 15;
-    else if (type === "damage") return 0.05;
-    else if (type === "critChance") return 0.03;
-    else if (type === "dropChance") return 0.02;
-    else if (type === "fireRate") return 0.1;
-    else if (type === "magSize") return 0.2;
-    else if (type === "penetration") return 0;
-    else if (type === "range") return 0.1;
-    else if (type === "recoil") return -0.15 * Math.pow(0.7, pointsIndex);
-    else if (type === "reloadSpeed") return -0.15 * Math.pow(0.7, pointsIndex);
-    else if (type === "velocity") return 0.2;
+  getEffect(stat: PlayerStat, pointsIndex: number): number {
+    if (stat === Stat.MaxHealth) return 5;
+    else if (stat === Stat.MoveSpeed) return 15;
+    else if (stat === Stat.Damage) return 0.05;
+    else if (stat === Stat.CritChance) return 0.03;
+    else if (stat === Stat.DropChance) return 0.02;
+    else if (stat === Stat.FireRate) return 0.1;
+    else if (stat === Stat.MagSize) return 0.2;
+    else if (stat === Stat.Penetration) return 0;
+    else if (stat === Stat.Range) return 0.1;
+    else if (stat === Stat.Recoil) return -0.15 * Math.pow(0.7, pointsIndex);
+    else if (stat === Stat.ReloadSpeed) return -0.15 * Math.pow(0.7, pointsIndex);
+    else if (stat === Stat.Velocity) return 0.2;
 
     throw new Error("Called getEffect on a stat that was not provided in method");
   }
@@ -332,10 +313,6 @@ export class Player extends MovingObject {
 
   getExperience() {
     return this.experience;
-  }
-
-  getCurrentMultiplier(stat: WeaponStat) {
-    return;
   }
 
   getTileState() {
@@ -456,10 +433,6 @@ export class Player extends MovingObject {
     }
 
     gun.addAmmo(ammo);
-  }
-
-  getMultiplier(stat: keyof typeof this.multipliers) {
-    return this.multipliers[stat];
   }
 
   inflictDamage(damage: number) {

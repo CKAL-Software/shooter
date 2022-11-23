@@ -1,5 +1,5 @@
 import { Tooltip } from "@mui/material";
-import { COLOR_MENU_BACKGROUND } from "../../lib/definitions";
+import { COLOR_MENU_BACKGROUND, COLOR_STAT_BONUS_BLUE } from "../../lib/definitions";
 
 interface SkillProps {
   text: string;
@@ -13,15 +13,7 @@ interface SkillProps {
 
 export function Skill(props: SkillProps) {
   const color =
-    props.state === "unavailable"
-      ? "#bfbfbf"
-      : props.state === "available"
-      ? "gray"
-      : props.state === "picked"
-      ? "orange"
-      : props.state === "maxed"
-      ? "#31ce00"
-      : "purple";
+    props.state === "unavailable" ? "#bfbfbf" : props.state === "available" ? "gray" : COLOR_STAT_BONUS_BLUE;
 
   return (
     <Tooltip title={props.text} placement="top" followCursor style={{ fontSize: 40 }}>
