@@ -275,9 +275,9 @@ export class Player extends MovingObject {
 
     if (!this.skillPointsUsed[stat]) {
       this.skillPointsUsed[stat] = 0;
-    } else {
-      this.skillPointsUsed[stat]!++;
     }
+
+    this.skillPointsUsed[stat]!++;
 
     if (stat === "magSize") {
       this.stats[stat] = Math.round(this.baseStats[stat] + effect);

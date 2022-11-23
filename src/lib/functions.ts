@@ -436,3 +436,7 @@ export function n(num: number) {
 export function getTileType(map: string[][], tile: Point) {
   return map[tile.y] ? map[tile.y][tile.x] : undefined;
 }
+
+export function percentFormatter(num: number) {
+  return (num * 100).toFixed(1).replace(".0", "") + "%";
+}

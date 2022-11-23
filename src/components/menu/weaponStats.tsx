@@ -1,6 +1,7 @@
 import { PlusOutlined } from "@ant-design/icons";
 import { useMemo } from "react";
 import { COLOR_STAT_BONUS_BLUE, COLOR_STAT_BONUS_ORANGE, experienceThresholdsNormal } from "../../lib/definitions";
+import { percentFormatter } from "../../lib/functions";
 import { Stat, WeaponStat } from "../../lib/skillDefinitions";
 import { player } from "../../Shooter";
 import { Gun } from "../../Weapons/Gun";
@@ -14,22 +15,26 @@ interface WeaponStatsProps {
 export function WeaponStats(props: WeaponStatsProps) {
   const nextLevelBonuses = useMemo(() => props.weapon.getLevelBonusStats(props.weapon.getLevel()), [props.weapon]);
 
-  function getStatText(stat: WeaponStat, formatter?: (val: number) => string | number) {
+  function getStatText(description: string, stat: WeaponStat, formatter?: (val: number) => string | number) {
     const baseStat = props.weapon.getStat(stat, true);
     const totalStat = props.weapon.getStat(stat);
 
     const weaponBonus = props.weapon.getCurrentEffect(stat);
     const playerBonus = player.getStat(stat);
 
+    const roundedWeaponBonus = Math.round(weaponBonus * 1000) / 1000;
+    const roundedPlayerBonus = Math.round(playerBonus * 1000) / 1000;
+
     return (
       <>
+        <div style={{ whiteSpace: "nowrap" }}>{description}</div>
         <div style={{ textAlign: "end" }}>{baseStat}</div>
         <div style={{ textAlign: "end", color: "rgba(0,0,0,0.4)" }}>{baseStat + nextLevelBonuses[stat]}</div>
         <div>{weaponBonus ? "+" : ""}</div>
-        <div style={{ textAlign: "end", color: COLOR_STAT_BONUS_BLUE }}>{weaponBonus || ""}</div>
+        <div style={{ textAlign: "end", color: COLOR_STAT_BONUS_BLUE }}>{roundedWeaponBonus || ""}</div>
         <div>{playerBonus ? "+" : ""}</div>
         <div style={{ textAlign: "end", color: COLOR_STAT_BONUS_ORANGE }}>
-          {playerBonus ? playerBonus * 100 + "%" : ""}
+          {playerBonus ? percentFormatter(roundedPlayerBonus) : ""}
         </div>
         <div style={{ textAlign: "end" }}>=</div>
         <div style={{ textAlign: "end" }}>{totalStat}</div>
@@ -61,11 +66,11 @@ export function WeaponStats(props: WeaponStatsProps) {
           barColor="#90caf9"
           backgroundColor={"rgba(0,0,0,0.15)"}
           height={20}
-          width={260}
+          width={350}
         />
       </div>
-      <div>Ammo</div>
-      <div style={{ textAlign: "end", gridColumn: "span 8", margin: "8px 0" }}>{props.weapon.getAmmo()}</div>
+      <div style={{ margin: "4px 0 8px" }}>Ammo</div>
+      <div style={{ textAlign: "end", gridColumn: "span 8", margin: "4px 0 8px" }}>{props.weapon.getAmmo()}</div>
       <div>Stat</div>
       <div>Base</div>
       <div>Next</div>
@@ -76,26 +81,14 @@ export function WeaponStats(props: WeaponStatsProps) {
       <div />
       <div>Total</div>
       <div style={{ gridColumn: "span 9" }} />
-      <div>Damage</div>
-      {getStatText(Stat.Damage)}
-      <div>Magazine size</div>
-      {getStatText(Stat.MagSize)}
-      <div>Reload time</div>
-      {getStatText(
-        Stat.ReloadSpeed,
-
-        (t) => Math.round(t * 100) / 100
-      )}
-      <div style={{ whiteSpace: "nowrap" }}>Fire rate</div>
-      {getStatText(Stat.FireRate)}
-      <div>Velocity</div>
-      {getStatText(Stat.Velocity)}
-      <div>Recoil</div>
-      {getStatText(Stat.Recoil)}
-      <div>Range</div>
-      {getStatText(Stat.Range)}
-      <div>Projectiles</div>
-      {getStatText(Stat.Projectiles)}
+      {getStatText("Damage", Stat.Damage)}
+      {getStatText("Mag size", Stat.MagSize)}
+      {getStatText("Reload speed", Stat.ReloadSpeed, (t) => Math.round(t * 100) / 100)}
+      {getStatText("Fire rate", Stat.FireRate)}
+      {getStatText("Velocity", Stat.Velocity)}
+      {getStatText("Recoil", Stat.Recoil)}
+      {getStatText("Range", Stat.Range)}
+      {getStatText("Projectiles", Stat.Projectiles)}
     </>
   );
 }

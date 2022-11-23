@@ -1,6 +1,5 @@
 import { COLOR_MENU_BACKGROUND } from "../../lib/definitions";
 import { PlayerSection } from "./playerSection";
-import { SkillTreeSection } from "./skillTreeSection";
 import { WeaponsSection } from "./weaponsSection";
 
 export function MenuContainer() {
@@ -40,7 +39,6 @@ export function MenuContainer() {
         >
           <PlayerSection />
           <WeaponsSection />
-          <SkillTreeSection />
         </div>
       </div>
     </div>

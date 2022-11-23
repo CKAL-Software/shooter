@@ -5,8 +5,10 @@ import {
   COLOR_HP_BAR_RED,
   COLOR_PLAYER,
   COLOR_SKILLPOINT,
+  COLOR_STAT_BONUS_ORANGE,
   experienceThresholdsPlayer,
 } from "../../lib/definitions";
+import { percentFormatter } from "../../lib/functions";
 import { PlayerStat, Stat } from "../../lib/skillDefinitions";
 import { player } from "../../Shooter";
 import { ProgressBar } from "../controlPanelElements/progressBar";
@@ -14,7 +16,7 @@ import { ProgressBar } from "../controlPanelElements/progressBar";
 export function PlayerSection() {
   const rerender = useContext(TriggerRenderContext);
 
-  function getStatText(stat: PlayerStat, formatter?: (value: number) => any) {
+  function getStatText(description: string, stat: PlayerStat, formatter?: (value: number) => any) {
     const num = player.getStat(stat);
     const roundedNum = Math.round(num * 1000) / 1000;
     const formattedNum = formatter ? formatter(roundedNum) : roundedNum;
@@ -22,25 +24,28 @@ export function PlayerSection() {
     const bonusNum = player.getEffect(stat, player.getSkillPointsForStat(stat));
     const roundedBonusNum = Math.round(bonusNum * 1000) / 1000;
     const formattedBonusNum = formatter ? formatter(roundedBonusNum) : roundedBonusNum;
+
+    const skillPointsUsedForStat = player.getSkillPointsForStat(stat);
+
+    const color = skillPointsUsedForStat > 0 ? COLOR_STAT_BONUS_ORANGE : undefined;
+
     return (
       <>
-        <div style={{ textAlign: "end" }}>{formattedNum}</div>
+        <div style={{ whiteSpace: "nowrap", color }}>{description}</div>
+        <div style={{ textAlign: "end", color }}>{formattedNum}</div>
         <button
           disabled={player.getUnusedSkillPoints() === 0}
           onClick={() => {
             player.upgrade(stat);
             rerender();
           }}
+          style={{ userSelect: "none" }}
         >
           {bonusNum > 0 ? "+" + formattedBonusNum : formattedBonusNum}
         </button>
-        <div style={{ textAlign: "end" }}>{player.getSkillPointsForStat(stat)}</div>
+        <div style={{ textAlign: "end", color }}>{skillPointsUsedForStat}</div>
       </>
     );
-  }
-
-  function percentFormatter(num: number) {
-    return (num * 100).toFixed(1).replace(".0", "") + "%";
   }
 
   return (
@@ -150,24 +155,15 @@ export function PlayerSection() {
           <div>${player.getMoney()}</div>
         </div>
         <div style={{ gridColumn: "span 4", marginBottom: 8 }} />
-        <div style={{ whiteSpace: "nowrap" }}>Max health</div>
-        {getStatText(Stat.MaxHealth)}
-        <div style={{ whiteSpace: "nowrap" }}>Move speed</div>
-        {getStatText(Stat.MoveSpeed)}
-        <div style={{ whiteSpace: "nowrap" }}>Damage bonus</div>
-        {getStatText(Stat.Damage, percentFormatter)}
-        <div style={{ whiteSpace: "nowrap" }}>Reload bonus</div>
-        {getStatText(Stat.ReloadSpeed, percentFormatter)}
-        <div style={{ whiteSpace: "nowrap" }}>Range bonus</div>
-        {getStatText(Stat.Range, percentFormatter)}
-        <div style={{ whiteSpace: "nowrap" }}>Recoil bonus</div>
-        {getStatText(Stat.Recoil, percentFormatter)}
-        <div style={{ whiteSpace: "nowrap" }}>Bullet velocity bonus</div>
-        {getStatText(Stat.Velocity, percentFormatter)}
-        <div style={{ whiteSpace: "nowrap" }}>Crit chance bonus</div>
-        {getStatText(Stat.CritChance, percentFormatter)}
-        <div style={{ whiteSpace: "nowrap" }}>Drop chance bonus</div>
-        {getStatText(Stat.DropChance, percentFormatter)}
+        {getStatText("Max health", Stat.MaxHealth)}
+        {getStatText("Move speed", Stat.MoveSpeed)}
+        {getStatText("Damage bonus", Stat.Damage, percentFormatter)}
+        {getStatText("Reload bonus", Stat.ReloadSpeed, percentFormatter)}
+        {getStatText("Range bonus", Stat.Range, percentFormatter)}
+        {getStatText("Recoil bonus", Stat.Recoil, percentFormatter)}
+        {getStatText("Bullet velocity bonus", Stat.Velocity, percentFormatter)}
+        {getStatText("Crit chance bonus", Stat.CritChance, percentFormatter)}
+        {getStatText("Drop chance bonus", Stat.DropChance, percentFormatter)}
       </div>
     </div>
   );
