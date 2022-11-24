@@ -23,10 +23,14 @@ import { Sniper } from "../Weapons/Sniper";
 import { MovingObject } from "./MovingObject";
 import { RisingText } from "./RisingText";
 
+const START_VELOCITY = 120;
+const START_MAX_HEALTH = 10;
+
 export class Player extends MovingObject {
-  private health = 10;
-  private maxHealth = 10;
+  private health = START_MAX_HEALTH;
   private money = 0;
+  private damageDealt = 0;
+  private takedowns = 0;
   private weapons: Gun[] = [new Pistol(), new Sniper()];
   private currentWeapon = this.weapons[0];
   private moveDirections: Set<Direction> = new Set();
@@ -44,18 +48,18 @@ export class Player extends MovingObject {
   private lastDmgAnimTimeLeft = 0;
   private lastHealthAnim: RisingText | undefined = undefined;
   private lastHealthAnimTimeLeft = 0;
-  private unusedSkillPoints = 3;
+  private unusedSkillPoints = 300;
 
-  private baseStats: PlayerStats;
   private stats: PlayerStats;
 
   private skillPointsUsed: { [k in PlayerStat]?: number } = {};
 
   constructor() {
-    super({ position: { x: 180, y: 280 }, size: 13, velocity: 120, color: COLOR_PLAYER });
+    super({ position: { x: 180, y: 280 }, size: 13, velocity: START_VELOCITY, color: COLOR_PLAYER });
 
-    this.baseStats = {
-      maxHealth: 100,
+    this.stats = {
+      maxHealth: START_MAX_HEALTH,
+      moveSpeed: this.velocity,
       ammoCost: 10,
       damage: 0,
       dropChance: 0,
@@ -66,13 +70,8 @@ export class Player extends MovingObject {
       fireRate: 0,
       burn: 0,
       critChance: 0,
-      magSize: 0,
-      moveSpeed: 0,
       penetration: 0,
-      projectiles: 0,
     };
-
-    this.stats = { ...this.baseStats };
   }
 
   draw(ctx: CanvasRenderingContext2D): void {
@@ -108,7 +107,7 @@ export class Player extends MovingObject {
     ctx.rect(
       drawPos.x - (width / 2) * (doubleLength ? 2 : 1),
       drawPos.y - (this.size + height + 4),
-      Math.round(width * (doubleLength ? 2 : 1) * (this.health / this.maxHealth)),
+      Math.round(width * (doubleLength ? 2 : 1) * (this.health / this.stats.maxHealth)),
       height
     );
     ctx.fillStyle = COLOR_HP_BAR_GREEN;
@@ -225,9 +224,24 @@ export class Player extends MovingObject {
       this.experience -= experienceThresholdsPlayer[this.level - 1];
       this.level++;
       this.unusedSkillPoints++;
-      this.onLevelUp(this.level - 1);
       numberAnimations.push(new RisingText(this.position, "Weapon level up!", COLOR_EXP));
     }
+  }
+
+  addTakedown() {
+    this.takedowns++;
+  }
+
+  addDamageDealt(damage: number) {
+    this.damageDealt += damage;
+  }
+
+  getDamageDealt() {
+    return this.damageDealt;
+  }
+
+  getTakedowns() {
+    return this.takedowns;
   }
 
   changeMoney(change: number) {
@@ -247,14 +261,6 @@ export class Player extends MovingObject {
     return this.totalExperience;
   }
 
-  onLevelUp(levelIndex: number) {
-    const healthIncrease = [5, 5, 5, 5, 5, 5, 5, 5, 5, 5][levelIndex];
-    this.maxHealth += healthIncrease;
-    this.health += healthIncrease;
-
-    this.velocity += [0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1][levelIndex];
-  }
-
   enterTeleporter(side: MapSide) {
     const { x, y } = this.position;
     if (side === "up") {
@@ -271,34 +277,48 @@ export class Player extends MovingObject {
   }
 
   upgrade(stat: PlayerStat) {
-    const effect = this.getEffect(stat, this.skillPointsUsed[stat] || 0);
-
     if (!this.skillPointsUsed[stat]) {
       this.skillPointsUsed[stat] = 0;
     }
 
     this.skillPointsUsed[stat]!++;
 
-    if (stat === "magSize") {
-      this.stats[stat] = Math.round(this.baseStats[stat] + effect);
-    } else {
-      this.stats[stat] = this.baseStats[stat] + effect;
+    let newValue = this.getEffect(stat, this.skillPointsUsed[stat] || 0);
+
+    if (stat === "moveSpeed") {
+      this.velocity = newValue;
     }
+    if (stat === "maxHealth") {
+      this.health += newValue - this.stats[stat];
+    }
+
+    this.stats[stat] = newValue;
   }
 
   getEffect(stat: PlayerStat, pointsIndex: number): number {
-    if (stat === Stat.MaxHealth) return 5;
-    else if (stat === Stat.MoveSpeed) return 15;
-    else if (stat === Stat.Damage) return 0.05;
-    else if (stat === Stat.CritChance) return 0.03;
-    else if (stat === Stat.DropChance) return 0.02;
-    else if (stat === Stat.FireRate) return 0.1;
-    else if (stat === Stat.MagSize) return 0.2;
-    else if (stat === Stat.Penetration) return 0;
-    else if (stat === Stat.Range) return 0.1;
-    else if (stat === Stat.Recoil) return -0.15 * Math.pow(0.7, pointsIndex);
-    else if (stat === Stat.ReloadSpeed) return -0.15 * Math.pow(0.7, pointsIndex);
-    else if (stat === Stat.Velocity) return 0.2;
+    if (stat === Stat.MaxHealth) return START_MAX_HEALTH + pointsIndex * 5;
+    if (stat === Stat.MoveSpeed) return START_VELOCITY + pointsIndex * 5;
+    if (stat === Stat.Damage) return pointsIndex * 0.05;
+    if (stat === Stat.CritChance) return pointsIndex * 0.03;
+    if (stat === Stat.DropChance) return pointsIndex * 0.02;
+    if (stat === Stat.FireRate) return pointsIndex * 0.1;
+    if (stat === Stat.Penetration) return pointsIndex * 0;
+    if (stat === Stat.Range) return pointsIndex * 0.1;
+    if (stat === Stat.Recoil) {
+      let sum = 0;
+      for (let i = 0; i <= pointsIndex; i++) {
+        sum += -0.15 * Math.pow(0.7, i);
+      }
+      return sum;
+    }
+    if (stat === Stat.ReloadSpeed) {
+      let sum = 0;
+      for (let i = 0; i <= pointsIndex; i++) {
+        sum += -0.15 * Math.pow(0.7, i);
+      }
+      return sum;
+    }
+    if (stat === Stat.Velocity) return pointsIndex * 0.2;
 
     throw new Error("Called getEffect on a stat that was not provided in method");
   }
@@ -385,7 +405,7 @@ export class Player extends MovingObject {
   }
 
   getMaxHealth() {
-    return this.maxHealth;
+    return this.stats.maxHealth;
   }
 
   getHealth() {
@@ -412,7 +432,7 @@ export class Player extends MovingObject {
   }
 
   addHealth(health: number) {
-    this.health = Math.min(this.maxHealth, this.health + health);
+    this.health = Math.min(this.stats.maxHealth, this.health + health);
     this.setTint(0, 255, 0);
 
     if (this.lastHealthAnimTimeLeft > 0) {

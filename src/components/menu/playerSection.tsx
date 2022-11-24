@@ -8,21 +8,22 @@ import {
   COLOR_STAT_BONUS_ORANGE,
   experienceThresholdsPlayer,
 } from "../../lib/definitions";
-import { percentFormatter } from "../../lib/functions";
+import { percentFormatter, round } from "../../lib/functions";
 import { PlayerStat, Stat } from "../../lib/skillDefinitions";
 import { player } from "../../Shooter";
 import { ProgressBar } from "../controlPanelElements/progressBar";
+import { RiMoneyDollarCircleFill } from "react-icons/ri";
 
 export function PlayerSection() {
   const rerender = useContext(TriggerRenderContext);
 
   function getStatText(description: string, stat: PlayerStat, formatter?: (value: number) => any) {
     const num = player.getStat(stat);
-    const roundedNum = Math.round(num * 1000) / 1000;
+    const roundedNum = round(num);
     const formattedNum = formatter ? formatter(roundedNum) : roundedNum;
 
-    const bonusNum = player.getEffect(stat, player.getSkillPointsForStat(stat));
-    const roundedBonusNum = Math.round(bonusNum * 1000) / 1000;
+    const bonusNum = player.getEffect(stat, player.getSkillPointsForStat(stat) + 1) - player.getStat(stat);
+    const roundedBonusNum = round(bonusNum);
     const formattedBonusNum = formatter ? formatter(roundedBonusNum) : roundedBonusNum;
 
     const skillPointsUsedForStat = player.getSkillPointsForStat(stat);
@@ -32,7 +33,9 @@ export function PlayerSection() {
     return (
       <>
         <div style={{ whiteSpace: "nowrap", color }}>{description}</div>
-        <div style={{ textAlign: "end", color }}>{formattedNum}</div>
+        <div style={{ textAlign: "end", color }}>
+          {(num > 0 && ![Stat.MaxHealth, Stat.MoveSpeed].includes(stat) ? "+" : "") + formattedNum}
+        </div>
         <button
           disabled={player.getUnusedSkillPoints() === 0}
           onClick={() => {
@@ -146,19 +149,24 @@ export function PlayerSection() {
           marginTop: 24,
         }}
       >
-        <div style={{ display: "flex", justifyContent: "space-between", fontSize: 18, gridColumn: "span 4" }}>
-          <div>Level</div>
-          <div>{player.getLevel()}</div>
+        <div style={{ fontSize: 22, gridColumn: "span 2" }}>Level {player.getLevel()}</div>
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "flex-end",
+            fontSize: 22,
+            gridColumn: "span 2",
+            alignItems: "center",
+          }}
+        >
+          <div>{player.getMoney()}</div>
+          <RiMoneyDollarCircleFill style={{ fontSize: 30, alignSelf: "center", marginLeft: 4 }} />
         </div>
-        <div style={{ display: "flex", justifyContent: "space-between", fontSize: 18, gridColumn: "span 4" }}>
-          <div>Money</div>
-          <div>${player.getMoney()}</div>
-        </div>
-        <div style={{ gridColumn: "span 4", marginBottom: 8 }} />
+        <div style={{ gridColumn: "span 4", marginBottom: 16 }} />
         {getStatText("Max health", Stat.MaxHealth)}
         {getStatText("Move speed", Stat.MoveSpeed)}
         {getStatText("Damage bonus", Stat.Damage, percentFormatter)}
-        {getStatText("Reload bonus", Stat.ReloadSpeed, percentFormatter)}
+        {getStatText("Reload speed bonus", Stat.ReloadSpeed, percentFormatter)}
         {getStatText("Range bonus", Stat.Range, percentFormatter)}
         {getStatText("Recoil bonus", Stat.Recoil, percentFormatter)}
         {getStatText("Bullet velocity bonus", Stat.Velocity, percentFormatter)}

@@ -1,4 +1,5 @@
 import { COLOR_STAT_BONUS_BLUE } from "../../lib/definitions";
+import { percentFormatter, round } from "../../lib/functions";
 import { Stat, WeaponStat } from "../../lib/skillDefinitions";
 import { Gun } from "../../Weapons/Gun";
 import { SkillTree } from "./skillTree";
@@ -9,14 +10,16 @@ interface SkillTreeSectionProps {
 
 export function SkillTreeSection(props: SkillTreeSectionProps) {
   function getBonusText(description: string, stat: WeaponStat) {
-    const effect = props.selectedWeapon.getCurrentEffect(stat);
+    const { effect, isAbsolute } = props.selectedWeapon.getCurrentEffect(stat);
 
-    const roundedEffect = Math.round(effect * 1000) / 1000;
+    const roundedEffect = round(effect);
 
     return effect ? (
       <>
         <div>{description}</div>
-        <div style={{ textAlign: "end" }}>{roundedEffect}</div>
+        <div style={{ textAlign: "end" }}>
+          {(effect > 0 ? "+" : "") + (isAbsolute ? roundedEffect : percentFormatter(roundedEffect))}
+        </div>
       </>
     ) : (
       <div style={{ gridColumn: "span 2" }} />
@@ -32,12 +35,12 @@ export function SkillTreeSection(props: SkillTreeSectionProps) {
           display: "grid",
           gridTemplateColumns: "auto min-content",
           color: COLOR_STAT_BONUS_BLUE,
-          marginTop: 16,
+          marginTop: 24,
           rowGap: 2,
         }}
       >
-        {getBonusText("Bonus damage", Stat.Damage)}
-        {getBonusText("Reload speed", Stat.ReloadSpeed)}
+        {getBonusText("Damage bonus", Stat.Damage)}
+        {getBonusText("Reload speed bonus", Stat.ReloadSpeed)}
       </div>
     </div>
   );

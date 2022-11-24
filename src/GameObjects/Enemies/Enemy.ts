@@ -270,12 +270,17 @@ export abstract class Enemy extends MovingObject {
     if (this.currentHp <= 0) {
       this.die(ownerGun);
     }
+
+    ownerGun?.addDamageDealt(actualDamage);
+    player.addDamageDealt(actualDamage);
   }
 
   private die(ownerGun?: Gun) {
     this.shouldDraw = false;
-    player.addExperience(this.reward);
 
+    player.addTakedown();
+    player.addExperience(this.reward);
+    ownerGun?.addTakedown();
     ownerGun?.addExperience(this.reward);
 
     if (Math.random() < 0.05) {

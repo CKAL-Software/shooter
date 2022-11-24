@@ -4,7 +4,7 @@ import { calculateDirection } from "../lib/canvasFunctions";
 import { COLOR_EXP, experienceThresholdsNormal, Point, TICK_DURATION_S } from "../lib/definitions";
 import { changeDirection } from "../lib/functions";
 import { SkillSheet } from "../lib/models";
-import { createSkillSheet, Skill, WeaponStat, WeaponStats } from "../lib/skillDefinitions";
+import { createSkillSheet, Skill, WeaponStat, WeaponStats, Stat } from "../lib/skillDefinitions";
 import { numberAnimations, player, projectiles } from "../Shooter";
 
 export interface GunConfig {
@@ -19,8 +19,10 @@ export interface GunConfig {
 
 export abstract class Gun {
   protected name: string;
-  protected level = 1;
-  protected experience = 0;
+  private level = 1;
+  private experience = 0;
+  private damageDealt = 0;
+  private takedowns = 0;
   protected magazineAmmo = 0;
   protected ammo: number;
   protected reloadSpeedRemaining = 0;
@@ -28,7 +30,7 @@ export abstract class Gun {
   protected projectileSize: number;
   protected projectileColor: string;
   protected shouldReload = false;
-  protected skillSheet: SkillSheet<WeaponStat> = {};
+  protected skillSheet: SkillSheet<WeaponStat>;
   protected unusedSkillPoints = 3;
   protected price: number;
   protected baseStats: WeaponStats;
@@ -147,10 +149,18 @@ export abstract class Gun {
     const skill = this.skillSheet[stat];
 
     if (!skill) {
-      return 0;
+      return { effect: 0, isAbsolute: true };
     }
 
-    return skill.getEffect(skill.points, this);
+    return skill.getEffect(skill.points);
+  }
+
+  addTakedown() {
+    this.takedowns++;
+  }
+
+  addDamageDealt(damage: number) {
+    this.damageDealt += damage;
   }
 
   upgrade(stat: WeaponStat) {
@@ -166,12 +176,14 @@ export abstract class Gun {
     }
 
     skill.points++;
-    const effect = skill.getEffect(skill.points, this);
+    const { effect, isAbsolute } = skill.getEffect(skill.points);
+
+    const newStat = this.baseStats[stat] + (isAbsolute ? effect : effect * this.baseStats[stat]);
 
     if (stat === "magSize") {
-      this.stats[stat] = Math.round(this.baseStats[stat] + effect);
+      this.stats[stat] = Math.round(newStat);
     } else {
-      this.stats[stat] = this.baseStats[stat] + effect;
+      this.stats[stat] = newStat;
     }
   }
 
@@ -212,7 +224,23 @@ export abstract class Gun {
       return this.stats.damage * 3;
     }
 
-    return this.stats.damage;
+    return this.getFinalStat(Stat.Damage);
+  }
+
+  getDamageDealt() {
+    return this.damageDealt;
+  }
+
+  getTakedowns() {
+    return this.takedowns;
+  }
+
+  getFinalStat(stat: WeaponStat) {
+    if (stat === Stat.MagSize || stat === Stat.Projectiles) {
+      return this.stats[stat];
+    }
+
+    return this.stats[stat] + this.baseStats[stat] * player.getStat(stat);
   }
 
   shoot(target: Point) {
@@ -222,14 +250,14 @@ export abstract class Gun {
       new NormalProjectile({
         position: player.getPosition(),
         direction: this.getNewDirectionAfterRecoil(target),
-        velocity: this.stats.velocity * TICK_DURATION_S,
+        velocity: this.getFinalStat(Stat.Velocity) * TICK_DURATION_S,
         damage: damage,
-        range: this.stats.range,
+        range: this.getFinalStat(Stat.Range),
         size: this.projectileSize,
         color: this.projectileColor,
         shotByPlayer: true,
         ownerGun: this,
-        isCriticalHit: damage > this.stats.damage,
+        isCriticalHit: damage > this.getFinalStat(Stat.Damage),
       })
     );
   }

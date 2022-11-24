@@ -1,9 +1,10 @@
 import { Tooltip } from "@mui/material";
-import { COLOR_MENU_BACKGROUND, COLOR_STAT_BONUS_BLUE } from "../../lib/definitions";
+import { COLOR_MENU_BACKGROUND, COLOR_STAT_BONUS_BLUE_RGBA } from "../../lib/definitions";
 
 interface SkillProps {
   text: string;
-  state: "unavailable" | "available" | "picked" | "maxed" | "bonus";
+  inactive: boolean;
+  state: "unavailable" | "available" | "picked";
   children: React.ReactNode;
   currentLevel: number;
   disableCursor: boolean;
@@ -12,8 +13,14 @@ interface SkillProps {
 }
 
 export function Skill(props: SkillProps) {
+  const opacity = props.inactive ? 0.5 : 1;
   const color =
-    props.state === "unavailable" ? "#bfbfbf" : props.state === "available" ? "gray" : COLOR_STAT_BONUS_BLUE;
+    props.state === "unavailable"
+      ? `rgb(191,191,191,${opacity})`
+      : props.state === "available"
+      ? `rgba(128,128,128,${opacity})`
+      : COLOR_STAT_BONUS_BLUE_RGBA(opacity);
+  const iconColor = props.state === "unavailable" ? `rgba(128,128,128,${opacity})` : `rgba(73,71,71,${opacity})`;
 
   return (
     <Tooltip title={props.text} placement="top" followCursor style={{ fontSize: 40 }}>
@@ -37,15 +44,14 @@ export function Skill(props: SkillProps) {
           color: color,
         }}
       >
-        <div style={{ color: props.state === "unavailable" ? "gray" : "#494747" }}>{props.children}</div>
-        {
+        <div style={{ color: iconColor }}>{props.children}</div>
+        {!props.special && (
           <div
             style={{
               position: "absolute",
               background: COLOR_MENU_BACKGROUND,
               border: `2px solid ${color}`,
               borderRadius: 4,
-              // padding: "1px 3px",
               fontWeight: "bold",
               fontSize: 12,
               right: -12,
@@ -58,13 +64,13 @@ export function Skill(props: SkillProps) {
               style={{
                 marginTop: -1,
                 padding: "1px 3px",
-                color: props.state === "unavailable" ? "gray" : "#494747",
+                color: iconColor,
               }}
             >
               {props.currentLevel}/{props.special ? 1 : 3}
             </div>
           </div>
-        }
+        )}
       </div>
     </Tooltip>
   );

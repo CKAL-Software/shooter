@@ -15,7 +15,6 @@ import {
   GiSupersonicBullet,
 } from "react-icons/gi";
 import { FaDollarSign } from "react-icons/fa";
-import { Gun } from "../Weapons/Gun";
 
 const skillIconStyle: CSSProperties = { fontSize: 30 };
 
@@ -55,7 +54,20 @@ export type WeaponStat =
   | Stat.DropChance
   | Stat.Burn;
 
-export type PlayerStat = Stat.MaxHealth | Stat.MoveSpeed | WeaponStat;
+export type PlayerStat =
+  | Stat.MaxHealth
+  | Stat.MoveSpeed
+  | Stat.Damage
+  | Stat.ReloadSpeed
+  | Stat.CritChance
+  | Stat.Range
+  | Stat.Recoil
+  | Stat.FireRate
+  | Stat.AmmoCost
+  | Stat.Velocity
+  | Stat.Penetration
+  | Stat.DropChance
+  | Stat.Burn;
 
 export interface Skill<Stat> {
   stat: Stat;
@@ -158,33 +170,33 @@ export const PenetrationSkill: SkillConstructor<WeaponStat> = (getEffect: Effect
 });
 
 export const PistolSkills: Skill<WeaponStat>[] = [
-  MultiShotSkill((points) => points * 10),
-  BurnSkill((points) => points * 10),
-  PenetrationSkill((points) => points * 10),
-  CritChanceSkill((points) => points * 10),
-  AmmoCostSkill((points) => points * 10),
-  DropChanceSkill((points) => points * 10),
-  FireRateSkill((points) => -points * 3),
-  RecoilSkill((points) => -points * 3),
-  RangeSkill((points) => points * 10),
-  DamageSkill((points) => points * 10),
-  ReloadSkill((points, entity) => -points * 0.1 * (entity as Gun).getStat(Stat.ReloadSpeed, true)),
-  MagSizeSkill((p) => p),
+  MultiShotSkill((points) => ({ effect: points * 1, isAbsolute: true })),
+  BurnSkill((points) => ({ effect: points * 10, isAbsolute: true })),
+  PenetrationSkill((points) => ({ effect: points * 10, isAbsolute: true })),
+  CritChanceSkill((points) => ({ effect: points * 10, isAbsolute: true })),
+  AmmoCostSkill((points) => ({ effect: points * 10, isAbsolute: true })),
+  DropChanceSkill((points) => ({ effect: points * 10, isAbsolute: true })),
+  FireRateSkill((points) => ({ effect: -points * 3, isAbsolute: true })),
+  RecoilSkill((points) => ({ effect: -points * 3, isAbsolute: true })),
+  RangeSkill((points) => ({ effect: points * 10, isAbsolute: true })),
+  DamageSkill((points) => ({ effect: points * 0.1, isAbsolute: false })),
+  ReloadSkill((points) => ({ effect: points * 10, isAbsolute: true })),
+  MagSizeSkill((p) => ({ effect: p, isAbsolute: true })),
 ];
 
 export const ShotgunSkills: Skill<WeaponStat>[] = [
-  BurnSkill((points) => points * 10),
-  PenetrationSkill((points) => points * 10),
-  CritChanceSkill((points) => points * 10),
-  AmmoCostSkill((points) => points * 10),
-  DropChanceSkill((points) => points * 10),
-  FireRateSkill((points) => -points * 3),
-  RecoilSkill((points) => -points * 3),
-  RangeSkill((points) => points * 10),
-  ReloadSkill((points, entity) => -points * 0.1 * (entity as Gun).getStat(Stat.ReloadSpeed, true)),
-  MagSizeSkill((p) => p),
-  DamageSkill((points) => points * 10),
-  MultiShotSkill((points) => points * 10),
+  MultiShotSkill((points) => ({ effect: points * 1, isAbsolute: true })),
+  BurnSkill((points) => ({ effect: points * 10, isAbsolute: true })),
+  PenetrationSkill((points) => ({ effect: points * 10, isAbsolute: true })),
+  CritChanceSkill((points) => ({ effect: points * 10, isAbsolute: true })),
+  AmmoCostSkill((points) => ({ effect: points * 10, isAbsolute: true })),
+  DropChanceSkill((points) => ({ effect: points * 10, isAbsolute: true })),
+  FireRateSkill((points) => ({ effect: -points * 3, isAbsolute: true })),
+  RecoilSkill((points) => ({ effect: -points * 3, isAbsolute: true })),
+  RangeSkill((points) => ({ effect: points * 10, isAbsolute: true })),
+  DamageSkill((points) => ({ effect: points * 10, isAbsolute: true })),
+  ReloadSkill((points) => ({ effect: points * 10, isAbsolute: true })),
+  MagSizeSkill((p) => ({ effect: p, isAbsolute: true })),
 ];
 
 // export const PistolNiceSkillSheet: SkillSheet = {

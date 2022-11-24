@@ -36,7 +36,7 @@ export interface SNode {
 
 export type Direction = "a" | "s" | "d" | "w";
 
-export type EffectFunction = (points: number, entity: Gun | Player) => number;
+export type EffectFunction = (points: number) => { effect: number; isAbsolute: boolean };
 
 export interface SkillExtended<T> extends Skill<T> {
   points: number;

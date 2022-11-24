@@ -18,8 +18,8 @@ export function SkillTree(props: SkillTreeProps) {
         .sort((a, b) => a.skillTreeIndex - b.skillTreeIndex)
         .map((gs, i) => {
           const isMaxLevel = gs.points === 3;
-          const beforeValue = gs.getEffect(isMaxLevel ? gs.points - 1 : gs.points, props.gun);
-          const afterValue = gs.getEffect(isMaxLevel ? gs.points : gs.points + 1, props.gun);
+          const beforeValue = gs.getEffect(isMaxLevel ? gs.points - 1 : gs.points);
+          const afterValue = gs.getEffect(isMaxLevel ? gs.points : gs.points + 1);
           let text = gs.description.replace("<before>", beforeValue + "").replace("<after>", afterValue + "");
           if (isMaxLevel) {
             text = text.replace("Increase", "Increased").replace("Decrease", "Decreased");
@@ -34,25 +34,16 @@ export function SkillTree(props: SkillTreeProps) {
             ? skillPointsUsed < 3
             : false;
 
-          const disableCursor =
-            props.gun.getUnusedSkillPoints() === 0 || unavailable || (isSpecial ? gs.points === 1 : gs.points === 3);
+          const isInactive = props.gun.getUnusedSkillPoints() === 0;
+          const disableCursor = isInactive || unavailable || (isSpecial ? gs.points === 1 : gs.points === 3);
 
           return (
             <Skill
               key={gs.stat}
               text={text}
+              inactive={isInactive}
               special={isSpecial}
-              state={
-                unavailable
-                  ? "unavailable"
-                  : gs.points === 0
-                  ? "available"
-                  : (isSpecial && gs.points === 1) || gs.points === 3
-                  ? "maxed"
-                  : gs.points < 3
-                  ? "picked"
-                  : "bonus"
-              }
+              state={unavailable ? "unavailable" : gs.points === 0 ? "available" : "picked"}
               currentLevel={gs.points}
               onClick={() => {
                 props.gun.upgrade(gs.stat);
