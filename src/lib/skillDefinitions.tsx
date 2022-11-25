@@ -34,6 +34,7 @@ export enum Stat {
   Burn,
   MaxHealth,
   MoveSpeed,
+  Reward,
 }
 
 export type WeaponStats = { [stat in WeaponStat]: number };
@@ -53,6 +54,17 @@ export type WeaponStat =
   | Stat.Projectiles
   | Stat.DropChance
   | Stat.Burn;
+
+export type EnemyStat =
+  | Stat.MoveSpeed
+  | Stat.MaxHealth
+  | Stat.Damage
+  | Stat.FireRate
+  | Stat.Range
+  | Stat.Recoil
+  | Stat.Velocity
+  | Stat.Projectiles
+  | Stat.Reward;
 
 export type PlayerStat =
   | Stat.MaxHealth

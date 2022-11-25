@@ -75,8 +75,8 @@ export function WeaponStats(props: WeaponStatsProps) {
       <div style={{ fontSize: 20, fontWeight: "bold", marginLeft: 0 }}>{props.weapon.getName()}</div>
       <div style={{ display: "flex", alignItems: "center", margin: "4px 0" }}>
         <ProgressBar
-          percentage={props.weapon.getExperience() / experienceThresholdsNormal[props.weapon.getLevel() - 1]}
-          text={props.weapon.getExperience() + "/" + experienceThresholdsNormal[props.weapon.getLevel() - 1]}
+          percentage={props.weapon.getExperience() / experienceThresholdsNormal[props.weapon.getLevel() + 1]}
+          text={props.weapon.getExperience() + "/" + experienceThresholdsNormal[props.weapon.getLevel() + 1]}
           barColor="#90caf9"
           backgroundColor={"rgba(0,0,0,0.15)"}
           height={20}

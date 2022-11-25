@@ -65,13 +65,6 @@ export let menuOpen = false;
 export let shopOpen = false;
 export const shopItems: Gun[] = [new Shotgun(), new Sniper()];
 
-let enemyStat = {
-  hp: 4,
-  velocity: 0.5,
-  damage: 1,
-  reward: 1,
-};
-
 let hasTeleported = 0;
 let canOpenShop = true;
 
@@ -198,10 +191,6 @@ export function Shooter() {
             maps.set(posToKey(currentMap.position), currentMap);
             enemiesCounter++;
             enemiesLeft = enemiesCounter;
-            enemyStat.damage++;
-            enemyStat.hp++;
-            enemyStat.reward++;
-            enemyStat.velocity += 0.1;
           }
           player.enterTeleporter(tpSide);
           hasTeleported = 2;
@@ -221,7 +210,7 @@ export function Shooter() {
           timeUntilNextSpawn = 10;
           enemiesLeft--;
           enemies.push(
-            new BasicEnemy({ ...enemyStat, position: findRandomLocation(currentMap.layout, player.getPosition()) })
+            new BasicEnemy({ level: 1, position: findRandomLocation(currentMap.layout, player.getPosition()) })
           );
         }
 

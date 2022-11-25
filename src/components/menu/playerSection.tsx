@@ -126,8 +126,8 @@ export function PlayerSection() {
             <div style={{ marginBottom: 4, fontSize: 16, marginLeft: 2 }}>Experience</div>
             <div style={{ display: "flex", alignItems: "center" }}>
               <ProgressBar
-                percentage={player.getExperience() / experienceThresholdsPlayer[player.getLevel() - 1]}
-                text={player.getExperience() + "/" + experienceThresholdsPlayer[player.getLevel() - 1]}
+                percentage={player.getExperience() / experienceThresholdsPlayer[player.getLevel() + 1]}
+                text={player.getExperience() + "/" + experienceThresholdsPlayer[player.getLevel() + 1]}
                 barColor="#90caf9"
                 backgroundColor={"rgba(0,0,0,0.15)"}
                 height={30}

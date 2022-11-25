@@ -1,11 +1,5 @@
 import { enemies, currentMap, miscellaneous, numberAnimations, player, projectiles } from "../../Shooter";
-import {
-  ANIM_COLLECT_TIME,
-  COLOR_HP_BAR_GREEN,
-  COLOR_HP_BAR_RED,
-  TICK_DURATION_S,
-  TILE_SIZE,
-} from "../../lib/definitions";
+import { ANIM_COLLECT_TIME, COLOR_HP_BAR_GREEN, COLOR_HP_BAR_RED, TICK_DURATION_S } from "../../lib/definitions";
 import { MovingObject, MovingObjectConfig } from "../MovingObject";
 import { calculateDirection, calculateDistance, drawBall, getObstacles, pathToPoint } from "../../lib/canvasFunctions";
 import { RisingText } from "../RisingText";
@@ -17,19 +11,16 @@ import { Gun } from "../../Weapons/Gun";
 import { HealthOrb } from "../Items/HealthOrb";
 import { AmmoOrb } from "../Items/AmmoOrb";
 import { MoneyOrb } from "../Items/MoneyOrb";
+import { EnemyStat, Stat } from "../../lib/skillDefinitions";
 
 export interface EnemyConfig extends MovingObjectConfig {
-  hp: number;
-  damage: number;
-  reward: number;
+  level: number;
 }
 
 export abstract class Enemy extends MovingObject {
+  private level;
   private pathIndex = 0;
-  private maxHp: number;
   private currentHp: number;
-  private damage: number;
-  private reward: number;
   private path: SNode[] = [];
   private ticksUntilPathRecalculated = 0;
   private timeUntilShot = this.getTimeUntilNextShot();
@@ -37,15 +28,17 @@ export abstract class Enemy extends MovingObject {
   private spawnTimeLeft = 4;
   private lastDmgAnim: RisingText | undefined = undefined;
   private lastDmgAnimTimeLeft = 0;
+  private stats: { [stat in EnemyStat]: number };
 
   constructor(config: EnemyConfig) {
     super(config);
 
-    this.maxHp = config.hp;
-    this.currentHp = config.hp;
+    this.level = config.level;
+    this.stats = this.getStatsForLevel(this.level);
+    this.currentHp = this.stats[Stat.MaxHealth];
+    this.velocity = this.stats[Stat.MoveSpeed];
+
     this.color = config.color;
-    this.damage = config.damage;
-    this.reward = config.reward;
   }
 
   move() {
@@ -136,10 +129,10 @@ export abstract class Enemy extends MovingObject {
           new NormalProjectile({
             position: this.position,
             direction: calculateDirection(this.position, leadShotDirection || player.getPosition()),
-            velocity: 1.5,
-            damage: this.damage,
+            velocity: this.stats[Stat.Velocity],
+            damage: this.stats[Stat.Damage],
             size: 5,
-            range: TILE_SIZE * 10,
+            range: this.stats[Stat.Range],
             color: "red",
             shotByPlayer: false,
             isCriticalHit: false,
@@ -189,7 +182,7 @@ export abstract class Enemy extends MovingObject {
     ctx.rect(
       drawPos.x - (width / 2) * (doubleLength ? 2 : 1),
       drawPos.y - (this.size + height + 4),
-      Math.round(width * (doubleLength ? 2 : 1) * (this.currentHp / this.maxHp)),
+      Math.round(width * (doubleLength ? 2 : 1) * (this.currentHp / this.stats[Stat.MaxHealth])),
       height
     );
     ctx.fillStyle = COLOR_HP_BAR_GREEN;
@@ -279,16 +272,16 @@ export abstract class Enemy extends MovingObject {
     this.shouldDraw = false;
 
     player.addTakedown();
-    player.addExperience(this.reward);
+    player.addExperience(this.stats[Stat.Reward]);
     ownerGun?.addTakedown();
-    ownerGun?.addExperience(this.reward);
+    ownerGun?.addExperience(this.stats[Stat.Reward]);
 
     // if (Math.random() < 0.05) {
     if (Math.random() < 1) {
       // const numExpOrbs = Math.floor(Math.random() * 6) + 1;
       const numExpOrbs = 1;
       for (let i = 0; i < numExpOrbs; i++) {
-        const exp = Math.round(Math.random() * this.reward * 4);
+        const exp = Math.round(Math.random() * this.stats[Stat.Reward] * 4);
 
         miscellaneous.push(new ExperienceOrb(this.position, exp));
       }
@@ -325,4 +318,6 @@ export abstract class Enemy extends MovingObject {
   getPathIndex() {
     return this.pathIndex;
   }
+
+  abstract getStatsForLevel(level: number): { [stat in EnemyStat]: number };
 }
