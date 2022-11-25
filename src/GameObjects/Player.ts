@@ -58,19 +58,19 @@ export class Player extends MovingObject {
     super({ position: { x: 180, y: 280 }, size: 13, velocity: START_VELOCITY, color: COLOR_PLAYER });
 
     this.stats = {
-      maxHealth: START_MAX_HEALTH,
-      moveSpeed: this.velocity,
-      ammoCost: 0,
-      damage: 0,
-      dropChance: 0,
-      velocity: 0,
-      range: 0,
-      recoil: 0,
-      reloadSpeed: 0,
-      fireRate: 0,
-      burn: 0,
-      critChance: 0,
-      penetration: 0,
+      [Stat.MaxHealth]: START_MAX_HEALTH,
+      [Stat.MoveSpeed]: this.velocity,
+      [Stat.AmmoCost]: 0,
+      [Stat.Damage]: 0,
+      [Stat.DropChance]: 0,
+      [Stat.Velocity]: 0,
+      [Stat.Range]: 0,
+      [Stat.Recoil]: 0,
+      [Stat.ReloadSpeed]: 0,
+      [Stat.FireRate]: 0,
+      [Stat.Burn]: 0,
+      [Stat.CritChance]: 0,
+      [Stat.Penetration]: 0,
     };
   }
 
@@ -107,7 +107,7 @@ export class Player extends MovingObject {
     ctx.rect(
       drawPos.x - (width / 2) * (doubleLength ? 2 : 1),
       drawPos.y - (this.size + height + 4),
-      Math.round(width * (doubleLength ? 2 : 1) * (this.health / this.stats.maxHealth)),
+      Math.round(width * (doubleLength ? 2 : 1) * (this.health / this.stats[Stat.MaxHealth])),
       height
     );
     ctx.fillStyle = COLOR_HP_BAR_GREEN;
@@ -220,12 +220,16 @@ export class Player extends MovingObject {
     }
     this.lastExpAnimTimeLeft = ANIM_COLLECT_TIME;
 
-    while (this.experience >= experienceThresholdsPlayer[this.level - 1]) {
-      this.experience -= experienceThresholdsPlayer[this.level - 1];
-      this.level++;
-      this.unusedSkillPoints++;
-      numberAnimations.push(new RisingText(this.position, "Weapon level up!", COLOR_EXP));
+    while (this.experience >= experienceThresholdsPlayer[this.level + 1]) {
+      this.experience -= experienceThresholdsPlayer[this.level + 1];
+      this.levelUp();
     }
+  }
+
+  levelUp() {
+    this.level++;
+    this.unusedSkillPoints++;
+    numberAnimations.push(new RisingText(this.position, "Level up!", COLOR_EXP));
   }
 
   addTakedown() {
@@ -285,10 +289,10 @@ export class Player extends MovingObject {
 
     let newValue = this.getEffect(stat, this.skillPointsUsed[stat] || 0);
 
-    if (stat === "moveSpeed") {
+    if (stat === Stat.MoveSpeed) {
       this.velocity = newValue;
     }
-    if (stat === "maxHealth") {
+    if (stat === Stat.MaxHealth) {
       this.health += newValue - this.stats[stat];
     }
 
@@ -405,10 +409,6 @@ export class Player extends MovingObject {
     return this.weapons;
   }
 
-  getMaxHealth() {
-    return this.stats.maxHealth;
-  }
-
   getHealth() {
     return this.health;
   }
@@ -433,7 +433,7 @@ export class Player extends MovingObject {
   }
 
   addHealth(health: number) {
-    this.health = Math.min(this.stats.maxHealth, this.health + health);
+    this.health = Math.min(this.stats[Stat.MaxHealth], this.health + health);
     this.setTint(0, 255, 0);
 
     if (this.lastHealthAnimTimeLeft > 0) {

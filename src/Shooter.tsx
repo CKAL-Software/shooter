@@ -19,7 +19,7 @@ import {
 import { Enemy } from "./GameObjects/Enemies/Enemy";
 import { Player } from "./GameObjects/Player";
 import { RisingText } from "./GameObjects/RisingText";
-import { ControlPanel } from "./components/controlPanel";
+import { ControlPanel } from "./components/controlPanel/controlPanel";
 import { Direction } from "./lib/models";
 import { GameObject } from "./GameObjects/GameObject";
 import {
@@ -40,7 +40,6 @@ import { Gun } from "./Weapons/Gun";
 import { Shotgun } from "./Weapons/Shotgun";
 import { Sniper } from "./Weapons/Sniper";
 import { GiSpikyExplosion } from "react-icons/gi";
-import { Stat } from "./lib/skillDefinitions";
 
 const moveDirections = new Set<Direction>();
 const r = getSeededRandomGenerator(getRandomInt(0, 100));
@@ -78,27 +77,6 @@ let canOpenShop = true;
 
 export function Shooter() {
   const [anims, setAnims] = useState<RisingText[]>([]);
-  const [hp, setHp] = useState(0);
-  const [maxHp, setMaxHp] = useState(0);
-  const [magAmmo, setMagAmmo] = useState(0);
-  const [magSize, setMagSize] = useState(0);
-  const [ammo, setAmmo] = useState(0);
-  const [money, setMoney] = useState(0);
-  const [playerExp, setPlayerExp] = useState(0);
-  const [playerLevel, setPlayerLevel] = useState(0);
-  const [weaponExp, setWeaponExp] = useState(0);
-  const [weaponLevel, setWeaponLevel] = useState(0);
-  const [fireRate, setFireRate] = useState(0);
-  const [velocity, setVelocity] = useState(0);
-  const [weaponVelocity, setWeaponVelocity] = useState(0);
-  const [weaponName, setWeaponName] = useState("");
-  const [reloadProgress, setReloadProgress] = useState(0);
-  const [damage, setDamage] = useState(0);
-  const [range, setRange] = useState(0);
-  const [recoil, setRecoil] = useState(0);
-  const [critChance, setCritChance] = useState(0);
-  const [numBullets, setNumBullets] = useState(0);
-  const [reloadSpeed, setreloadSpeed] = useState(0);
   const [tint, setTint] = useState(0);
   const [tintColor, setTintColor] = useState("0,0,0");
   const [currentMapPosition, setCurrentMapPosition] = useState(currentMap.position);
@@ -249,32 +227,8 @@ export function Shooter() {
 
         setAnims([...numberAnimations]);
 
-        setHp(player.getHealth());
-        setPlayerExp(player.getExperience());
-        setPlayerLevel(player.getLevel());
-        setMaxHp(player.getMaxHealth());
         setTint(player.getTintIntencity());
         setTintColor(player.getTintColor());
-        setMoney(player.getMoney());
-
-        const currWeap = player.getCurrentWeapon();
-
-        setWeaponExp(currWeap.getExperience());
-        setWeaponLevel(currWeap.getLevel());
-        setVelocity(player.getVelocity());
-        setWeaponName(currWeap.getName());
-        setReloadProgress(currWeap.getReloadProgress());
-        setAmmo(currWeap.getAmmo());
-        setMagSize(currWeap.getStat(Stat.MagSize));
-        setWeaponVelocity(currWeap.getStat(Stat.Velocity));
-        setFireRate(currWeap.getStat(Stat.FireRate));
-        setreloadSpeed(currWeap.getStat(Stat.ReloadSpeed));
-        setRange(currWeap.getStat(Stat.Range));
-        setRecoil(currWeap.getStat(Stat.Recoil));
-        setDamage(currWeap.getStat(Stat.Damage));
-        setNumBullets(currWeap.getStat(Stat.Projectiles));
-        setCritChance(currWeap.getStat(Stat.CritChance));
-        setMagAmmo(currWeap.getMagazineAmmo());
 
         setCurrentMapPosition(currentMap.position);
         setAllMaps(new Map(maps));
@@ -360,29 +314,7 @@ export function Shooter() {
                 }}
               />
             </div>
-            <ControlPanel
-              hp={hp}
-              range={range}
-              recoil={recoil}
-              damage={damage}
-              critChance={critChance}
-              projectiles={numBullets}
-              maxHp={maxHp}
-              money={money}
-              magSize={magSize}
-              magAmmo={magAmmo}
-              ammo={ammo}
-              playerExp={playerExp}
-              playerLevel={playerLevel}
-              weaponExp={weaponExp}
-              weaponLevel={weaponLevel}
-              velocity={velocity}
-              weaponVelocity={weaponVelocity}
-              fireRate={fireRate}
-              weaponName={weaponName}
-              reloadProgress={reloadProgress}
-              reloadSpeed={reloadSpeed}
-            />
+            <ControlPanel />
           </div>
         </div>
       </div>

@@ -19,21 +19,21 @@ import { FaDollarSign } from "react-icons/fa";
 const skillIconStyle: CSSProperties = { fontSize: 30 };
 
 export enum Stat {
-  Damage = "damage",
-  ReloadSpeed = "reloadSpeed",
-  MagSize = "magSize",
-  CritChance = "critChance",
-  Range = "range",
-  Recoil = "recoil",
-  FireRate = "fireRate",
-  AmmoCost = "ammoCost",
-  Velocity = "velocity",
-  Penetration = "penetration",
-  Projectiles = "projectiles",
-  DropChance = "dropChance",
-  Burn = "burn",
-  MaxHealth = "maxHealth",
-  MoveSpeed = "moveSpeed",
+  Damage,
+  ReloadSpeed,
+  MagSize,
+  CritChance,
+  Range,
+  Recoil,
+  FireRate,
+  AmmoCost,
+  Velocity,
+  Penetration,
+  Projectiles,
+  DropChance,
+  Burn,
+  MaxHealth,
+  MoveSpeed,
 }
 
 export type WeaponStats = { [stat in WeaponStat]: number };

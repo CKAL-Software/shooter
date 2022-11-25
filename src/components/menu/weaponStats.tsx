@@ -11,7 +11,7 @@ import { percentFormatter, round } from "../../lib/functions";
 import { Stat, WeaponStat } from "../../lib/skillDefinitions";
 import { player } from "../../Shooter";
 import { Gun } from "../../Weapons/Gun";
-import { ProgressBar } from "../controlPanelElements/progressBar";
+import { ProgressBar } from "../progressBar";
 import { LevelNumber } from "../levelNumber";
 
 interface WeaponStatsProps {
@@ -84,21 +84,23 @@ export function WeaponStats(props: WeaponStatsProps) {
         />
         <LevelNumber level={props.weapon.getLevel()} />
       </div>
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "min-content min-content",
-          columnGap: 8,
-          margin: "8px 0 12px",
-          fontSize: 20,
-        }}
-      >
-        <div style={{ textAlign: "end" }}>{props.weapon.getAmmo()}</div>
-        <GiHeavyBullets style={{ alignSelf: "center" }} />
-        <div style={{ textAlign: "end" }}>{props.weapon.getDamageDealt()}</div>
-        <GiSwordWound style={{ alignSelf: "center" }} />
-        <div style={{ textAlign: "end" }}>{props.weapon.getTakedowns()}</div>
-        <GiSkullCrossedBones style={{ alignSelf: "center" }} />
+      <div style={{ display: "flex", justifyContent: "flex-end", marginRight: 24, margin: "8px 24px 16px 0" }}>
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "min-content min-content",
+            columnGap: 8,
+
+            fontSize: 20,
+          }}
+        >
+          <div style={{ textAlign: "end" }}>{props.weapon.getAmmo()}</div>
+          <GiHeavyBullets style={{ alignSelf: "center" }} />
+          <div style={{ textAlign: "end" }}>{props.weapon.getDamageDealt()}</div>
+          <GiSwordWound style={{ alignSelf: "center" }} />
+          <div style={{ textAlign: "end" }}>{props.weapon.getTakedowns()}</div>
+          <GiSkullCrossedBones style={{ alignSelf: "center" }} />
+        </div>
       </div>
       <div
         style={{

@@ -4,7 +4,7 @@ import { Orb } from "./Orb";
 
 export class ExperienceOrb extends Orb {
   private experience: number;
-  private opacity: number = 0;
+  private opacity: number = 0.5;
   private increaseOpacity = true;
 
   constructor(position: Point, experience: number) {

@@ -1,6 +1,6 @@
 import { ReactElement, useMemo } from "react";
-import { nTimes } from "../../lib/functions";
-import { ProgressBar } from "./progressBar";
+import { nTimes } from "../../../lib/functions";
+import { ProgressBar } from "../../progressBar";
 
 interface MagazineProps {
   reloadProgress: number;

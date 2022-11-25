@@ -8,7 +8,7 @@ export class AmmoOrb extends Orb {
   private weapon: string;
 
   constructor(position: Point, ammo: number, weapon: string) {
-    super(position, 8, "lightgreen");
+    super(position, 12, "#119d42");
 
     this.ammo = ammo;
     this.weapon = weapon;

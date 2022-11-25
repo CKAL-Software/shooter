@@ -33,8 +33,8 @@ export type EnemyConstructor = typeof BasicEnemy;
 
 export type ActualProjectile = NormalProjectile;
 
-export const experienceThresholdsNormal = [10, 20, 30, 40, 50, 60, 70, 80, 90, 100];
-export const experienceThresholdsPlayer = [50, 100, 150, 200, 250, 300, 350, 400, 450, 500];
+export const experienceThresholdsNormal = [0, 0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100];
+export const experienceThresholdsPlayer = [0, 0, 50, 100, 150, 200, 250, 300, 350, 400, 450, 500];
 
 export const COLOR_MONEY = "#edd500";
 export const COLOR_EXP = "rgba(144,202,249,1)";
@@ -46,10 +46,8 @@ export const COLOR_HP_BAR_RED = "red";
 export const COLOR_HP_BAR_GREEN = "#36e400";
 export const COLOR_HP_GREEN = "#3cff00";
 export const COLOR_MENU_BACKGROUND = "#ded4b2";
-// export const COLOR_STAT_BONUS_BLUE = "#0091df";
 export const COLOR_STAT_BONUS_BLUE = "rgba(2,166,255,1)";
 export const COLOR_STAT_BONUS_BLUE_RGBA = (opacity: number) => COLOR_STAT_BONUS_BLUE.replace("1)", `${opacity})`);
-// export const COLOR_STAT_BONUS_ORANGE = "#ff6c00";
 export const COLOR_STAT_BONUS_ORANGE = "#ed6400";
 export const COLOR_SELECTED = "#4f97d1";
 export const COLOR_GUN_SELECTED = "#4f97d1";

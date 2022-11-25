@@ -50,7 +50,7 @@ export abstract class Gun {
 
   protected getNewDirectionAfterRecoil(target: Point) {
     const direction = calculateDirection(player.getPosition(), target);
-    const newAngle = Math.random() * 2 * this.stats.recoil - this.stats.recoil;
+    const newAngle = Math.random() * 2 * this.getStat(Stat.Recoil) - this.getStat(Stat.Recoil);
     const newDirection = changeDirection(direction, newAngle);
     return newDirection;
   }
@@ -66,7 +66,7 @@ export abstract class Gun {
 
     this.ammo--;
     this.magazineAmmo--;
-    this.fireTimeRemaining = 60 / this.stats.fireRate;
+    this.fireTimeRemaining = 60 / this.getStat(Stat.FireRate);
 
     this.shoot(target);
 
@@ -74,15 +74,19 @@ export abstract class Gun {
   }
 
   initiateReload() {
-    if (this.reloadSpeedRemaining === 0 && this.ammo > 0 && this.magazineAmmo !== this.stats.magSize) {
-      this.reloadSpeedRemaining = this.stats.reloadSpeed;
+    if (
+      this.reloadSpeedRemaining === 0 &&
+      this.ammo > 0 &&
+      this.magazineAmmo !== this.getStat(this.getStat(Stat.MagSize))
+    ) {
+      this.reloadSpeedRemaining = this.getStat(Stat.ReloadSpeed);
       this.magazineAmmo = 0;
       this.shouldReload = true;
     }
   }
 
   reload() {
-    this.magazineAmmo = Math.min(this.stats.magSize, this.ammo);
+    this.magazineAmmo = Math.min(this.getStat(Stat.MagSize), this.ammo);
     this.shouldReload = false;
   }
 
@@ -103,12 +107,9 @@ export abstract class Gun {
   addExperience(experience: number) {
     this.experience += experience;
 
-    while (this.experience >= experienceThresholdsNormal[this.level - 1]) {
-      this.experience -= experienceThresholdsNormal[this.level - 1];
-      this.level++;
-      this.unusedSkillPoints++;
-      this.onLevelUp(this.level - 1);
-      numberAnimations.push(new RisingText(player.getPosition(), "Level up!", COLOR_EXP));
+    while (this.experience >= experienceThresholdsNormal[this.level + 1]) {
+      this.experience -= experienceThresholdsNormal[this.level + 1];
+      this.levelUp();
     }
   }
 
@@ -124,7 +125,7 @@ export abstract class Gun {
     if (!this.shouldReload) {
       return 0;
     }
-    return 1 - this.reloadSpeedRemaining / this.stats.reloadSpeed;
+    return 1 - this.reloadSpeedRemaining / this.getStat(Stat.ReloadSpeed);
   }
 
   getLevel() {
@@ -205,8 +206,8 @@ export abstract class Gun {
   }
 
   protected getDamageForNextBullet() {
-    if (Math.random() < this.stats.critChance) {
-      return this.stats.damage * 3;
+    if (Math.random() < this.getStat(Stat.CritChance)) {
+      return this.getStat(Stat.Damage) * 3;
     }
 
     return this.getStat(Stat.Damage);
@@ -263,16 +264,15 @@ export abstract class Gun {
     );
   }
 
-  onLevelUp(levelIndex: number) {
-    const upgrade = this.getLevelBonusStats(levelIndex);
+  levelUp() {
+    numberAnimations.push(new RisingText(player.getPosition(), "Weapon level up!", COLOR_EXP));
 
-    this.stats.damage += upgrade.damage;
-    this.stats.magSize += upgrade.magSize;
-    this.stats.reloadSpeed -= upgrade.reloadSpeed;
-    this.stats.recoil -= upgrade.recoil;
-    this.stats.velocity += upgrade.velocity;
-    this.stats.fireRate += upgrade.fireRate;
-    this.stats.range += upgrade.range;
+    this.level++;
+    this.unusedSkillPoints++;
+
+    const upgrades = this.getLevelBonusStats(this.level);
+
+    Object.entries(upgrades).forEach(([stat, effect]) => (this.stats[stat as unknown as WeaponStat] += effect));
   }
 
   abstract getLevelBonusStats(levelIndex: number): { [stat in WeaponStat]: number };

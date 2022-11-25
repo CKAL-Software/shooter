@@ -11,7 +11,7 @@ import {
 import { percentFormatter, round } from "../../lib/functions";
 import { PlayerStat, Stat } from "../../lib/skillDefinitions";
 import { player } from "../../Shooter";
-import { ProgressBar } from "../controlPanelElements/progressBar";
+import { ProgressBar } from "../progressBar";
 import { RiMoneyDollarCircleFill } from "react-icons/ri";
 import { LevelNumber } from "../levelNumber";
 
@@ -52,6 +52,8 @@ export function PlayerSection() {
     );
   }
 
+  const healthRatio = player.getHealth() / player.getStat(Stat.MaxHealth);
+
   return (
     <div style={{ width: "min-content" }}>
       <div style={{ fontSize: 28, fontWeight: "bold" }}>Player</div>
@@ -69,7 +71,7 @@ export function PlayerSection() {
             style={{
               position: "absolute",
               height: 16,
-              width: `${Math.min(80, (80 * player.getHealth()) / player.getMaxHealth())}px`,
+              width: `${Math.min(80, (80 * player.getHealth()) / player.getStat(Stat.MaxHealth))}px`,
               background: COLOR_HP_BAR_GREEN,
             }}
           />
@@ -112,15 +114,9 @@ export function PlayerSection() {
           <div style={{ marginBottom: 8 }}>
             <div style={{ marginBottom: 4, fontSize: 16, marginLeft: 2 }}>Health</div>
             <ProgressBar
-              percentage={player.getHealth() / player.getMaxHealth()}
-              text={player.getHealth() + "/" + player.getMaxHealth()}
-              barColor={
-                player.getHealth() / player.getMaxHealth() <= 0.25
-                  ? "#d50000"
-                  : player.getHealth() / player.getMaxHealth() <= 0.5
-                  ? "#d5c800"
-                  : "#32d500"
-              }
+              percentage={healthRatio}
+              text={player.getHealth() + "/" + player.getStat(Stat.MaxHealth)}
+              barColor={healthRatio <= 0.25 ? "#d50000" : healthRatio <= 0.5 ? "#d5c800" : "#32d500"}
               backgroundColor={"rgba(0,0,0,0.15)"}
               height={30}
               width={300}

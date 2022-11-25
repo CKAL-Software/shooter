@@ -1,26 +1,25 @@
-import { PistolSkills } from "../lib/skillDefinitions";
+import { PistolSkills, Stat } from "../lib/skillDefinitions";
 import { Gun } from "./Gun";
 import { TILE_SIZE } from "../lib/definitions";
-import { MAP_SIZE } from "../Definitions/Maps";
 
 export class Sniper extends Gun {
   constructor() {
     super({
       name: "Sniper",
       stats: {
-        damage: 15,
-        magSize: 3,
-        reloadSpeed: 2,
-        fireRate: 40,
-        velocity: 400,
-        recoil: 5,
-        critChance: 0.2,
-        range: TILE_SIZE * MAP_SIZE,
-        projectiles: 1,
-        penetration: 0,
-        burn: 0,
-        dropChance: 0,
-        ammoCost: 10,
+        [Stat.Damage]: 15,
+        [Stat.MagSize]: 3,
+        [Stat.ReloadSpeed]: 25,
+        [Stat.FireRate]: 40,
+        [Stat.Velocity]: 400,
+        [Stat.Recoil]: 5,
+        [Stat.CritChance]: 0.2,
+        [Stat.Range]: TILE_SIZE * 5,
+        [Stat.Projectiles]: 1,
+        [Stat.Penetration]: 0,
+        [Stat.DropChance]: 0,
+        [Stat.Burn]: 0,
+        [Stat.AmmoCost]: 10,
       },
       projectileSize: 4,
       projectileColor: "black",
@@ -32,19 +31,19 @@ export class Sniper extends Gun {
 
   getLevelBonusStats(levelIndex: number) {
     return {
-      damage: 10,
-      magSize: [0, 0, 1, 0, 0, 1, 0, 0, 2][levelIndex],
-      reloadSpeed: -0.05,
-      recoil: -0.5,
-      velocity: 20,
-      fireRate: 5,
-      range: 0,
-      projectiles: 0,
-      critChance: 0,
-      penetration: 0,
-      ammoCost: 0,
-      burn: 0,
-      dropChance: 0,
+      [Stat.Damage]: 10,
+      [Stat.MagSize]: [0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 2][levelIndex],
+      [Stat.ReloadSpeed]: -0.5,
+      [Stat.FireRate]: -1,
+      [Stat.Velocity]: 5,
+      [Stat.Recoil]: 3,
+      [Stat.CritChance]: 0,
+      [Stat.Range]: TILE_SIZE * 5,
+      [Stat.Projectiles]: 1,
+      [Stat.Penetration]: 0,
+      [Stat.DropChance]: 0,
+      [Stat.Burn]: 0,
+      [Stat.AmmoCost]: 10,
     };
   }
 }

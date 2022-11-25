@@ -43,4 +43,4 @@ export interface SkillExtended<T> extends Skill<T> {
   skillTreeIndex: number;
 }
 
-export type SkillSheet<T extends string> = { [stat in T]?: SkillExtended<T> };
+export type SkillSheet<T extends number> = { [stat in T]?: SkillExtended<T> };
