@@ -9,7 +9,7 @@ import { numberAnimations, player, projectiles } from "../Shooter";
 
 export interface GunConfig {
   name: string;
-  baseStats: WeaponStats;
+  stats: WeaponStats;
   projectileSize: number;
   projectileColor: string;
   ammo: number;
@@ -33,14 +33,12 @@ export abstract class Gun {
   protected skillSheet: SkillSheet<WeaponStat>;
   protected unusedSkillPoints = 300;
   protected price: number;
-  protected baseStats: WeaponStats;
   protected stats: WeaponStats;
 
   constructor(config: GunConfig) {
     this.name = config.name;
     this.ammo = config.ammo;
-    this.baseStats = { ...config.baseStats };
-    this.stats = { ...config.baseStats };
+    this.stats = { ...config.stats };
     this.projectileSize = config.projectileSize;
     this.projectileColor = config.projectileColor;
     this.price = config.price;
@@ -81,10 +79,6 @@ export abstract class Gun {
       this.magazineAmmo = 0;
       this.shouldReload = true;
     }
-  }
-
-  getStat(stat: WeaponStat, base?: boolean) {
-    return (base ? this.baseStats : this.stats)[stat];
   }
 
   reload() {
@@ -176,15 +170,6 @@ export abstract class Gun {
     }
 
     skill.points++;
-    const { effect, isAbsolute } = skill.getEffect(skill.points);
-
-    const newStat = this.baseStats[stat] + (isAbsolute ? effect : effect * this.baseStats[stat]);
-
-    if (stat === "magSize") {
-      this.stats[stat] = Math.round(newStat);
-    } else {
-      this.stats[stat] = newStat;
-    }
   }
 
   getMagazineAmmo() {
@@ -224,7 +209,7 @@ export abstract class Gun {
       return this.stats.damage * 3;
     }
 
-    return this.getFinalStat(Stat.Damage);
+    return this.getStat(Stat.Damage);
   }
 
   getDamageDealt() {
@@ -235,12 +220,28 @@ export abstract class Gun {
     return this.takedowns;
   }
 
-  getFinalStat(stat: WeaponStat) {
-    if (stat === Stat.MagSize || stat === Stat.Projectiles) {
-      return this.stats[stat];
+  getStat(stat: WeaponStat, base?: boolean) {
+    const baseValue = this.stats[stat];
+
+    if (base) {
+      return baseValue;
     }
 
-    return this.stats[stat] + this.baseStats[stat] * player.getStat(stat);
+    let weaponBonus = 0;
+    let playerBonus = 0;
+
+    const weaponStat = this.skillSheet[stat];
+    if (weaponStat) {
+      const { effect, isAbsolute } = weaponStat.getEffect(weaponStat.points);
+      weaponBonus = isAbsolute ? effect : effect * baseValue;
+    }
+
+    const isAPlayerStat = stat !== Stat.MagSize && stat !== Stat.Projectiles;
+    if (isAPlayerStat) {
+      playerBonus = baseValue * player.getStat(stat);
+    }
+
+    return baseValue + weaponBonus + playerBonus;
   }
 
   shoot(target: Point) {
@@ -250,14 +251,14 @@ export abstract class Gun {
       new NormalProjectile({
         position: player.getPosition(),
         direction: this.getNewDirectionAfterRecoil(target),
-        velocity: this.getFinalStat(Stat.Velocity) * TICK_DURATION_S,
+        velocity: this.getStat(Stat.Velocity) * TICK_DURATION_S,
         damage: damage,
-        range: this.getFinalStat(Stat.Range),
+        range: this.getStat(Stat.Range),
         size: this.projectileSize,
         color: this.projectileColor,
         shotByPlayer: true,
         ownerGun: this,
-        isCriticalHit: damage > this.getFinalStat(Stat.Damage),
+        isCriticalHit: damage > this.getStat(Stat.Damage),
       })
     );
   }
@@ -265,13 +266,13 @@ export abstract class Gun {
   onLevelUp(levelIndex: number) {
     const upgrade = this.getLevelBonusStats(levelIndex);
 
-    this.baseStats.damage += upgrade.damage;
-    this.baseStats.magSize += upgrade.magSize;
-    this.baseStats.reloadSpeed -= upgrade.reloadSpeed;
-    this.baseStats.recoil -= upgrade.recoil;
-    this.baseStats.velocity += upgrade.velocity;
-    this.baseStats.fireRate += upgrade.fireRate;
-    this.baseStats.range += upgrade.range;
+    this.stats.damage += upgrade.damage;
+    this.stats.magSize += upgrade.magSize;
+    this.stats.reloadSpeed -= upgrade.reloadSpeed;
+    this.stats.recoil -= upgrade.recoil;
+    this.stats.velocity += upgrade.velocity;
+    this.stats.fireRate += upgrade.fireRate;
+    this.stats.range += upgrade.range;
   }
 
   abstract getLevelBonusStats(levelIndex: number): { [stat in WeaponStat]: number };

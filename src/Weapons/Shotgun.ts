@@ -10,7 +10,7 @@ export class Shotgun extends Gun {
   constructor() {
     super({
       name: "Shotgun",
-      baseStats: {
+      stats: {
         magSize: 2,
         reloadSpeed: 3,
         fireRate: 60,
@@ -65,7 +65,7 @@ export class Shotgun extends Gun {
 
   getLevelBonusStats(levelIndex: number) {
     return {
-      damage: this.baseStats.damage * 0.2,
+      damage: 10,
       magSize: [0, 0, 1, 0, 0, 1, 0, 0, 2][levelIndex],
       reloadSpeed: -0.12,
       recoil: -3,

@@ -30,7 +30,7 @@ export function WeaponStats(props: WeaponStatsProps) {
     const nextLevelStat = baseStat + nextLevelBonuses[stat];
     const weaponBonus = props.weapon.getCurrentEffect(stat);
     const playerBonus = excludePlayerStat ? 0 : player.getStat(stat);
-    const totalStat = props.weapon.getFinalStat(stat);
+    const totalStat = props.weapon.getStat(stat);
 
     const roundedWeaponBonus = Math.abs(round(weaponBonus.effect));
     const roundedPlayerBonus = Math.abs(round(playerBonus));
