@@ -9,7 +9,7 @@ interface SkillTreeSectionProps {
 }
 
 export function SkillTreeSection(props: SkillTreeSectionProps) {
-  function getBonusText(description: string, stat: WeaponStat) {
+  function getBonusText(description: string, stat: WeaponStat, isPercentagePoints?: boolean) {
     const { effect, isAbsolute } = props.selectedWeapon.getCurrentEffect(stat);
 
     const roundedEffect = round(effect);
@@ -18,7 +18,12 @@ export function SkillTreeSection(props: SkillTreeSectionProps) {
       <>
         <div>{description}</div>
         <div style={{ textAlign: "end" }}>
-          {(effect > 0 ? "+" : "") + (isAbsolute ? roundedEffect : percentFormatter(roundedEffect))}
+          {(effect > 0 ? "+" : "") +
+            (isAbsolute
+              ? isPercentagePoints
+                ? percentFormatter(roundedEffect, true)
+                : roundedEffect
+              : percentFormatter(roundedEffect))}
         </div>
       </>
     ) : (
@@ -45,7 +50,7 @@ export function SkillTreeSection(props: SkillTreeSectionProps) {
         {getBonusText("Fire rate bonus", Stat.FireRate)}
         {getBonusText("Recoil decrease", Stat.Recoil)}
         {getBonusText("Range bonus", Stat.Range)}
-        {getBonusText("Crit chance bonus", Stat.CritChance)}
+        {getBonusText("Crit chance bonus", Stat.CritChance, true)}
         {getBonusText("Ammo cost", Stat.AmmoCost)}
         {getBonusText("Drop chance bonus", Stat.DropChance)}
         {getBonusText("Extra projectiles", Stat.Projectiles)}

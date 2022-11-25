@@ -32,7 +32,7 @@ export function MenuContainer() {
             border: "2px solid gray",
             borderRadius: 4,
             display: "flex",
-            columnGap: 48,
+            columnGap: 36,
             padding: "20px 40px",
             overflow: "hidden",
           }}

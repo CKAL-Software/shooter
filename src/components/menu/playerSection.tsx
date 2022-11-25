@@ -185,6 +185,7 @@ export function PlayerSection() {
         <div style={{ gridColumn: "span 4", marginBottom: 16 }} />
         {getStatText("Max health", Stat.MaxHealth)}
         {getStatText("Move speed", Stat.MoveSpeed)}
+        {getStatText("Ammo cost", Stat.AmmoCost, percentFormatter)}
         {getStatText("Damage bonus", Stat.Damage, percentFormatter)}
         {getStatText("Reload speed bonus", Stat.ReloadSpeed, percentFormatter)}
         {getStatText("Range bonus", Stat.Range, percentFormatter)}

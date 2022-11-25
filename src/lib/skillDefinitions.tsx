@@ -158,7 +158,7 @@ export const MultiShotSkill: SkillConstructor<WeaponStat> = (getEffect: EffectFu
 export const BurnSkill: SkillConstructor<WeaponStat> = (getEffect: EffectFunction) => ({
   stat: Stat.Burn,
   content: <GiBurningDot style={skillIconStyle} />,
-  description: "Bullets will burn enemies for <value>",
+  description: "Bullets will burn enemies for <value> of damage",
   getEffect,
 });
 
@@ -178,10 +178,10 @@ const StandardAmmoCostSkill = AmmoCostSkill((p) => ({ effect: p * -0.1, isAbsolu
 const StandardDropChanceSkill = DropChanceSkill((p) => ({ effect: p * 0.4, isAbsolute: false }));
 const StandardCritChanceSkill = CritChanceSkill((p) => ({ effect: p * 0.05, isAbsolute: true }));
 const StandardPenetrationSkill = PenetrationSkill((p) => ({ effect: p, isAbsolute: true }));
-const StandardBurnSkill = BurnSkill((p) => ({ effect: p * 0.7, isAbsolute: true }));
+const StandardBurnSkill = BurnSkill((p) => ({ effect: p * 0.7, isAbsolute: false }));
 
 export const PistolSkills: Skill<WeaponStat>[] = [
-  MultiShotSkill((p) => ({ effect: p * 3, isAbsolute: true })),
+  MultiShotSkill((p) => ({ effect: p * 2, isAbsolute: true })),
   StandardBurnSkill,
   StandardPenetrationSkill,
   StandardCritChanceSkill,

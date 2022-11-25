@@ -60,7 +60,7 @@ export class Player extends MovingObject {
     this.stats = {
       maxHealth: START_MAX_HEALTH,
       moveSpeed: this.velocity,
-      ammoCost: 10,
+      ammoCost: 0,
       damage: 0,
       dropChance: 0,
       velocity: 0,
@@ -298,6 +298,7 @@ export class Player extends MovingObject {
   getEffect(stat: PlayerStat, pointsIndex: number): number {
     if (stat === Stat.MaxHealth) return START_MAX_HEALTH + pointsIndex * 5;
     if (stat === Stat.MoveSpeed) return START_VELOCITY + pointsIndex * 5;
+    if (stat === Stat.AmmoCost) return pointsIndex * -0.1;
     if (stat === Stat.Damage) return pointsIndex * 0.05;
     if (stat === Stat.CritChance) return pointsIndex * 0.03;
     if (stat === Stat.DropChance) return pointsIndex * 0.02;

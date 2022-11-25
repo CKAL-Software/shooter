@@ -437,8 +437,12 @@ export function getTileType(map: string[][], tile: Point) {
   return map[tile.y] ? map[tile.y][tile.x] : undefined;
 }
 
-export function percentFormatter(num: number) {
-  return (num * 100).toFixed(Math.abs(num) < 0.1 ? 2 : 1).replace(Math.abs(num) < 0.1 ? ".00" : ".0", "") + "%";
+export function percentFormatter(num: number, isPercentagePoints?: boolean) {
+  return (
+    (num * 100).toFixed(Math.abs(num) < 0.1 ? 2 : 1).replace(Math.abs(num) < 0.1 ? ".00" : ".0", "") +
+    "%" +
+    (isPercentagePoints ? "p" : "")
+  );
 }
 
 export function round(num: number) {
@@ -446,5 +450,9 @@ export function round(num: number) {
     return Math.round(num * 10000) / 10000;
   }
 
-  return Math.round(num * 1000) / 1000;
+  if (Math.abs(num) < 1) {
+    return Math.round(num * 1000) / 1000;
+  }
+
+  return Math.round(num * 100) / 100;
 }
