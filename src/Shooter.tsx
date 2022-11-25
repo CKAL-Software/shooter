@@ -54,9 +54,7 @@ const maps = new Map<string, MapInfo>();
 maps.set(currentMap.position.x + "," + currentMap.position.y, currentMap);
 export let obstacles = getObstacles(currentMap.layout);
 export const player = new Player();
-export const enemies: Enemy[] = [
-  // new BasicEnemy({ x: 200, y: 400 })
-];
+export const enemies: Enemy[] = [];
 export let timeUntilNextSpawn = 0;
 export let enemiesCounter = 1;
 export let enemiesLeft = 10;
@@ -69,7 +67,7 @@ export let shopOpen = false;
 export const shopItems: Gun[] = [new Shotgun(), new Sniper()];
 
 let enemyStat = {
-  hp: 4000,
+  hp: 4,
   velocity: 0.5,
   damage: 1,
   reward: 1,
@@ -242,7 +240,7 @@ export function Shooter() {
         timeUntilNextSpawn -= TICK_DURATION_S;
 
         if (timeUntilNextSpawn < 0 && enemiesLeft > 0) {
-          timeUntilNextSpawn = 3;
+          timeUntilNextSpawn = 10;
           enemiesLeft--;
           enemies.push(
             new BasicEnemy({ ...enemyStat, position: findRandomLocation(currentMap.layout, player.getPosition()) })
@@ -299,7 +297,7 @@ export function Shooter() {
           style={{
             display: "flex",
             justifyContent: "center",
-            marginTop: "48px",
+            paddingTop: "48px",
             outline: "none",
           }}
           onKeyDown={(e) => {}}

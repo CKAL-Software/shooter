@@ -1,5 +1,7 @@
 import React from "react";
 import { GiHeavyBullets } from "react-icons/gi";
+import { RiMoneyDollarBoxFill } from "react-icons/ri";
+import { Stat } from "../../lib/skillDefinitions";
 import { player } from "../../Shooter";
 import { GunIcon } from "../gunIcon";
 
@@ -23,13 +25,22 @@ export function BuyAmmoSection() {
               <div>{weapon.getAmmo()}</div>
               <GiHeavyBullets style={{ marginLeft: 6, fontSize: 20 }} />
             </div>
-            <div style={{ display: "grid", gridTemplateColumns: "max-content min-content", rowGap: 4, columnGap: 12 }}>
+            <div style={{ display: "grid", gridTemplateColumns: "max-content min-content", rowGap: 4, columnGap: 16 }}>
               <button style={{ whiteSpace: "nowrap" }}>Buy 1</button>
-              <div style={{ textAlign: "end" }}>$2</div>
+              <div style={{ textAlign: "end", display: "flex", alignItems: "center", justifyContent: "flex-end" }}>
+                <div>{Math.ceil(weapon.getStat(Stat.AmmoCost))}</div>
+                <RiMoneyDollarBoxFill style={{ fontSize: 22, marginLeft: 4, marginBottom: -2 }} />
+              </div>
               <button style={{ whiteSpace: "nowrap" }}>Buy 10</button>
-              <div style={{ textAlign: "end" }}>$15</div>
+              <div style={{ textAlign: "end", display: "flex", alignItems: "center", justifyContent: "flex-end" }}>
+                <div>{Math.ceil(10 * weapon.getStat(Stat.AmmoCost))}</div>
+                <RiMoneyDollarBoxFill style={{ fontSize: 22, marginLeft: 4, marginBottom: -2 }} />
+              </div>
               <button style={{ whiteSpace: "nowrap" }}>Buy 100</button>
-              <div style={{ textAlign: "end" }}>$150</div>
+              <div style={{ textAlign: "end", display: "flex", alignItems: "center", justifyContent: "flex-end" }}>
+                <div>{Math.ceil(100 * weapon.getStat(Stat.AmmoCost))}</div>
+                <RiMoneyDollarBoxFill style={{ fontSize: 22, marginLeft: 4, marginBottom: -2 }} />
+              </div>
             </div>
           </React.Fragment>
         ))}

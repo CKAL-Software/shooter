@@ -17,14 +17,18 @@ export function drawBackground(ctx: CanvasRenderingContext2D, mapLayout: string[
   ctx.closePath();
 }
 
-export function drawTile(ctx: CanvasRenderingContext2D, x: number, y: number, color: string) {
+export function drawSquare(ctx: CanvasRenderingContext2D, size: number, x: number, y: number, color: string) {
   ctx.beginPath();
 
-  ctx.rect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
+  ctx.rect(x, y, size, size);
   ctx.fillStyle = color;
   ctx.fill();
 
   ctx.closePath();
+}
+
+export function drawTile(ctx: CanvasRenderingContext2D, x: number, y: number, color: string) {
+  drawSquare(ctx, TILE_SIZE, x * TILE_SIZE, y * TILE_SIZE, color);
 }
 
 export function drawCrosshair(

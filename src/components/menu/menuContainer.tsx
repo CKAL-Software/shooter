@@ -38,6 +38,9 @@ export function MenuContainer() {
           }}
         >
           <PlayerSection />
+          <div style={{ display: "flex", flexDirection: "column", justifyContent: "center" }}>
+            <div style={{ height: "90%", borderLeft: "2px solid rgba(128,128,128,0.3)" }} />
+          </div>
           <WeaponsSection />
         </div>
       </div>

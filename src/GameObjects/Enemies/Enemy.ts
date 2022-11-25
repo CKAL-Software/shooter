@@ -283,7 +283,8 @@ export abstract class Enemy extends MovingObject {
     ownerGun?.addTakedown();
     ownerGun?.addExperience(this.reward);
 
-    if (Math.random() < 0.05) {
+    // if (Math.random() < 0.05) {
+    if (Math.random() < 1) {
       // const numExpOrbs = Math.floor(Math.random() * 6) + 1;
       const numExpOrbs = 1;
       for (let i = 0; i < numExpOrbs; i++) {

@@ -1,3 +1,4 @@
+import { RiMoneyDollarCircleFill } from "react-icons/ri";
 import { COLOR_MENU_BACKGROUND } from "../../lib/definitions";
 import { player } from "../../Shooter";
 import { BuyAmmoSection } from "./buyAmmoSection";
@@ -18,7 +19,10 @@ export function ShopContainer() {
         }}
       >
         <div style={{ fontWeight: "bold", fontSize: 30, textAlign: "center", marginBottom: 12 }}>Shop</div>
-        <div style={{ fontSize: 20, marginBottom: 12 }}>Balance: ${player.getMoney()}</div>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-end" }}>
+          <div style={{ fontSize: 22, marginTop: -2 }}>{player.getMoney()}</div>
+          <RiMoneyDollarCircleFill style={{ fontSize: 30, alignSelf: "center", marginLeft: 4 }} />
+        </div>
         <div
           style={{
             display: "flex",

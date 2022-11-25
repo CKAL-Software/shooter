@@ -22,12 +22,12 @@ export function SkillTreeSection(props: SkillTreeSectionProps) {
         </div>
       </>
     ) : (
-      <div style={{ gridColumn: "span 2" }} />
+      <></>
     );
   }
 
   return (
-    <div style={{ userSelect: "none" }}>
+    <div style={{ userSelect: "none", width: 220 }}>
       <div style={{ fontSize: 24, fontWeight: "bold", marginBottom: 24 }}>Skill tree</div>
       <SkillTree gun={props.selectedWeapon} />
       <div
@@ -41,6 +41,16 @@ export function SkillTreeSection(props: SkillTreeSectionProps) {
       >
         {getBonusText("Damage bonus", Stat.Damage)}
         {getBonusText("Reload speed bonus", Stat.ReloadSpeed)}
+        {getBonusText("Magazine size increase", Stat.MagSize)}
+        {getBonusText("Fire rate bonus", Stat.FireRate)}
+        {getBonusText("Recoil decrease", Stat.Recoil)}
+        {getBonusText("Range bonus", Stat.Range)}
+        {getBonusText("Crit chance bonus", Stat.CritChance)}
+        {getBonusText("Ammo cost", Stat.AmmoCost)}
+        {getBonusText("Drop chance bonus", Stat.DropChance)}
+        {getBonusText("Extra projectiles", Stat.Projectiles)}
+        {getBonusText("Burn damage", Stat.Burn)}
+        {getBonusText("Penetration", Stat.Penetration)}
       </div>
     </div>
   );

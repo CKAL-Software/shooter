@@ -1,3 +1,4 @@
+import { drawSquare } from "../../lib/canvasFunctions";
 import { Point } from "../../lib/definitions";
 import { player } from "../../Shooter";
 import { Orb } from "./Orb";
@@ -11,6 +12,10 @@ export class AmmoOrb extends Orb {
 
     this.ammo = ammo;
     this.weapon = weapon;
+  }
+
+  draw(ctx: CanvasRenderingContext2D): void {
+    drawSquare(ctx, this.size, this.position.x, this.position.y, this.color);
   }
 
   onPickup(): void {

@@ -1,5 +1,6 @@
 import { useContext } from "react";
 import { TriggerRenderContext } from "../../lib/contexts";
+import { percentFormatter } from "../../lib/functions";
 import { Gun } from "../../Weapons/Gun";
 import { Skill } from "./skill";
 
@@ -18,11 +19,14 @@ export function SkillTree(props: SkillTreeProps) {
         .sort((a, b) => a.skillTreeIndex - b.skillTreeIndex)
         .map((gs, i) => {
           const isMaxLevel = gs.points === 3;
-          const beforeValue = gs.getEffect(isMaxLevel ? gs.points - 1 : gs.points);
-          const afterValue = gs.getEffect(isMaxLevel ? gs.points : gs.points + 1);
-          let text = gs.description.replace("<before>", beforeValue + "").replace("<after>", afterValue + "");
-          if (isMaxLevel) {
-            text = text.replace("Increase", "Increased").replace("Decrease", "Decreased");
+          let text = "";
+          if (!isMaxLevel) {
+            const beforeValue = gs.getEffect(gs.points);
+            const afterValue = gs.getEffect(gs.points + 1);
+            const value = afterValue.effect - beforeValue.effect;
+            text = gs.description
+              .replace("<value>", afterValue.isAbsolute ? `${value}` : percentFormatter(value))
+              .replace("<neg_value>", afterValue.isAbsolute ? `${-value}` : percentFormatter(-value));
           }
 
           const isSpecial = i < 3;

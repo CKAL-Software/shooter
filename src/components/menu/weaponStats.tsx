@@ -7,6 +7,7 @@ import { player } from "../../Shooter";
 import { Gun } from "../../Weapons/Gun";
 import { ProgressBar } from "../controlPanelElements/progressBar";
 import { GunIcon } from "../gunIcon";
+import { LevelNumber } from "../levelNumber";
 
 interface WeaponStatsProps {
   weapon: Gun;
@@ -49,13 +50,6 @@ export function WeaponStats(props: WeaponStatsProps) {
         <div style={{ textAlign: "end" }}>=</div>
         <div style={{ textAlign: "end" }}>{roundedTotalStat}</div>
       </>
-      // <div style={{ textAlign: "end" }}>
-      //   <span>{formatter ? formatter(base) : base}</span>
-      //   {getBonusStatText(stat, formatter)}
-      //   <span style={{ color: COLOR_STAT_BONUS_BLUE }}>
-      //     {base === total ? "" : formatter ? formatter(total) : total}
-      //   </span>
-      // </div>
     );
   }
 
@@ -69,15 +63,16 @@ export function WeaponStats(props: WeaponStatsProps) {
         />
         <div style={{ fontSize: 20, fontWeight: "bold", marginLeft: 20 }}>{props.weapon.getName()}</div>
       </div>
-      <div style={{ gridColumn: "span 9", margin: "4px 0" }}>
+      <div style={{ display: "flex", alignItems: "center", gridColumn: "span 9", margin: "4px 0" }}>
         <ProgressBar
           percentage={props.weapon.getExperience() / experienceThresholdsNormal[props.weapon.getLevel() - 1]}
           text={props.weapon.getExperience() + "/" + experienceThresholdsNormal[props.weapon.getLevel() - 1]}
           barColor="#90caf9"
           backgroundColor={"rgba(0,0,0,0.15)"}
           height={20}
-          width={350}
+          width={314}
         />
+        <LevelNumber level={props.weapon.getLevel()} />
       </div>
       <div
         style={{

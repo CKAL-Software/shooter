@@ -13,6 +13,7 @@ import { PlayerStat, Stat } from "../../lib/skillDefinitions";
 import { player } from "../../Shooter";
 import { ProgressBar } from "../controlPanelElements/progressBar";
 import { RiMoneyDollarCircleFill } from "react-icons/ri";
+import { LevelNumber } from "../levelNumber";
 
 export function PlayerSection() {
   const rerender = useContext(TriggerRenderContext);
@@ -54,7 +55,7 @@ export function PlayerSection() {
   return (
     <div style={{ width: "min-content" }}>
       <div style={{ fontSize: 28, fontWeight: "bold" }}>Player</div>
-      <div style={{ display: "flex", alignItems: "center", flexDirection: "column", margin: "12px 0 24px" }}>
+      <div style={{ display: "flex", alignItems: "center", flexDirection: "column", margin: "12px 44px 24px 0" }}>
         <div
           style={{
             width: 80,
@@ -73,7 +74,6 @@ export function PlayerSection() {
             }}
           />
         </div>
-
         <div
           style={{ width: 52, height: 52, borderRadius: "50%", backgroundColor: COLOR_PLAYER, position: "relative" }}
         >
@@ -128,14 +128,17 @@ export function PlayerSection() {
           </div>
           <div>
             <div style={{ marginBottom: 4, fontSize: 16, marginLeft: 2 }}>Experience</div>
-            <ProgressBar
-              percentage={player.getExperience() / experienceThresholdsPlayer[player.getLevel() - 1]}
-              text={player.getExperience() + "/" + experienceThresholdsPlayer[player.getLevel() - 1]}
-              barColor="#90caf9"
-              backgroundColor={"rgba(0,0,0,0.15)"}
-              height={30}
-              width={300}
-            />
+            <div style={{ display: "flex", alignItems: "center" }}>
+              <ProgressBar
+                percentage={player.getExperience() / experienceThresholdsPlayer[player.getLevel() - 1]}
+                text={player.getExperience() + "/" + experienceThresholdsPlayer[player.getLevel() - 1]}
+                barColor="#90caf9"
+                backgroundColor={"rgba(0,0,0,0.15)"}
+                height={30}
+                width={300}
+              />
+              <LevelNumber level={player.getLevel()} />
+            </div>
           </div>
         </div>
       </div>
@@ -149,18 +152,35 @@ export function PlayerSection() {
           marginTop: 24,
         }}
       >
-        <div style={{ fontSize: 22, gridColumn: "span 2" }}>Level {player.getLevel()}</div>
         <div
           style={{
             display: "flex",
-            justifyContent: "flex-end",
+            justifyContent: "space-between",
             fontSize: 22,
-            gridColumn: "span 2",
+            gridColumn: "span 4",
             alignItems: "center",
           }}
         >
-          <div>{player.getMoney()}</div>
-          <RiMoneyDollarCircleFill style={{ fontSize: 30, alignSelf: "center", marginLeft: 4 }} />
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "min-content min-content",
+              gridColumn: "span 9",
+              columnGap: 12,
+              rowGap: 2,
+              margin: "4px 0 8px",
+              fontSize: 16,
+            }}
+          >
+            <div style={{ whiteSpace: "nowrap" }}>Damage dealt</div>
+            <div style={{ textAlign: "end" }}>{player.getDamageDealt()}</div>
+            <div>Takedowns</div>
+            <div style={{ textAlign: "end" }}>{player.getTakedowns()}</div>
+          </div>
+          <div style={{ display: "flex", alignItems: "center" }}>
+            <div style={{ marginTop: -2 }}>{player.getMoney()}</div>
+            <RiMoneyDollarCircleFill style={{ fontSize: 30, alignSelf: "center", marginLeft: 4 }} />
+          </div>
         </div>
         <div style={{ gridColumn: "span 4", marginBottom: 16 }} />
         {getStatText("Max health", Stat.MaxHealth)}

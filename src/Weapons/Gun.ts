@@ -31,7 +31,7 @@ export abstract class Gun {
   protected projectileColor: string;
   protected shouldReload = false;
   protected skillSheet: SkillSheet<WeaponStat>;
-  protected unusedSkillPoints = 3;
+  protected unusedSkillPoints = 300;
   protected price: number;
   protected baseStats: WeaponStats;
   protected stats: WeaponStats;

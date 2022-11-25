@@ -80,7 +80,7 @@ type SkillConstructor<T> = (getEffect: EffectFunction) => Skill<T>;
 
 export const DamageSkill: SkillConstructor<WeaponStat> = (getEffect: EffectFunction) => ({
   stat: Stat.Damage,
-  description: "Increase bullet damage from <before> to <after>",
+  description: "Increase bullet damage by <value>",
   content: <GiBlaster style={skillIconStyle} />,
   getEffect,
 });
@@ -88,114 +88,125 @@ export const DamageSkill: SkillConstructor<WeaponStat> = (getEffect: EffectFunct
 export const CritChanceSkill: SkillConstructor<WeaponStat> = (getEffect: EffectFunction) => ({
   stat: Stat.CritChance,
   content: <GiHeadshot style={skillIconStyle} />,
-  description: "Increase critical hit chance from <before> to <after>",
+  description: "Increase critical hit chance by <value>",
   getEffect,
 });
 
 export const MagSizeSkill: SkillConstructor<WeaponStat> = (getEffect: EffectFunction) => ({
   stat: Stat.MagSize,
   content: <GiMachineGunMagazine style={skillIconStyle} />,
-  description: "Increase magazine size from <before> to <after>",
+  description: "Increase magazine size by <value>",
   getEffect,
 });
 
 export const RangeSkill: SkillConstructor<WeaponStat> = (getEffect: EffectFunction) => ({
   stat: Stat.Range,
   content: <GiBeamWake style={skillIconStyle} />,
-  description: "Increase range of projectile travel from <before> to <after>",
+  description: "Increase range by <value>",
   getEffect,
 });
 
 export const RecoilSkill: SkillConstructor<WeaponStat> = (getEffect: EffectFunction) => ({
   stat: Stat.Recoil,
   content: <GiBullseye style={skillIconStyle} />,
-  description: "Decrease recoil from <before> to <after>",
+  description: "Decrease recoil by <neg_value>",
   getEffect,
 });
 
 export const FireRateSkill: SkillConstructor<WeaponStat> = (getEffect: EffectFunction) => ({
   stat: Stat.FireRate,
   content: <GiBullets style={skillIconStyle} />,
-  description: "Increase fire rate from <before> to <after>",
+  description: "Increase fire rate by <value>",
   getEffect,
 });
 
 export const AmmoCostSkill: SkillConstructor<WeaponStat> = (getEffect: EffectFunction) => ({
   stat: Stat.AmmoCost,
   content: <FaDollarSign style={skillIconStyle} />,
-  description: "Decrease cost of ammo from <before> to <after>",
+  description: "Decrease cost of ammo by <neg_value>",
   getEffect,
 });
 
 export const VelocitySkill: SkillConstructor<WeaponStat> = (getEffect: EffectFunction) => ({
   stat: Stat.Velocity,
   content: <GiSupersonicBullet style={skillIconStyle} />,
-  description: "Increase bullet velocity from <before> to <after>",
+  description: "Increase bullet velocity by <value>",
   getEffect,
 });
 
 export const DropChanceSkill: SkillConstructor<WeaponStat> = (getEffect: EffectFunction) => ({
   stat: Stat.DropChance,
   content: <GiOpenTreasureChest style={skillIconStyle} />,
-  description: "Increase drop chance from kills from <before> to <after>",
+  description: "Increase drop chance from kills by <value>",
   getEffect,
 });
 
 export const ReloadSkill: SkillConstructor<WeaponStat> = (getEffect: EffectFunction) => ({
   stat: Stat.ReloadSpeed,
   content: <GiReloadGunBarrel style={skillIconStyle} />,
-  description: "Decrease reload speed from <before> to <after>",
+  description: "Decrease reload speed by <neg_value>",
   getEffect,
 });
 
 export const MultiShotSkill: SkillConstructor<WeaponStat> = (getEffect: EffectFunction) => ({
   stat: Stat.Projectiles,
   content: <GiStrikingBalls style={skillIconStyle} />,
-  description: "Shoot 3 bullets instead of 1",
+  description: "Increase projectiles fired by <value>",
   getEffect,
 });
 
 export const BurnSkill: SkillConstructor<WeaponStat> = (getEffect: EffectFunction) => ({
   stat: Stat.Burn,
   content: <GiBurningDot style={skillIconStyle} />,
-  description: "Bullets will burn enemies",
+  description: "Bullets will burn enemies for <value>",
   getEffect,
 });
 
 export const PenetrationSkill: SkillConstructor<WeaponStat> = (getEffect: EffectFunction) => ({
   stat: Stat.Penetration,
   content: <GiPiercedBody style={skillIconStyle} />,
-  description: "Bullets will penetrate enemies with damage dropoff",
+  description: "Bullets will penetrate enemies",
   getEffect,
 });
 
+const StandardDamageSkill = DamageSkill((p) => ({ effect: p * 0.1, isAbsolute: false }));
+const StandardReloadSkill = ReloadSkill((p) => ({ effect: p * -0.15, isAbsolute: false }));
+const StandardRecoilSkill = RecoilSkill((p) => ({ effect: p * -0.15, isAbsolute: false }));
+const StandardRangeSkill = RangeSkill((p) => ({ effect: p * 0.4, isAbsolute: false }));
+const StandardFireRateSkill = FireRateSkill((p) => ({ effect: p * 0.15, isAbsolute: false }));
+const StandardAmmoCostSkill = AmmoCostSkill((p) => ({ effect: p * -0.1, isAbsolute: false }));
+const StandardDropChanceSkill = DropChanceSkill((p) => ({ effect: p * 0.4, isAbsolute: false }));
+const StandardCritChanceSkill = CritChanceSkill((p) => ({ effect: p * 0.05, isAbsolute: true }));
+const StandardPenetrationSkill = PenetrationSkill((p) => ({ effect: p, isAbsolute: true }));
+const StandardBurnSkill = BurnSkill((p) => ({ effect: p * 0.7, isAbsolute: true }));
+
 export const PistolSkills: Skill<WeaponStat>[] = [
-  MultiShotSkill((points) => ({ effect: points * 1, isAbsolute: true })),
-  BurnSkill((points) => ({ effect: points * 10, isAbsolute: true })),
-  PenetrationSkill((points) => ({ effect: points * 10, isAbsolute: true })),
-  CritChanceSkill((points) => ({ effect: points * 10, isAbsolute: true })),
-  AmmoCostSkill((points) => ({ effect: points * 10, isAbsolute: true })),
-  DropChanceSkill((points) => ({ effect: points * 10, isAbsolute: true })),
-  FireRateSkill((points) => ({ effect: -points * 3, isAbsolute: true })),
-  RecoilSkill((points) => ({ effect: -points * 3, isAbsolute: true })),
-  RangeSkill((points) => ({ effect: points * 10, isAbsolute: true })),
-  DamageSkill((points) => ({ effect: points * 0.1, isAbsolute: false })),
-  ReloadSkill((points) => ({ effect: points * 10, isAbsolute: true })),
-  MagSizeSkill((p) => ({ effect: p, isAbsolute: true })),
+  MultiShotSkill((p) => ({ effect: p * 3, isAbsolute: true })),
+  StandardBurnSkill,
+  StandardPenetrationSkill,
+  StandardCritChanceSkill,
+  StandardAmmoCostSkill,
+  StandardDropChanceSkill,
+  StandardFireRateSkill,
+  StandardRecoilSkill,
+  StandardRangeSkill,
+  StandardDamageSkill,
+  StandardReloadSkill,
+  MagSizeSkill((p) => ({ effect: p * 2, isAbsolute: true })),
 ];
 
 export const ShotgunSkills: Skill<WeaponStat>[] = [
-  MultiShotSkill((points) => ({ effect: points * 1, isAbsolute: true })),
-  BurnSkill((points) => ({ effect: points * 10, isAbsolute: true })),
-  PenetrationSkill((points) => ({ effect: points * 10, isAbsolute: true })),
-  CritChanceSkill((points) => ({ effect: points * 10, isAbsolute: true })),
-  AmmoCostSkill((points) => ({ effect: points * 10, isAbsolute: true })),
-  DropChanceSkill((points) => ({ effect: points * 10, isAbsolute: true })),
-  FireRateSkill((points) => ({ effect: -points * 3, isAbsolute: true })),
-  RecoilSkill((points) => ({ effect: -points * 3, isAbsolute: true })),
-  RangeSkill((points) => ({ effect: points * 10, isAbsolute: true })),
-  DamageSkill((points) => ({ effect: points * 10, isAbsolute: true })),
-  ReloadSkill((points) => ({ effect: points * 10, isAbsolute: true })),
+  MultiShotSkill((p) => ({ effect: p * 8, isAbsolute: true })),
+  StandardBurnSkill,
+  StandardPenetrationSkill,
+  StandardCritChanceSkill,
+  StandardAmmoCostSkill,
+  StandardDropChanceSkill,
+  StandardFireRateSkill,
+  StandardRecoilSkill,
+  StandardRangeSkill,
+  StandardDamageSkill,
+  StandardReloadSkill,
   MagSizeSkill((p) => ({ effect: p, isAbsolute: true })),
 ];
 

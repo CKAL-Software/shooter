@@ -45,8 +45,7 @@ export function GunIcon(props: GunIconProps) {
         background: "white",
         height: 40,
         width: 40,
-        border: `1px solid ${props.selected ? COLOR_SELECTED : "gray"}`,
-        borderRadius: 2,
+        border: `2px solid ${props.selected ? COLOR_SELECTED : "#515151"}`,
         color: props.selected ? COLOR_GUN_SELECTED : undefined,
         position: "relative",
         cursor: props.onClick ? "pointer" : undefined,
@@ -86,7 +85,7 @@ export function GunIcon(props: GunIconProps) {
           style={{
             position: "absolute",
             background: "white",
-            border: `1px solid ${props.selected ? COLOR_SELECTED : "gray"}`,
+            border: `1px solid ${props.selected ? COLOR_SELECTED : "#515151"}`,
             borderRadius: 2,
             fontWeight: "bold",
             fontSize: 12,
@@ -111,7 +110,7 @@ export function GunIcon(props: GunIconProps) {
           style={{
             position: "absolute",
             background: "white",
-            border: `1px solid ${props.selected ? COLOR_SELECTED : "gray"}`,
+            border: `1px solid ${props.selected ? COLOR_SELECTED : "#515151"}`,
             borderRadius: 4,
             fontWeight: "bold",
             fontSize: 12,

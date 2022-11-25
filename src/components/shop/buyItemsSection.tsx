@@ -1,4 +1,5 @@
 import React from "react";
+import { RiMoneyDollarBoxFill } from "react-icons/ri";
 import { player, shopItems } from "../../Shooter";
 import { GunIcon } from "../gunIcon";
 
@@ -11,7 +12,7 @@ export function BuyItemsSection() {
           display: "grid",
           gridTemplateColumns: "min-content auto min-content min-content",
           rowGap: 20,
-          columnGap: 12,
+          columnGap: 16,
           alignItems: "center",
         }}
       >
@@ -20,7 +21,10 @@ export function BuyItemsSection() {
             <GunIcon entityName={weapon.getName()} />
             <div>{weapon.getName()}</div>
             <button disabled={weapon.getPrice() > player.getMoney()}>Buy</button>
-            <div style={{ textAlign: "end" }}>${weapon.getPrice()}</div>
+            <div style={{ textAlign: "end", display: "flex", alignItems: "center", justifyContent: "flex-end" }}>
+              <div style={{ textAlign: "end" }}>{weapon.getPrice()}</div>
+              <RiMoneyDollarBoxFill style={{ fontSize: 22, marginLeft: 4, marginBottom: -2 }} />
+            </div>
           </React.Fragment>
         ))}
       </div>

@@ -37,7 +37,8 @@ export const experienceThresholdsNormal = [10, 20, 30, 40, 50, 60, 70, 80, 90, 1
 export const experienceThresholdsPlayer = [50, 100, 150, 200, 250, 300, 350, 400, 450, 500];
 
 export const COLOR_MONEY = "#edd500";
-export const COLOR_EXP = "#90caf9";
+export const COLOR_EXP = "rgba(144,202,249,1)";
+export const COLOR_EXP_RGBA = (opacity: number) => COLOR_EXP.replace("1)", `${opacity})`);
 export const COLOR_SKILLPOINT = "#57b4ff";
 export const COLOR_DMG = "red";
 export const COLOR_PLAYER = "#ed8300";
