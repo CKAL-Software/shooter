@@ -8,7 +8,8 @@ export interface ActualEnemyConfig {
 }
 
 export class BasicEnemy extends Enemy {
-  // eslint-disable-next-line @typescript-eslint/no-useless-constructor
+  name = "Basic";
+
   constructor(config: ActualEnemyConfig) {
     super({ ...config, velocity: 0, color: "#aaaaaa", size: 12 });
   }

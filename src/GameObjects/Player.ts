@@ -229,7 +229,7 @@ export class Player extends MovingObject {
   levelUp() {
     this.level++;
     this.unusedSkillPoints++;
-    numberAnimations.push(new RisingText(this.position, "Level up!", COLOR_EXP));
+    numberAnimations.push(new RisingText({ x: this.position.x, y: this.position.y - 5 }, "Level up!", COLOR_EXP));
   }
 
   addTakedown() {

@@ -26,8 +26,8 @@ export function WeaponStats(props: WeaponStatsProps) {
 
     const excludePlayerStat = stat === Stat.MagSize || stat === Stat.Projectiles;
 
-    const baseStat = props.weapon.getStat(stat, true);
-    const nextLevelStat = baseStat + nextLevelBonuses[stat];
+    const baseStat = round(props.weapon.getStat(stat, true));
+    const nextLevelStat = round(baseStat + nextLevelBonuses[stat]);
     const weaponBonus = props.weapon.getCurrentEffect(stat);
     const playerBonus = excludePlayerStat ? 0 : player.getStat(stat);
     const totalStat = props.weapon.getStat(stat);

@@ -265,7 +265,8 @@ export abstract class Gun {
   }
 
   levelUp() {
-    numberAnimations.push(new RisingText(player.getPosition(), "Weapon level up!", COLOR_EXP));
+    const { x, y } = player.getPosition();
+    numberAnimations.push(new RisingText({ x, y: y - 5 }, "Weapon level up!", COLOR_EXP));
 
     this.level++;
     this.unusedSkillPoints++;

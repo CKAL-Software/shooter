@@ -19,13 +19,14 @@ export interface EnemyConfig extends MovingObjectConfig {
 
 export abstract class Enemy extends MovingObject {
   private level;
+  abstract name: string;
   private pathIndex = 0;
   private currentHp: number;
   private path: SNode[] = [];
   private ticksUntilPathRecalculated = 0;
   private timeUntilShot = this.getTimeUntilNextShot();
   private canSeePlayer = false;
-  private spawnTimeLeft = 4;
+  private spawnTimeLeft = 0;
   private lastDmgAnim: RisingText | undefined = undefined;
   private lastDmgAnimTimeLeft = 0;
   private stats: { [stat in EnemyStat]: number };
@@ -161,6 +162,13 @@ export abstract class Enemy extends MovingObject {
     }
   }
 
+  drawLevel(ctx: CanvasRenderingContext2D) {
+    const { x, y } = this.getDrawPosition();
+    ctx.font = "16px sans-serif";
+    ctx.fillStyle = "black";
+    ctx.fillText(`${this.level}`, x + 24, y - (this.size + 2));
+  }
+
   drawHealthBar(ctx: CanvasRenderingContext2D, doubleLength?: boolean) {
     const width = 40;
     const height = 8;
@@ -200,6 +208,7 @@ export abstract class Enemy extends MovingObject {
 
     drawBall(ctx, drawPos, this.size, this.color);
     this.drawHealthBar(ctx);
+    this.drawLevel(ctx);
 
     // this.path.forEach((node) => {
     //   ctx.beginPath();

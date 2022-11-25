@@ -8,7 +8,7 @@ export class RisingText extends GameObject {
   private isCriticalHit: boolean;
 
   constructor(position: Point, value: string | number, color: string, isCriticalHit?: boolean) {
-    super({ position, size: 0, color });
+    super({ position: { ...position, y: position.y - 20 }, size: 0, color });
 
     this.value = value;
     this.id = (Math.random() * 1000000).toString();
