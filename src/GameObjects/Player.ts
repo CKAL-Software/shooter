@@ -20,6 +20,7 @@ import { PlayerStat, PlayerStats, Stat } from "../lib/skillDefinitions";
 import { currentMap, mousePos, numberAnimations } from "../Shooter";
 import { Gun } from "../Weapons/Gun";
 import { Pistol } from "../Weapons/Pistol";
+import { Shotgun } from "../Weapons/Shotgun";
 import { Sniper } from "../Weapons/Sniper";
 import { MovingObject } from "./MovingObject";
 import { RisingText } from "./RisingText";
@@ -33,7 +34,7 @@ export class Player extends MovingObject {
   private money = 0;
   private damageDealt = 0;
   private takedowns = 0;
-  private weapons: Gun[] = [new Pistol(), new Sniper()];
+  private weapons: Gun[] = [new Pistol(), new Sniper(), new Shotgun()];
   private currentWeapon = this.weapons[0];
   private moveDirections: Set<Direction> = new Set();
   private wantFire = false;
