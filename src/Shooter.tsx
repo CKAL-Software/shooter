@@ -19,18 +19,11 @@ import {
 import { Enemy } from "./GameObjects/Enemies/Enemy";
 import { Player } from "./GameObjects/Player";
 import { RisingText } from "./GameObjects/RisingText";
-import { ControlPanel } from "./components/controlPanel/controlPanel";
+import { ControlPanel } from "./components/InfoPanels/controlPanel/controlPanel";
 import { Direction } from "./lib/models";
 import { GameObject } from "./GameObjects/GameObject";
-import {
-  flipSide,
-  generateRandomMap,
-  getPredefinedTeleporters,
-  getSeededRandomGenerator,
-  posToKey,
-} from "./lib/functions";
+import { generateRandomMap, getPredefinedTeleporters, getSeededRandomGenerator, posToKey } from "./lib/functions";
 import { getRandomInt } from "./lib/utils";
-import { Minimap } from "./components/minimap";
 import { AiOutlineAim } from "react-icons/ai";
 import { MenuContainer } from "./components/menu/menuContainer";
 import { TriggerRenderContext } from "./lib/contexts";
@@ -40,6 +33,7 @@ import { Gun } from "./Weapons/Gun";
 import { Shotgun } from "./Weapons/Shotgun";
 import { Sniper } from "./Weapons/Sniper";
 import { GiSpikyExplosion } from "react-icons/gi";
+import { GameInfo } from "./components/InfoPanels/gameInfo/gameInfo";
 
 const moveDirections = new Set<Direction>();
 const r = getSeededRandomGenerator(getRandomInt(0, 100));
@@ -181,7 +175,6 @@ export function Shooter() {
             const teleporters = { up: { size: 1 }, right: { size: 2 }, down: { size: 3 }, left: { size: 4 } };
             const predefinedTeleporters = getPredefinedTeleporters(maps, newMapPosition);
             Object.entries(predefinedTeleporters).forEach(([side, tpInfo]) => (teleporters[side as MapSide] = tpInfo));
-            teleporters[flipSide(tpSide)] = currentMap.teleporters[tileState];
             currentMap = generateRandomMap({
               position: newMapPosition,
               rng: r,
@@ -249,12 +242,8 @@ export function Shooter() {
           }}
           tabIndex={0}
         >
-          <div style={{ display: "grid", gridTemplateColumns: "1fr auto 1fr" }}>
-            <div style={{ display: "flex", justifyContent: "flex-end" }}>
-              <div style={{ padding: 24 }}>
-                <Minimap maps={allMaps} currentMapPosition={currentMapPosition} vision={3} />
-              </div>
-            </div>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr auto 1fr", columnGap: 24 }}>
+            <GameInfo />
             <div
               style={{
                 position: "relative",
@@ -303,7 +292,7 @@ export function Shooter() {
                 }}
               />
             </div>
-            <ControlPanel />
+            <ControlPanel maps={allMaps} currentMapPosition={currentMapPosition} vision={3} />
           </div>
         </div>
       </div>

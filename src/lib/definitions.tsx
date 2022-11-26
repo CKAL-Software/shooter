@@ -29,6 +29,15 @@ export enum APIResources {
   Score = "score",
 }
 
+export type GameLogType = "normal" | "level up";
+
+export interface GameLog {
+  id: number;
+  text: string;
+  type: GameLogType;
+  timestamp: string;
+}
+
 export type EnemyConstructor = typeof BasicEnemy;
 
 export type ActualProjectile = NormalProjectile;
@@ -52,6 +61,7 @@ export const COLOR_STAT_BONUS_ORANGE = "#ed6400";
 export const COLOR_SELECTED = "#4f97d1";
 export const COLOR_GUN_SELECTED = "#4f97d1";
 export const COLOR_LEVEL = "#62abe6";
+export const COLOR_MAP_BACKGROUND = "#eeeeee";
 
 export const ANIM_COLLECT_TIME = 0.4;
 export const ANIM_TIME = 1.0;

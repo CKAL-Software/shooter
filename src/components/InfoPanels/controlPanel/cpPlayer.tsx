@@ -1,16 +1,15 @@
 import { RiMoneyDollarCircleFill } from "react-icons/ri";
-import { experienceThresholdsPlayer } from "../../lib/definitions";
-import { Stat } from "../../lib/skillDefinitions";
-import { player } from "../../Shooter";
-import { LevelNumber } from "../levelNumber";
-import { ProgressBar } from "../progressBar";
+import { experienceThresholdsPlayer } from "../../../lib/definitions";
+import { Stat } from "../../../lib/skillDefinitions";
+import { player } from "../../../Shooter";
+import { LevelNumber } from "../../levelNumber";
+import { ProgressBar } from "../../progressBar";
 
 export function CPPlayer() {
   const healthRatio = player.getHealth() / player.getStat(Stat.MaxHealth);
 
   return (
     <div>
-      <div style={{ fontSize: 24, marginBottom: 8 }}>Player</div>
       <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-end" }}>
         <div style={{ fontSize: 22, marginTop: -2 }}>{player.getMoney()}</div>
         <RiMoneyDollarCircleFill style={{ fontSize: 30, alignSelf: "center", marginLeft: 4 }} />

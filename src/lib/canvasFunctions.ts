@@ -1,6 +1,6 @@
 import { CANVAS_COLUMNS, CANVAS_ROWS } from "../Definitions/Maps";
 import { GameObject } from "../GameObjects/GameObject";
-import { Point, TILE_SIZE } from "./definitions";
+import { COLOR_MAP_BACKGROUND, Point, TILE_SIZE } from "./definitions";
 import { changeDirection, getTileType } from "./functions";
 import { MinHeap } from "./minHeap";
 import { SNode } from "./models";
@@ -9,7 +9,7 @@ export function drawBackground(ctx: CanvasRenderingContext2D, mapLayout: string[
   ctx.beginPath();
 
   ctx.rect(0, 0, ctx.canvas.width, ctx.canvas.height);
-  ctx.fillStyle = "#eeeeee";
+  ctx.fillStyle = COLOR_MAP_BACKGROUND;
   ctx.fill();
 
   drawMap(ctx, mapLayout);

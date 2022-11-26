@@ -12,6 +12,7 @@ import { HealthOrb } from "../Items/HealthOrb";
 import { AmmoOrb } from "../Items/AmmoOrb";
 import { MoneyOrb } from "../Items/MoneyOrb";
 import { EnemyStat, Stat } from "../../lib/skillDefinitions";
+import { addLog } from "../../lib/GameLog";
 
 export interface EnemyConfig extends MovingObjectConfig {
   level: number;
@@ -268,6 +269,8 @@ export abstract class Enemy extends MovingObject {
       this.lastDmgAnim = newAnim;
     }
     this.lastDmgAnimTimeLeft = ANIM_COLLECT_TIME;
+
+    addLog("hit");
 
     if (this.currentHp <= 0) {
       this.die(ownerGun);

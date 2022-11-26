@@ -14,6 +14,7 @@ import {
   TILE_SIZE,
 } from "../lib/definitions";
 import { toUnitVector } from "../lib/functions";
+import { addLog } from "../lib/GameLog";
 import { Direction } from "../lib/models";
 import { PlayerStat, PlayerStats, Stat } from "../lib/skillDefinitions";
 import { currentMap, mousePos, numberAnimations } from "../Shooter";
@@ -23,7 +24,8 @@ import { Sniper } from "../Weapons/Sniper";
 import { MovingObject } from "./MovingObject";
 import { RisingText } from "./RisingText";
 
-const START_VELOCITY = 120;
+// const START_VELOCITY = 120;
+const START_VELOCITY = 240;
 const START_MAX_HEALTH = 10;
 
 export class Player extends MovingObject {
@@ -229,7 +231,8 @@ export class Player extends MovingObject {
   levelUp() {
     this.level++;
     this.unusedSkillPoints++;
-    numberAnimations.push(new RisingText({ x: this.position.x, y: this.position.y - 5 }, "Level up!", COLOR_EXP));
+    numberAnimations.push(new RisingText({ x: this.position.x, y: this.position.y - 15 }, "Level up!", COLOR_EXP));
+    addLog(`Player reached level ${this.level}!`, "level up");
   }
 
   addTakedown() {

@@ -3,6 +3,7 @@ import { RisingText } from "../GameObjects/RisingText";
 import { calculateDirection } from "../lib/canvasFunctions";
 import { COLOR_EXP, experienceThresholdsNormal, Point, TICK_DURATION_S } from "../lib/definitions";
 import { changeDirection } from "../lib/functions";
+import { addLog } from "../lib/GameLog";
 import { SkillSheet } from "../lib/models";
 import { createSkillSheet, Skill, WeaponStat, WeaponStats, Stat } from "../lib/skillDefinitions";
 import { numberAnimations, player, projectiles } from "../Shooter";
@@ -265,10 +266,12 @@ export abstract class Gun {
   }
 
   levelUp() {
-    const { x, y } = player.getPosition();
-    numberAnimations.push(new RisingText({ x, y: y - 5 }, "Weapon level up!", COLOR_EXP));
-
     this.level++;
+
+    const { x, y } = player.getPosition();
+    numberAnimations.push(new RisingText({ x, y: y - 15 }, "Weapon level up!", COLOR_EXP));
+    addLog(`${this.name} reached level ${this.level}!`, "level up");
+
     this.unusedSkillPoints++;
 
     const upgrades = this.getLevelBonusStats(this.level);

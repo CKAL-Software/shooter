@@ -18,14 +18,14 @@ export class BasicEnemy extends Enemy {
     const levelIndex = level - 1;
 
     return {
-      [Stat.MaxHealth]: [5, 10, 20, 40, 80, 160][levelIndex],
-      [Stat.MoveSpeed]: [0.5, 0.7, 0.9, 1.1, 1.3, 1.5][levelIndex],
-      [Stat.Reward]: [5, 10, 20, 40, 80, 160][levelIndex],
-      [Stat.Damage]: [1, 2, 3, 4, 5, 6][levelIndex],
-      [Stat.FireRate]: [20, 30, 40, 50, 60, 70][levelIndex],
-      [Stat.Velocity]: [1, 1.5, 2, 2.5, 3, 3.5][levelIndex],
-      [Stat.Range]: [3, 4, 5, 6, 7, 8][levelIndex] * TILE_SIZE,
-      [Stat.Recoil]: [40, 30, 20, 10, 5, 0][levelIndex],
+      [Stat.MaxHealth]: Math.round(5 + levelIndex * 5),
+      [Stat.MoveSpeed]: 0.5 + 0.2 * levelIndex,
+      [Stat.Reward]: Math.round(5 + levelIndex * 5),
+      [Stat.Damage]: levelIndex,
+      [Stat.FireRate]: 20 + 10 * levelIndex,
+      [Stat.Velocity]: 1 + 0.5 * levelIndex,
+      [Stat.Range]: (3 + levelIndex) * TILE_SIZE,
+      [Stat.Recoil]: Math.max(0, 40 - 5 * levelIndex),
       [Stat.Projectiles]: 1,
     };
   }

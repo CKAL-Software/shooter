@@ -1,6 +1,6 @@
 import { ReactElement, useMemo } from "react";
-import { nTimes } from "../../../lib/functions";
-import { ProgressBar } from "../../progressBar";
+import { nTimes } from "../../../../lib/functions";
+import { ProgressBar } from "../../../progressBar";
 
 interface MagazineProps {
   reloadProgress: number;
@@ -25,7 +25,7 @@ export function Magazine(props: MagazineProps) {
         ...nTimes(30).map((i) => (
           <Bullet
             key={i + "," + bulletsLeft}
-            color={props.magAmmo >= magCount * 30 + i + 1 ? "#333333" : "darkgray"}
+            color={props.magAmmo >= magCount * 30 + i + 1 ? "#333333" : "rgba(0,0,0,0.15)"}
             height={height}
             borderRadius={borderRadius}
           />
@@ -43,7 +43,7 @@ export function Magazine(props: MagazineProps) {
       ...nTimes(bulletsLeft).map((i) => (
         <Bullet
           key={i + "," + bulletsLeft}
-          color={props.magAmmo >= magCount * 30 + i + 1 ? "#333333" : "darkgray"}
+          color={props.magAmmo >= magCount * 30 + i + 1 ? "#333333" : "rgba(0,0,0,0.15)"}
           height={height}
           borderRadius={borderRadius}
         />
@@ -60,7 +60,7 @@ export function Magazine(props: MagazineProps) {
           <ProgressBar
             percentage={props.reloadProgress}
             barColor="#333333"
-            backgroundColor="darkgray"
+            backgroundColor="rgba(0,0,0,0.15)"
             height={30}
             text={((1 - props.reloadProgress) * props.reloadSpeed).toFixed(1) + "s"}
             width={260}

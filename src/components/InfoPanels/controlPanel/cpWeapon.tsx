@@ -1,9 +1,9 @@
-import { experienceThresholdsNormal } from "../../lib/definitions";
-import { Stat } from "../../lib/skillDefinitions";
-import { player } from "../../Shooter";
-import { GunIcon } from "../gunIcon";
-import { LevelNumber } from "../levelNumber";
-import { ProgressBar } from "../progressBar";
+import { experienceThresholdsNormal } from "../../../lib/definitions";
+import { Stat } from "../../../lib/skillDefinitions";
+import { player } from "../../../Shooter";
+import { GunIcon } from "../../gunIcon";
+import { LevelNumber } from "../../levelNumber";
+import { ProgressBar } from "../../progressBar";
 import { Magazine } from "./controlPanelElements/magazine";
 
 export function CPWeapons() {
@@ -11,7 +11,6 @@ export function CPWeapons() {
 
   return (
     <div>
-      <div style={{ fontSize: 24, marginBottom: 8, marginTop: 32 }}>Weapons</div>
       <div style={{ display: "flex", columnGap: 12, marginBottom: 20 }}>
         {player.getWeapons().map((gun, i) => (
           <GunIcon
