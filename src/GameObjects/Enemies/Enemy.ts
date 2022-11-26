@@ -1,7 +1,7 @@
 import { enemies, currentMap, miscellaneous, numberAnimations, player, projectiles } from "../../Shooter";
-import { ANIM_COLLECT_TIME, COLOR_HP_BAR_GREEN, COLOR_HP_BAR_RED, TICK_DURATION_S } from "../../lib/definitions";
+import { ANIM_COLLECT_TIME, TICK_DURATION_S } from "../../lib/definitions";
 import { MovingObject, MovingObjectConfig } from "../MovingObject";
-import { calculateDirection, calculateDistance, drawBall, getObstacles, pathToPoint } from "../../lib/canvasFunctions";
+import { calculateDirection, calculateDistance, drawBall, getObstacles, pathToPoint } from "../../lib/util.canvas";
 import { RisingText } from "../RisingText";
 import { SNode } from "../../lib/models";
 import { intercept, intersects, toUnitVector } from "../../lib/functions";
@@ -13,6 +13,7 @@ import { AmmoOrb } from "../Items/AmmoOrb";
 import { MoneyOrb } from "../Items/MoneyOrb";
 import { EnemyStat, Stat } from "../../lib/skillDefinitions";
 import { addLog } from "../../lib/GameLog";
+import { COLOR_HP_BAR_RED, COLOR_HP_BAR_GREEN } from "../../lib/definitions.colors";
 
 export interface EnemyConfig extends MovingObjectConfig {
   level: number;

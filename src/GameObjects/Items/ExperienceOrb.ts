@@ -1,4 +1,5 @@
-import { COLOR_EXP, COLOR_EXP_RGBA, Point } from "../../lib/definitions";
+import { Point } from "../../lib/definitions";
+import { COLOR_EXP, COLOR_EXP_RGBA } from "../../lib/definitions.colors";
 import { player } from "../../Shooter";
 import { Orb } from "./Orb";
 

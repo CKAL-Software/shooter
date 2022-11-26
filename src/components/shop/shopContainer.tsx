@@ -1,5 +1,5 @@
 import { RiMoneyDollarCircleFill } from "react-icons/ri";
-import { COLOR_MENU_BACKGROUND } from "../../lib/definitions";
+import { COLOR_MENU_BACKGROUND } from "../../lib/definitions.colors";
 import { player } from "../../Shooter";
 import { BuyAmmoSection } from "./buyAmmoSection";
 import { BuyItemsSection } from "./buyItemsSection";

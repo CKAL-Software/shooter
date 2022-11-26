@@ -1,5 +1,5 @@
 import { CANVAS_COLUMNS, CANVAS_ROWS } from "../Definitions/Maps";
-import { getSurroundingObstacles, pixelsToTile } from "../lib/canvasFunctions";
+import { getSurroundingObstacles, pixelsToTile } from "../lib/util.canvas";
 import { Point, TILE_SIZE } from "../lib/definitions";
 import { currentMap } from "../Shooter";
 import { GameObject, GameObjectConfig } from "./GameObject";

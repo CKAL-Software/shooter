@@ -1,5 +1,5 @@
 import React from "react";
-import { COLOR_LEVEL } from "../../../lib/definitions";
+import { COLOR_LEVEL } from "../../../lib/definitions.colors";
 import { logs } from "../../../lib/GameLog";
 
 export function GameLog() {

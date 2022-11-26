@@ -1,4 +1,5 @@
-import { COLOR_HP_BAR_GREEN, Point } from "../../lib/definitions";
+import { Point } from "../../lib/definitions";
+import { COLOR_HP_BAR_GREEN } from "../../lib/definitions.colors";
 import { player } from "../../Shooter";
 import { Orb } from "./Orb";
 

@@ -1,4 +1,5 @@
-import { CANVAS_HEIGHT, COLOR_MENU_BACKGROUND } from "../../../lib/definitions";
+import { CANVAS_HEIGHT } from "../../../lib/definitions";
+import { COLOR_MENU_BACKGROUND } from "../../../lib/definitions.colors";
 import { EnemiesOverview } from "./enemiesOverview";
 import { GameLog } from "./gameLog";
 

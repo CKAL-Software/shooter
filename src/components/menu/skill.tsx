@@ -1,5 +1,5 @@
 import { Tooltip } from "@mui/material";
-import { COLOR_MENU_BACKGROUND, COLOR_STAT_BONUS_BLUE_RGBA } from "../../lib/definitions";
+import { COLOR_STAT_BONUS_BLUE_RGBA, COLOR_MENU_BACKGROUND } from "../../lib/definitions.colors";
 
 interface SkillProps {
   text: string;

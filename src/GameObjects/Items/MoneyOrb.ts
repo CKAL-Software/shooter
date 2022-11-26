@@ -1,4 +1,5 @@
-import { COLOR_MONEY, Point } from "../../lib/definitions";
+import { Point } from "../../lib/definitions";
+import { COLOR_MONEY } from "../../lib/definitions.colors";
 import { player } from "../../Shooter";
 import { Orb } from "./Orb";
 

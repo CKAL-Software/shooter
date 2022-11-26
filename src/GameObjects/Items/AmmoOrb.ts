@@ -1,4 +1,4 @@
-import { drawSquare } from "../../lib/canvasFunctions";
+import { drawSquare } from "../../lib/util.canvas";
 import { Point } from "../../lib/definitions";
 import { player } from "../../Shooter";
 import { Orb } from "./Orb";

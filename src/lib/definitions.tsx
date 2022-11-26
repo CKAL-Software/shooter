@@ -11,12 +11,13 @@ export const TICK_DURATION_S = TICK_DURATION / 1000;
 
 export type MapSide = "up" | "right" | "down" | "left";
 
-export type Teleporters = { [side in string]: { startPosition?: number; size: number } };
+export type Teleporters = { [side in MapSide]?: { size: number; startPosition: number } };
 
 export interface MapInfo {
   position: Point;
   layout: string[][];
   teleporters: Teleporters;
+  hasShop: boolean;
 }
 
 export interface Point {
@@ -38,30 +39,25 @@ export interface GameLog {
   timestamp: string;
 }
 
+export const STRAY_TO_LEVEL = {
+  3: 1,
+  6: 2,
+  10: 3,
+  15: 4,
+  20: 5,
+  30: 6,
+  40: 7,
+  50: 8,
+  60: 9,
+  70: 10,
+};
+
 export type EnemyConstructor = typeof BasicEnemy;
 
 export type ActualProjectile = NormalProjectile;
 
 export const experienceThresholdsNormal = [0, 0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100];
 export const experienceThresholdsPlayer = [0, 0, 50, 100, 150, 200, 250, 300, 350, 400, 450, 500];
-
-export const COLOR_MONEY = "#edd500";
-export const COLOR_EXP = "rgba(144,202,249,1)";
-export const COLOR_EXP_RGBA = (opacity: number) => COLOR_EXP.replace("1)", `${opacity})`);
-export const COLOR_SKILLPOINT = "#57b4ff";
-export const COLOR_DMG = "red";
-export const COLOR_PLAYER = "#ed8300";
-export const COLOR_HP_BAR_RED = "red";
-export const COLOR_HP_BAR_GREEN = "#36e400";
-export const COLOR_HP_GREEN = "#3cff00";
-export const COLOR_MENU_BACKGROUND = "#ded4b2";
-export const COLOR_STAT_BONUS_BLUE = "rgba(2,166,255,1)";
-export const COLOR_STAT_BONUS_BLUE_RGBA = (opacity: number) => COLOR_STAT_BONUS_BLUE.replace("1)", `${opacity})`);
-export const COLOR_STAT_BONUS_ORANGE = "#ed6400";
-export const COLOR_SELECTED = "#4f97d1";
-export const COLOR_GUN_SELECTED = "#4f97d1";
-export const COLOR_LEVEL = "#62abe6";
-export const COLOR_MAP_BACKGROUND = "#eeeeee";
 
 export const ANIM_COLLECT_TIME = 0.4;
 export const ANIM_TIME = 1.0;

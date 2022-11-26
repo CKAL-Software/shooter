@@ -1,4 +1,4 @@
-import { COLOR_STAT_BONUS_BLUE } from "../../lib/definitions";
+import { COLOR_STAT_BONUS_BLUE } from "../../lib/definitions.colors";
 import { percentFormatter, round } from "../../lib/functions";
 import { Stat, WeaponStat } from "../../lib/skillDefinitions";
 import { Gun } from "../../Weapons/Gun";

@@ -1,18 +1,14 @@
 import { MAP_SIZE } from "../Definitions/Maps";
+import { ANIM_COLLECT_TIME, experienceThresholdsPlayer, MapSide, TICK_DURATION_S, TILE_SIZE } from "../lib/definitions";
 import {
-  ANIM_COLLECT_TIME,
-  COLOR_DMG,
-  COLOR_EXP,
-  COLOR_HP_BAR_GREEN,
-  COLOR_HP_BAR_RED,
-  COLOR_HP_GREEN,
-  COLOR_MONEY,
   COLOR_PLAYER,
-  experienceThresholdsPlayer,
-  MapSide,
-  TICK_DURATION_S,
-  TILE_SIZE,
-} from "../lib/definitions";
+  COLOR_HP_BAR_RED,
+  COLOR_HP_BAR_GREEN,
+  COLOR_EXP,
+  COLOR_MONEY,
+  COLOR_HP_GREEN,
+  COLOR_DMG,
+} from "../lib/definitions.colors";
 import { toUnitVector } from "../lib/functions";
 import { addLog } from "../lib/GameLog";
 import { Direction } from "../lib/models";
@@ -122,6 +118,7 @@ export class Player extends MovingObject {
     this.tintTime = Math.max(0, this.tintTime - TICK_DURATION_S);
     this.currentWeapon.tick();
     this.move();
+
     if (this.wantFire) {
       this.shoot();
     }

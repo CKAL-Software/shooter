@@ -1,5 +1,5 @@
 import { enemies, player } from "../../Shooter";
-import { calculateDistance } from "../../lib/canvasFunctions";
+import { calculateDistance } from "../../lib/util.canvas";
 import { CANVAS_HEIGHT, CANVAS_WIDTH } from "../../lib/definitions";
 import { Projectile } from "./Projectile";
 

@@ -1,11 +1,5 @@
 import { useEffect, useState } from "react";
-import {
-  drawBackground,
-  drawAndCleanupObjects,
-  getMousePos,
-  getObstacles,
-  findRandomLocation,
-} from "./lib/canvasFunctions";
+import { drawBackground, drawAndCleanupObjects, getMousePos, getObstacles, calculateDistance } from "./lib/util.canvas";
 import {
   Point,
   CANVAS_HEIGHT,
@@ -22,28 +16,29 @@ import { RisingText } from "./GameObjects/RisingText";
 import { ControlPanel } from "./components/InfoPanels/controlPanel/controlPanel";
 import { Direction } from "./lib/models";
 import { GameObject } from "./GameObjects/GameObject";
-import { generateRandomMap, getPredefinedTeleporters, getSeededRandomGenerator, posToKey } from "./lib/functions";
+import { getSeededRandomGenerator } from "./lib/functions";
 import { getRandomInt } from "./lib/utils";
 import { AiOutlineAim } from "react-icons/ai";
 import { MenuContainer } from "./components/menu/menuContainer";
 import { TriggerRenderContext } from "./lib/contexts";
-import { BasicEnemy } from "./GameObjects/Enemies/BasicEnemy";
 import { ShopContainer } from "./components/shop/shopContainer";
 import { Gun } from "./Weapons/Gun";
 import { Shotgun } from "./Weapons/Shotgun";
 import { Sniper } from "./Weapons/Sniper";
 import { GiSpikyExplosion } from "react-icons/gi";
 import { GameInfo } from "./components/InfoPanels/gameInfo/gameInfo";
+import { generateRandomMap, posToKey } from "./lib/MapGenerator";
+import { Stat } from "./lib/skillDefinitions";
 
 const moveDirections = new Set<Direction>();
 const r = getSeededRandomGenerator(getRandomInt(0, 100));
+const maps = new Map<string, MapInfo>();
 export let currentMap = generateRandomMap({
+  maps,
   position: { x: 0, y: 0 },
   rng: r,
   numStructures: 7,
-  teleporters: { up: { size: 1 }, right: { size: 2 }, down: { size: 3 }, left: { size: 4 } },
 });
-const maps = new Map<string, MapInfo>();
 maps.set(currentMap.position.x + "," + currentMap.position.y, currentMap);
 export let obstacles = getObstacles(currentMap.layout);
 export const player = new Player();
@@ -61,6 +56,21 @@ export const shopItems: Gun[] = [new Shotgun(), new Sniper()];
 
 let hasTeleported = 0;
 let canOpenShop = true;
+
+function updateCrosshairColor() {
+  const crosshair = document.getElementById("crosshair");
+  if (!crosshair) {
+    return;
+  }
+
+  const distance = calculateDistance(player.getPosition(), mousePos);
+
+  if (distance > player.getCurrentWeapon().getStat(Stat.Range)) {
+    crosshair.style.color = "rgba(0,0,0,0.4)";
+  } else {
+    crosshair.style.color = "rgba(0,0,0,1)";
+  }
+}
 
 export function Shooter() {
   const [anims, setAnims] = useState<RisingText[]>([]);
@@ -154,13 +164,6 @@ export function Shooter() {
         miscellaneous.forEach((obj) => obj.tick());
         player.tick();
 
-        const crosshair = document.getElementById("crosshair");
-        if (crosshair) {
-          const size = 8;
-          crosshair.style.height = size + "px";
-          crosshair.style.width = size + "px";
-        }
-
         const tileState = player.getTileState();
         if (tileState.includes("tp") && hasTeleported <= 0 && enemies.length === 0) {
           const tpSide = tileState.replace("tp-", "") as MapSide;
@@ -172,14 +175,11 @@ export function Shooter() {
           if (existingMap) {
             currentMap = existingMap;
           } else {
-            const teleporters = { up: { size: 1 }, right: { size: 2 }, down: { size: 3 }, left: { size: 4 } };
-            const predefinedTeleporters = getPredefinedTeleporters(maps, newMapPosition);
-            Object.entries(predefinedTeleporters).forEach(([side, tpInfo]) => (teleporters[side as MapSide] = tpInfo));
             currentMap = generateRandomMap({
+              maps,
               position: newMapPosition,
               rng: r,
               numStructures: 7,
-              teleporters: teleporters,
             });
             maps.set(posToKey(currentMap.position), currentMap);
             enemiesCounter++;
@@ -197,15 +197,15 @@ export function Shooter() {
 
         hasTeleported -= TICK_DURATION_S;
 
-        timeUntilNextSpawn -= TICK_DURATION_S;
+        // timeUntilNextSpawn -= TICK_DURATION_S;
 
-        if (timeUntilNextSpawn < 0 && enemiesLeft > 0) {
-          timeUntilNextSpawn = 10;
-          enemiesLeft--;
-          enemies.push(
-            new BasicEnemy({ level: 1, position: findRandomLocation(currentMap.layout, player.getPosition()) })
-          );
-        }
+        // if (timeUntilNextSpawn < 0 && enemiesLeft > 0) {
+        //   timeUntilNextSpawn = 10;
+        //   enemiesLeft--;
+        //   enemies.push(
+        //     new BasicEnemy({ level: 1, position: findRandomLocation(currentMap.layout, player.getPosition()) })
+        //   );
+        // }
 
         setAnims([...numberAnimations]);
 
@@ -214,6 +214,8 @@ export function Shooter() {
 
         setCurrentMapPosition(currentMap.position);
         setAllMaps(new Map(maps));
+
+        updateCrosshairColor();
       }, TICK_DURATION);
     }
 
@@ -255,8 +257,8 @@ export function Shooter() {
               <canvas id="game-layer" height={CANVAS_HEIGHT} width={CANVAS_WIDTH} style={{ zIndex: 2 }} />
               <div id="numbers" style={{ height: CANVAS_HEIGHT, width: CANVAS_WIDTH, zIndex: 3 }}>
                 <div style={{ height: CANVAS_HEIGHT, width: CANVAS_WIDTH, userSelect: "none" }}>
-                  <div id="crosshair" style={{ marginLeft: -13, marginTop: -13 }}>
-                    <AiOutlineAim style={{ fontSize: 26, verticalAlign: 0, color: "rgba(0,0,0,0.5)" }} />
+                  <div id="crosshair" style={{ marginLeft: -13, marginTop: -13, color: "rgba(0,0,0,0.5)" }}>
+                    <AiOutlineAim style={{ fontSize: 26, verticalAlign: 0 }} />
                   </div>
                   {anims.map((anim) => (
                     <div

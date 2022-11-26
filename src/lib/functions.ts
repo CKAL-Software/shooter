@@ -1,8 +1,6 @@
-import { CANVAS_COLUMNS, CANVAS_ROWS, MAP_SIZE } from "../Definitions/Maps";
-import { calculateDistance } from "./canvasFunctions";
-import { MapInfo, MapSide, Point, Teleporters, TICK_DURATION } from "./definitions";
+import { calculateDistance } from "./util.canvas";
+import { MapSide, Point, TICK_DURATION } from "./definitions";
 import { LeaderboardEntry } from "./models";
-import { getRandomInt } from "./utils";
 
 export async function doFetch(
   httpMethod: "GET" | "POST" | "PUT" | "DELETE",
@@ -232,164 +230,7 @@ export function getSeededRandomGenerator(seed: number) {
   return random;
 }
 
-export function generateRandomMap(config: {
-  position: Point;
-  rng: () => number;
-  teleporters: Teleporters;
-  numStructures: number;
-}): MapInfo {
-  const map = Array.from(new Array(CANVAS_ROWS)).map(() => Array.from(new Array(CANVAS_COLUMNS)).map(() => " "));
-
-  const teleporters: Teleporters = {};
-
-  Object.entries(config.teleporters).forEach(([side, tpInfo]) => {
-    let horizontal = true;
-    let fixedCoordinate = 0;
-
-    if (side === "up") {
-      horizontal = true;
-      fixedCoordinate = 0;
-    } else if (side === "right") {
-      horizontal = false;
-      fixedCoordinate = CANVAS_COLUMNS - 1;
-    } else if (side === "down") {
-      horizontal = true;
-      fixedCoordinate = CANVAS_ROWS - 1;
-    } else {
-      horizontal = false;
-      fixedCoordinate = 0;
-    }
-
-    const startPosition = tpInfo.startPosition ?? Math.floor(config.rng() * (MAP_SIZE - 2 - tpInfo.size)) + 1;
-    for (let i = startPosition; i < startPosition + tpInfo.size; i++) {
-      map[horizontal ? fixedCoordinate : i][horizontal ? i : fixedCoordinate] = "~";
-    }
-
-    teleporters[side] = { size: tpInfo.size, startPosition: startPosition };
-  });
-
-  const obstacles: number[][][] = [
-    [
-      [0, 0],
-      [1, 0],
-      [2, 0],
-      [3, 0],
-      [0, 1],
-      [1, 1],
-      [2, 1],
-      [3, 1],
-    ],
-    [
-      [0, 0],
-      [0, 1],
-      [0, 2],
-      [1, 0],
-      [1, 1],
-      [1, 2],
-      [2, 0],
-      [2, 1],
-      [2, 2],
-    ],
-    [
-      [0, 0],
-      [0, 1],
-      [1, 0],
-      [1, 1],
-    ],
-    [
-      [0, 0],
-      [1, 0],
-      [2, 0],
-      [3, 0],
-      [4, 0],
-      [5, 0],
-    ],
-    [
-      [0, 0],
-      [1, 0],
-      [2, 0],
-      [3, 0],
-      [3, 1],
-      [3, 2],
-      [3, 3],
-    ],
-    [
-      [0, 0],
-      [1, 0],
-      [2, 0],
-      [3, 0],
-      [3, 1],
-      [3, 2],
-      [3, 3],
-      [3, 4],
-      [2, 4],
-      [1, 4],
-      [0, 4],
-    ],
-  ];
-
-  for (let i = 0; i < config.numStructures; i++) {
-    const structure = obstacles[getRandomInt(0, obstacles.length - 1, config.rng)];
-    const flipOne = getRandomInt(0, 1, config.rng) === 0;
-    const flipTwo = getRandomInt(0, 1, config.rng) === 0;
-    for (let tries = 0; tries < 5; tries++) {
-      const row = getRandomInt(0, MAP_SIZE - 1, config.rng);
-      const col = getRandomInt(0, MAP_SIZE - 1, config.rng);
-
-      let canPlace = true;
-      for (const [preX, preY] of structure) {
-        const [x, y] = flipCoords(preX, preY, flipOne, flipTwo);
-        if (!map[row + y] || map[row + y][col + x] !== " ") {
-          canPlace = false;
-          break;
-        }
-      }
-
-      if (canPlace) {
-        for (const [preX, preY] of structure) {
-          const [x, y] = flipCoords(preX, preY, flipOne, flipTwo);
-          map[row + y][col + x] = "x";
-        }
-        break;
-      }
-    }
-  }
-
-  if (config.rng() < 1.0) {
-    const shop = [
-      [0, 0],
-      [1, 0],
-      [0, 1],
-      [1, 1],
-    ];
-
-    while (true) {
-      const row = getRandomInt(0, MAP_SIZE - 1, config.rng);
-      const col = getRandomInt(0, MAP_SIZE - 1, config.rng);
-
-      let canPlace = true;
-      for (const [preX, preY] of shop) {
-        const [x, y] = flipCoords(preX, preY, false, false);
-        if (!map[row + y] || map[row + y][col + x] !== " ") {
-          canPlace = false;
-          break;
-        }
-      }
-
-      if (canPlace) {
-        for (const [preX, preY] of shop) {
-          const [x, y] = flipCoords(preX, preY, false, false);
-          map[row + y][col + x] = "s";
-        }
-        break;
-      }
-    }
-  }
-
-  return { position: config.position, layout: map, teleporters: teleporters };
-}
-
-function flipCoords(x: number, y: number, flipOne: boolean, flipTwo: boolean) {
+export function flipCoords(x: number, y: number, flipOne: boolean, flipTwo: boolean) {
   if (flipOne) {
     if (flipTwo) {
       return [x, y];
@@ -407,26 +248,6 @@ function flipCoords(x: number, y: number, flipOne: boolean, flipTwo: boolean) {
 
 export function flipSide(side: MapSide): MapSide {
   return ({ up: "down", right: "left", down: "up", left: "right" } as { [side in MapSide]: MapSide })[side];
-}
-
-export function getPredefinedTeleporters(maps: Map<string, MapInfo>, newMapPosition: Point) {
-  const mapAbove = maps.get(posToKey({ x: newMapPosition.x, y: newMapPosition.y - 1 }));
-  const mapBelow = maps.get(posToKey({ x: newMapPosition.x, y: newMapPosition.y + 1 }));
-  const mapToTheLeft = maps.get(posToKey({ x: newMapPosition.x - 1, y: newMapPosition.y }));
-  const mapToTheRight = maps.get(posToKey({ x: newMapPosition.x + 1, y: newMapPosition.y }));
-
-  const predefinedTeleporters: Teleporters = {};
-
-  if (mapAbove) predefinedTeleporters["up"] = mapAbove.teleporters["down"];
-  if (mapBelow) predefinedTeleporters["down"] = mapBelow.teleporters["up"];
-  if (mapToTheLeft) predefinedTeleporters["left"] = mapToTheLeft.teleporters["right"];
-  if (mapToTheRight) predefinedTeleporters["right"] = mapToTheRight.teleporters["left"];
-
-  return predefinedTeleporters;
-}
-
-export function posToKey(position: Point) {
-  return position.x + "," + position.y;
 }
 
 export function n(num: number) {

@@ -1,6 +1,7 @@
 import { CANVAS_COLUMNS, CANVAS_ROWS } from "../Definitions/Maps";
 import { GameObject } from "../GameObjects/GameObject";
-import { COLOR_MAP_BACKGROUND, Point, TILE_SIZE } from "./definitions";
+import { Point, TILE_SIZE } from "./definitions";
+import { COLOR_MAP_BACKGROUND, COLOR_SHOP } from "./definitions.colors";
 import { changeDirection, getTileType } from "./functions";
 import { MinHeap } from "./minHeap";
 import { SNode } from "./models";
@@ -73,7 +74,7 @@ export function drawMap(ctx: CanvasRenderingContext2D, mapLayout: string[][]) {
       } else if (tile === "^") {
         drawTile(ctx, x, y, "lightgray");
       } else if (tile === "s") {
-        drawTile(ctx, x, y, "green");
+        drawTile(ctx, x, y, COLOR_SHOP);
       }
     }
   }

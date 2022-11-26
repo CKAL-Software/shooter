@@ -1,19 +1,19 @@
 import { useContext } from "react";
 import { TriggerRenderContext } from "../../lib/contexts";
-import {
-  COLOR_HP_BAR_GREEN,
-  COLOR_HP_BAR_RED,
-  COLOR_PLAYER,
-  COLOR_SKILLPOINT,
-  COLOR_STAT_BONUS_ORANGE,
-  experienceThresholdsPlayer,
-} from "../../lib/definitions";
+import { experienceThresholdsPlayer } from "../../lib/definitions";
 import { percentFormatter, round } from "../../lib/functions";
 import { PlayerStat, Stat } from "../../lib/skillDefinitions";
 import { player } from "../../Shooter";
 import { ProgressBar } from "../progressBar";
 import { RiMoneyDollarCircleFill } from "react-icons/ri";
 import { LevelNumber } from "../levelNumber";
+import {
+  COLOR_STAT_BONUS_ORANGE,
+  COLOR_HP_BAR_RED,
+  COLOR_HP_BAR_GREEN,
+  COLOR_PLAYER,
+  COLOR_SKILLPOINT,
+} from "../../lib/definitions.colors";
 
 export function PlayerSection() {
   const rerender = useContext(TriggerRenderContext);

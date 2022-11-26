@@ -1,5 +1,5 @@
 import { NormalProjectile } from "../GameObjects/Projectiles/NormalProjectile";
-import { calculateDirection } from "../lib/canvasFunctions";
+import { calculateDirection } from "../lib/util.canvas";
 import { Point, TILE_SIZE } from "../lib/definitions";
 import { changeDirection } from "../lib/functions";
 import { ShotgunSkills, Stat } from "../lib/skillDefinitions";

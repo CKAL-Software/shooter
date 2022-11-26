@@ -1,6 +1,8 @@
-import { calculateDistance } from "../../../lib/canvasFunctions";
-import { COLOR_MAP_BACKGROUND, MapInfo, Point } from "../../../lib/definitions";
-import { n, posToKey, round } from "../../../lib/functions";
+import { calculateDistance } from "../../../lib/util.canvas";
+import { MapInfo, Point } from "../../../lib/definitions";
+import { COLOR_MAP_BACKGROUND, COLOR_SHOP } from "../../../lib/definitions.colors";
+import { n, round } from "../../../lib/functions";
+import { posToKey } from "../../../lib/MapGenerator";
 
 interface MinimapProps {
   maps: Map<string, MapInfo>;
@@ -8,14 +10,15 @@ interface MinimapProps {
   vision: number;
 }
 
-const tileMapSize = 16;
+const tileMapSize = 20;
+const borderSize = 1;
 const pathLength = 4;
-const tileSize = tileMapSize + 2 * pathLength;
+const cellSize = tileMapSize + 2 * borderSize + 2 * pathLength;
 
 export function Minimap(props: MinimapProps) {
   const elements = 1 + 2 * props.vision;
 
-  const minimapSize = tileSize * (2 * props.vision + 1);
+  const minimapSize = cellSize * (2 * props.vision + 1);
 
   return (
     <div>
@@ -41,7 +44,7 @@ export function Minimap(props: MinimapProps) {
               );
 
               if (!mapOfInterest) {
-                return <div key={row + "," + col} style={{ height: tileSize, width: tileSize }} />;
+                return <div key={row + "," + col} style={{ height: cellSize, width: cellSize }} />;
               }
 
               return (
@@ -56,39 +59,51 @@ export function Minimap(props: MinimapProps) {
                   }}
                 >
                   <div />
-                  {mapOfInterest.teleporters["up"] ? (
-                    <div style={{ height: pathLength, borderRight: "2px solid gray" }} />
-                  ) : (
-                    <div />
-                  )}
+                  <div
+                    style={{
+                      height: pathLength,
+                      borderRight: mapOfInterest.teleporters["up"] ? "2px solid gray" : undefined,
+                    }}
+                  />
                   <div />
-                  {mapOfInterest.teleporters["left"] ? (
-                    <div style={{ width: pathLength, borderBottom: "2px solid gray" }} />
-                  ) : (
-                    <div />
-                  )}
+                  <div
+                    style={{
+                      width: pathLength,
+                      borderBottom: mapOfInterest.teleporters["left"] ? "2px solid gray" : undefined,
+                    }}
+                  />
                   {mapOfInterest ? (
                     <div
                       style={{
                         height: tileMapSize,
                         width: tileMapSize,
-                        background: row === props.vision && col === props.vision ? "red" : "gray",
+                        background: row === props.vision && col === props.vision ? "red" : "white",
+                        border: `${borderSize}px solid gray`,
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
                       }}
-                    />
+                    >
+                      {mapOfInterest.hasShop && (
+                        <div style={{ background: COLOR_SHOP, height: tileMapSize - 8, width: tileMapSize - 8 }} />
+                      )}
+                    </div>
                   ) : (
-                    <div style={{ height: tileSize, width: tileSize }} />
+                    <div style={{ height: tileMapSize, width: tileMapSize }} />
                   )}
-                  {mapOfInterest.teleporters["right"] ? (
-                    <div style={{ width: pathLength, borderBottom: "2px solid gray" }} />
-                  ) : (
-                    <div />
-                  )}
+                  <div
+                    style={{
+                      width: pathLength,
+                      borderBottom: mapOfInterest.teleporters["right"] ? "2px solid gray" : undefined,
+                    }}
+                  />
                   <div />
-                  {mapOfInterest.teleporters["down"] ? (
-                    <div style={{ height: pathLength, borderRight: "2px solid gray" }} />
-                  ) : (
-                    <div />
-                  )}
+                  <div
+                    style={{
+                      height: pathLength,
+                      borderRight: mapOfInterest.teleporters["down"] ? "2px solid gray" : undefined,
+                    }}
+                  />
                   <div />
                 </div>
               );

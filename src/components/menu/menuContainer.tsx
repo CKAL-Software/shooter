@@ -1,4 +1,4 @@
-import { COLOR_MENU_BACKGROUND } from "../../lib/definitions";
+import { COLOR_MENU_BACKGROUND } from "../../lib/definitions.colors";
 import { PlayerSection } from "./playerSection";
 import { WeaponsSection } from "./weaponsSection";
 

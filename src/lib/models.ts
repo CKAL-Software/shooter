@@ -1,7 +1,5 @@
-import { Player } from "../GameObjects/Player";
-import { Gun } from "../Weapons/Gun";
 import { Point } from "./definitions";
-import { Skill, Stat } from "./skillDefinitions";
+import { Skill } from "./skillDefinitions";
 
 export interface UserInfo {
   email: string;

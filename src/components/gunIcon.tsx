@@ -1,6 +1,6 @@
 import { AiOutlineUser } from "react-icons/ai";
 import { GiPistolGun, GiSawedOffShotgun } from "react-icons/gi";
-import { COLOR_GUN_SELECTED, COLOR_SELECTED, COLOR_SKILLPOINT } from "../lib/definitions";
+import { COLOR_SELECTED, COLOR_GUN_SELECTED, COLOR_SKILLPOINT } from "../lib/definitions.colors";
 import sniperIcon from "../lib/media/sniper.png";
 
 interface GunIconProps {

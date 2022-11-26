@@ -1,18 +1,14 @@
 import { PlusOutlined } from "@ant-design/icons";
 import { useMemo } from "react";
 import { GiHeavyBullets, GiSkullCrossedBones, GiSwordWound } from "react-icons/gi";
-import {
-  COLOR_STAT_BONUS_BLUE,
-  COLOR_STAT_BONUS_ORANGE,
-  experienceThresholdsNormal,
-  TILE_SIZE,
-} from "../../lib/definitions";
+import { experienceThresholdsNormal, TILE_SIZE } from "../../lib/definitions";
 import { percentFormatter, round } from "../../lib/functions";
 import { Stat, WeaponStat } from "../../lib/skillDefinitions";
 import { player } from "../../Shooter";
 import { Gun } from "../../Weapons/Gun";
 import { ProgressBar } from "../progressBar";
 import { LevelNumber } from "../levelNumber";
+import { COLOR_STAT_BONUS_BLUE, COLOR_STAT_BONUS_ORANGE } from "../../lib/definitions.colors";
 
 interface WeaponStatsProps {
   weapon: Gun;

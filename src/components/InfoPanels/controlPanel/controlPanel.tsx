@@ -1,7 +1,8 @@
-import { CANVAS_HEIGHT, COLOR_MENU_BACKGROUND, MapInfo, Point } from "../../../lib/definitions";
+import { CANVAS_HEIGHT, MapInfo, Point } from "../../../lib/definitions";
 import { Minimap } from "./minimap";
 import { CPPlayer } from "./cpPlayer";
 import { CPWeapons } from "./cpWeapon";
+import { COLOR_MENU_BACKGROUND } from "../../../lib/definitions.colors";
 
 interface ControlPanelProps {
   maps: Map<string, MapInfo>;

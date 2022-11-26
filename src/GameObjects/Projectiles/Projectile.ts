@@ -1,4 +1,4 @@
-import { drawBall } from "../../lib/canvasFunctions";
+import { drawBall } from "../../lib/util.canvas";
 import { Point } from "../../lib/definitions";
 import { Gun } from "../../Weapons/Gun";
 import { Enemy } from "../Enemies/Enemy";

@@ -1,5 +1,5 @@
-import { calculateDirection, calculateDistance, drawBall } from "../../lib/canvasFunctions";
-import { COLOR_EXP, Point } from "../../lib/definitions";
+import { calculateDirection, calculateDistance, drawBall } from "../../lib/util.canvas";
+import { Point } from "../../lib/definitions";
 import { changeDirection } from "../../lib/functions";
 import { player } from "../../Shooter";
 import { MovingObject } from "../MovingObject";

@@ -1,7 +1,8 @@
 import { NormalProjectile } from "../GameObjects/Projectiles/NormalProjectile";
 import { RisingText } from "../GameObjects/RisingText";
-import { calculateDirection } from "../lib/canvasFunctions";
-import { COLOR_EXP, experienceThresholdsNormal, Point, TICK_DURATION_S } from "../lib/definitions";
+import { calculateDirection } from "../lib/util.canvas";
+import { experienceThresholdsNormal, Point, TICK_DURATION_S } from "../lib/definitions";
+import { COLOR_EXP } from "../lib/definitions.colors";
 import { changeDirection } from "../lib/functions";
 import { addLog } from "../lib/GameLog";
 import { SkillSheet } from "../lib/models";
