@@ -163,7 +163,8 @@ export function Shooter() {
         player.tick();
 
         const tileState = player.getTileState();
-        if (tileState.includes("tp") && hasTeleported <= 0 && enemies.length === 0) {
+        // if (tileState.includes("tp") && hasTeleported <= 0 && enemies.length === 0) {
+        if (tileState.includes("tp") && hasTeleported <= 0) {
           const tpSide = tileState.replace("tp-", "") as MapSide;
           const newMapPosition = {
             x: currentMap.getPosition().x + (tileState === "tp-left" ? -1 : tileState === "tp-right" ? 1 : 0),
