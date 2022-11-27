@@ -2,18 +2,19 @@ import { CANVAS_COLUMNS, CANVAS_ROWS } from "../Definitions/Maps";
 import { GameObject } from "../GameObjects/GameObject";
 import { Point, TILE_SIZE } from "./definitions";
 import { COLOR_MAP_BACKGROUND, COLOR_SHOP } from "./definitions.colors";
-import { changeDirection, getTileType } from "./functions";
+import { changeDirection, isTileOccupied } from "./functions";
+import { RandomMap } from "./MapGenerator";
 import { MinHeap } from "./minHeap";
 import { SNode } from "./models";
 
-export function drawBackground(ctx: CanvasRenderingContext2D, mapLayout: string[][]) {
+export function drawBackground(ctx: CanvasRenderingContext2D, mapLayout: string[][], tpsIsUnlocked: boolean) {
   ctx.beginPath();
 
   ctx.rect(0, 0, ctx.canvas.width, ctx.canvas.height);
   ctx.fillStyle = COLOR_MAP_BACKGROUND;
   ctx.fill();
 
-  drawMap(ctx, mapLayout);
+  drawMap(ctx, mapLayout, tpsIsUnlocked);
 
   ctx.closePath();
 }
@@ -63,14 +64,14 @@ export function drawBall(ctx: CanvasRenderingContext2D, position: Point, size: n
   ctx.closePath();
 }
 
-export function drawMap(ctx: CanvasRenderingContext2D, mapLayout: string[][]) {
+export function drawMap(ctx: CanvasRenderingContext2D, mapLayout: string[][], tpsIsUnlocked: boolean) {
   for (let x = 0; x < mapLayout[0].length; x++) {
     for (let y = 0; y < mapLayout.length; y++) {
       const tile = mapLayout[y][x];
       if (tile === "x") {
         drawTile(ctx, x, y, "#444444");
       } else if (tile === "~") {
-        drawTile(ctx, x, y, "#006fff");
+        drawTile(ctx, x, y, tpsIsUnlocked ? "rgba(0,111,255,1)" : "rgba(0,111,255,0.4)");
       } else if (tile === "^") {
         drawTile(ctx, x, y, "lightgray");
       } else if (tile === "s") {
@@ -80,50 +81,42 @@ export function drawMap(ctx: CanvasRenderingContext2D, mapLayout: string[][]) {
   }
 }
 
-export function getObstacles(mapLayout: string[][]) {
+export function getObstacleTiles(map: RandomMap) {
   const obstacles: { topLeftPoint: Point }[] = [];
 
-  for (let row = 0; row < mapLayout.length; row++) {
-    for (let col = 0; col < mapLayout[row].length; col++) {
-      if (mapLayout[row][col] === "x") {
-        obstacles.push({ topLeftPoint: { x: TILE_SIZE * col, y: TILE_SIZE * row } });
-      }
-    }
-  }
+  map
+    .getObstacleTiles()
+    .forEach(({ x, y }) => obstacles.push({ topLeftPoint: { x: x * TILE_SIZE, y: y * TILE_SIZE } }));
 
   return obstacles;
 }
 
-export function getSurroundingObstacles(mapLayout: string[][], pixelPos: Point) {
-  const tilePos = pixelsToTile(pixelPos);
+export function getSurroundingObstacles(map: RandomMap, pixelPos: Point) {
+  const { x, y } = pixelsToTile(pixelPos);
 
-  const surroundingIndexDeltas = [
-    [-1, -1],
-    [0, -1],
-    [1, -1],
-    [-1, 0],
-    [1, 0],
-    [-1, 1],
-    [0, 1],
-    [1, 1],
+  const surroundingTileIndicies = [
+    [x - 1, y - 1],
+    [x, y - 1],
+    [x + 1, y - 1],
+    [x - 1, y],
+    [x + 1, y],
+    [x - 1, y + 1],
+    [x, y + 1],
+    [x + 1, y + 1],
   ];
 
-  const obstacles: { topLeftPoint: Point }[] = [];
+  const allObstacleTiles = map.getObstacleTiles();
 
-  for (const [deltaX, deltaY] of surroundingIndexDeltas) {
-    const col = tilePos.x + deltaX;
-    const row = tilePos.y + deltaY;
-
-    if (col < 0 || col > mapLayout[0].length - 1 || row < 0 || row > mapLayout.length - 1) {
-      continue;
-    }
-
-    if (mapLayout[row][col] === "x") {
-      obstacles.push({ topLeftPoint: { x: TILE_SIZE * col, y: TILE_SIZE * row } });
-    }
-  }
-
-  return obstacles;
+  return allObstacleTiles
+    .filter(({ x, y }) => {
+      for (const [surrX, surrY] of surroundingTileIndicies) {
+        if (x === surrX && y === surrY) {
+          return true;
+        }
+      }
+      return false;
+    })
+    .map(({ x, y }) => ({ topLeftPoint: { x: x * TILE_SIZE, y: y * TILE_SIZE } }));
 }
 
 export function getMousePos(canvas: HTMLCanvasElement, mouseEvent: MouseEvent) {
@@ -179,7 +172,7 @@ export function drawAndCleanupObjects(ctx: CanvasRenderingContext2D, objects: Ga
   }
 }
 
-export function pathToPoint(mapLayout: string[][], fromPositionPixels: Point, toPositionPixels: Point): SNode[] {
+export function pathToPoint(mapLayout: boolean[][], fromPositionPixels: Point, toPositionPixels: Point): SNode[] {
   function h(node: SNode) {
     return calculateDistance(node.pos, toPositionPixels);
   }
@@ -243,17 +236,13 @@ export function pathToPoint(mapLayout: string[][], fromPositionPixels: Point, to
 
       // We move diagonally, check no obstacles on either side
       if (cost > TILE_SIZE) {
-        if (deltaX === -1 && getTileType(mapLayout, { x: current.tilePos.x - 1, y: current.tilePos.y }) !== " ")
-          continue;
-        if (deltaX === 1 && getTileType(mapLayout, { x: current.tilePos.x + 1, y: current.tilePos.y }) !== " ")
-          continue;
-        if (deltaY === -1 && getTileType(mapLayout, { x: current.tilePos.x, y: current.tilePos.y - 1 }) !== " ")
-          continue;
-        if (deltaY === 1 && getTileType(mapLayout, { x: current.tilePos.x, y: current.tilePos.y + 1 }) !== " ")
-          continue;
+        if (deltaX === -1 && isTileOccupied(mapLayout, { x: current.tilePos.x - 1, y: current.tilePos.y })) continue;
+        if (deltaX === 1 && isTileOccupied(mapLayout, { x: current.tilePos.x + 1, y: current.tilePos.y })) continue;
+        if (deltaY === -1 && isTileOccupied(mapLayout, { x: current.tilePos.x, y: current.tilePos.y - 1 })) continue;
+        if (deltaY === 1 && isTileOccupied(mapLayout, { x: current.tilePos.x, y: current.tilePos.y + 1 })) continue;
       }
 
-      if (getTileType(mapLayout, neighbor) === " ") {
+      if (!isTileOccupied(mapLayout, neighbor)) {
         const tentativeGScore = gScore[current.key] + cost;
         const neighbor = createNode({ x: neighborX, y: neighborY });
         if (tentativeGScore < (gScore[neighbor.key] || Number.MAX_SAFE_INTEGER)) {
@@ -271,13 +260,13 @@ export function pathToPoint(mapLayout: string[][], fromPositionPixels: Point, to
   return [];
 }
 
-export function findRandomLocation(mapLayout: string[][], pathTo?: Point) {
+export function findRandomLocation(mapLayout: boolean[][], pathTo?: Point) {
   let randomRow = Math.floor(Math.random() * CANVAS_ROWS);
   let randomColumn = Math.floor(Math.random() * CANVAS_COLUMNS);
   let pathFulfilled =
     !pathTo || pathToPoint(mapLayout, tileCenterToPixels({ x: randomColumn, y: randomRow }), pathTo).length > 0;
 
-  while (mapLayout[randomRow][randomColumn] !== " " || !pathFulfilled) {
+  while (isTileOccupied(mapLayout, { x: randomColumn, y: randomRow }) || !pathFulfilled) {
     randomRow = Math.floor(Math.random() * CANVAS_ROWS);
     randomColumn = Math.floor(Math.random() * CANVAS_COLUMNS);
     pathFulfilled =

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { drawBackground, drawAndCleanupObjects, getMousePos, getObstacles, calculateDistance } from "./lib/util.canvas";
+import { drawAndCleanupObjects, getMousePos, calculateDistance, findRandomLocation } from "./lib/util.canvas";
 import {
   Point,
   CANVAS_HEIGHT,
@@ -7,7 +7,6 @@ import {
   TICK_DURATION,
   ActualProjectile,
   TICK_DURATION_S,
-  MapInfo,
   MapSide,
 } from "./lib/definitions";
 import { Enemy } from "./GameObjects/Enemies/Enemy";
@@ -27,25 +26,26 @@ import { Shotgun } from "./Weapons/Shotgun";
 import { Sniper } from "./Weapons/Sniper";
 import { GiSpikyExplosion } from "react-icons/gi";
 import { GameInfo } from "./components/InfoPanels/gameInfo/gameInfo";
-import { generateRandomMap, posToKey } from "./lib/MapGenerator";
+import { posToKey, RandomMap } from "./lib/MapGenerator";
 import { Stat } from "./lib/skillDefinitions";
+import { BasicEnemy } from "./GameObjects/Enemies/BasicEnemy";
 
 const moveDirections = new Set<Direction>();
 const r = getSeededRandomGenerator(getRandomInt(0, 100));
-const maps = new Map<string, MapInfo>();
-export let currentMap = generateRandomMap({
+const maps = new Map<string, RandomMap>();
+export let currentMap = new RandomMap({
   maps,
   position: { x: 0, y: 0 },
   rng: r,
   numStructures: 7,
 });
-maps.set(currentMap.position.x + "," + currentMap.position.y, currentMap);
-export let obstacles = getObstacles(currentMap.layout);
+maps.set(currentMap.getPositionKey(), currentMap);
+export let obstacles = currentMap.getObstacles();
 export const player = new Player();
 export const enemies: Enemy[] = [];
 export let timeUntilNextSpawn = 0;
 export let enemiesCounter = 1;
-export let enemiesLeft = 10;
+export let enemiesLeft = 1;
 export const miscellaneous: GameObject[] = [];
 export const numberAnimations: RisingText[] = [];
 export const projectiles: ActualProjectile[] = [];
@@ -76,7 +76,7 @@ export function Shooter() {
   const [anims, setAnims] = useState<RisingText[]>([]);
   const [tint, setTint] = useState(0);
   const [tintColor, setTintColor] = useState("0,0,0");
-  const [currentMapPosition, setCurrentMapPosition] = useState(currentMap.position);
+  const [currentMapPosition, setCurrentMapPosition] = useState(currentMap.getPosition());
   const [allMaps, setAllMaps] = useState(maps);
   const [menuOpenState, setMenuOpenState] = useState(false);
   const [shopOpenState, setShopOpenState] = useState(false);
@@ -88,10 +88,6 @@ export function Shooter() {
     const bg = canvas2.getContext("2d");
 
     let id: NodeJS.Timeout;
-
-    if (bg) {
-      drawBackground(bg, currentMap.layout);
-    }
 
     const canvas = document.getElementById("game-layer") as HTMLCanvasElement;
     const upperDiv = document.getElementById("tint") as HTMLCanvasElement;
@@ -146,9 +142,11 @@ export function Shooter() {
       player.setWantFire(false);
     };
 
-    if (game) {
+    if (bg && game) {
       id = setInterval(() => {
         if (menuOpen || shopOpen) return;
+
+        currentMap.draw(bg);
 
         game.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -168,20 +166,20 @@ export function Shooter() {
         if (tileState.includes("tp") && hasTeleported <= 0 && enemies.length === 0) {
           const tpSide = tileState.replace("tp-", "") as MapSide;
           const newMapPosition = {
-            x: currentMap.position.x + (tileState === "tp-left" ? -1 : tileState === "tp-right" ? 1 : 0),
-            y: currentMap.position.y + (tileState === "tp-up" ? -1 : tileState === "tp-down" ? 1 : 0),
+            x: currentMap.getPosition().x + (tileState === "tp-left" ? -1 : tileState === "tp-right" ? 1 : 0),
+            y: currentMap.getPosition().y + (tileState === "tp-up" ? -1 : tileState === "tp-down" ? 1 : 0),
           };
           const existingMap = maps.get(posToKey(newMapPosition));
           if (existingMap) {
             currentMap = existingMap;
           } else {
-            currentMap = generateRandomMap({
+            currentMap = new RandomMap({
               maps,
               position: newMapPosition,
               rng: r,
               numStructures: 7,
             });
-            maps.set(posToKey(currentMap.position), currentMap);
+            maps.set(currentMap.getPositionKey(), currentMap);
             enemiesCounter++;
             enemiesLeft = enemiesCounter;
           }
@@ -197,22 +195,25 @@ export function Shooter() {
 
         hasTeleported -= TICK_DURATION_S;
 
-        // timeUntilNextSpawn -= TICK_DURATION_S;
+        timeUntilNextSpawn -= TICK_DURATION_S;
 
-        // if (timeUntilNextSpawn < 0 && enemiesLeft > 0) {
-        //   timeUntilNextSpawn = 10;
-        //   enemiesLeft--;
-        //   enemies.push(
-        //     new BasicEnemy({ level: 1, position: findRandomLocation(currentMap.layout, player.getPosition()) })
-        //   );
-        // }
+        if (timeUntilNextSpawn < 0 && enemiesLeft > 0) {
+          timeUntilNextSpawn = 1;
+          enemiesLeft--;
+          enemies.push(
+            new BasicEnemy({
+              level: 1,
+              position: findRandomLocation(currentMap.getTileOccupation(), player.getPosition()),
+            })
+          );
+        }
 
         setAnims([...numberAnimations]);
 
         setTint(player.getTintIntencity());
         setTintColor(player.getTintColor());
 
-        setCurrentMapPosition(currentMap.position);
+        setCurrentMapPosition(currentMap.getPosition());
         setAllMaps(new Map(maps));
 
         updateCrosshairColor();
@@ -224,7 +225,7 @@ export function Shooter() {
         clearInterval(id);
       }
     };
-  }, [anims]);
+  }, []);
 
   return (
     <TriggerRenderContext.Provider value={() => setRerenderFlip((flip) => !flip)}>

@@ -1,7 +1,7 @@
 import { enemies, currentMap, miscellaneous, numberAnimations, player, projectiles } from "../../Shooter";
 import { ANIM_COLLECT_TIME, TICK_DURATION_S } from "../../lib/definitions";
 import { MovingObject, MovingObjectConfig } from "../MovingObject";
-import { calculateDirection, calculateDistance, drawBall, getObstacles, pathToPoint } from "../../lib/util.canvas";
+import { calculateDirection, calculateDistance, drawBall, getObstacleTiles, pathToPoint } from "../../lib/util.canvas";
 import { RisingText } from "../RisingText";
 import { SNode } from "../../lib/models";
 import { intercept, intersects, toUnitVector } from "../../lib/functions";
@@ -156,7 +156,7 @@ export abstract class Enemy extends MovingObject {
 
     if (this.ticksUntilPathRecalculated <= 0) {
       this.ticksUntilPathRecalculated = 100;
-      this.path = pathToPoint(currentMap.layout, this.position, player.getPosition()).slice(1);
+      this.path = pathToPoint(currentMap.getTileOccupation(), this.position, player.getPosition()).slice(1);
     }
 
     if (this.path.length > 0 && calculateDistance(this.position, this.path[0].pos) <= 1) {
@@ -229,7 +229,7 @@ export abstract class Enemy extends MovingObject {
   }
 
   updateCanSeePlayer() {
-    for (let obstacle of getObstacles(currentMap.layout)) {
+    for (let obstacle of getObstacleTiles(currentMap)) {
       const { x, y } = obstacle.topLeftPoint;
       const vertexDeltas = [
         [0, 0, 50, 0],

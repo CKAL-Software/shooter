@@ -1,5 +1,6 @@
 import { CANVAS_COLUMNS, CANVAS_ROWS } from "../Definitions/Maps";
 import { BasicEnemy } from "../GameObjects/Enemies/BasicEnemy";
+import { Enemy } from "../GameObjects/Enemies/Enemy";
 import { NormalProjectile } from "../GameObjects/Projectiles/NormalProjectile";
 
 export const TILE_SIZE = 30;
@@ -18,6 +19,7 @@ export interface MapInfo {
   layout: string[][];
   teleporters: Teleporters;
   hasShop: boolean;
+  enemies: Enemy[];
 }
 
 export interface Point {

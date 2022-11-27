@@ -1,5 +1,5 @@
 export const COLOR_MONEY = "#edd500";
-export const COLOR_EXP = "rgba(144,202,249,1)";
+export const COLOR_EXP = "rgba(63,166,250,1)";
 export const COLOR_EXP_RGBA = (opacity: number) => COLOR_EXP.replace("1)", `${opacity})`);
 export const COLOR_SKILLPOINT = "#57b4ff";
 export const COLOR_DMG = "red";

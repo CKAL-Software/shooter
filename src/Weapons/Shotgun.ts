@@ -12,7 +12,7 @@ export class Shotgun extends Gun {
       name: "Shotgun",
       stats: {
         [Stat.Damage]: 2,
-        [Stat.MagSize]: 2,
+        [Stat.MagSize]: 50,
         [Stat.ReloadSpeed]: 3,
         [Stat.FireRate]: 60,
         [Stat.Velocity]: 2,

@@ -254,8 +254,12 @@ export function n(num: number) {
   return Array.from(new Array(num)).map((_, i) => i);
 }
 
-export function getTileType(map: string[][], tile: Point) {
-  return map[tile.y] ? map[tile.y][tile.x] : undefined;
+export function isTileOccupied(map: boolean[][], tile: Point) {
+  if (!map[tile.y]) {
+    return false;
+  }
+
+  return map[tile.y][tile.x];
 }
 
 export function percentFormatter(num: number, isPercentagePoints?: boolean) {

@@ -342,18 +342,7 @@ export class Player extends MovingObject {
   }
 
   getTileState() {
-    const { x, y } = this.tile;
-    const tile = currentMap.layout[y][x];
-    if (tile === "~") {
-      if (x === 0) return "tp-left";
-      if (x === MAP_SIZE - 1) return "tp-right";
-      if (y === MAP_SIZE - 1) return "tp-down";
-      if (y === 0) return "tp-up";
-    } else if (tile === "s") {
-      return "shop";
-    }
-
-    return "none";
+    return currentMap.getTileState(this.tile);
   }
 
   getName() {

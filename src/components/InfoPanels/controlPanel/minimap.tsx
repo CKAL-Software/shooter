@@ -1,11 +1,11 @@
 import { calculateDistance } from "../../../lib/util.canvas";
-import { MapInfo, Point } from "../../../lib/definitions";
+import { Point } from "../../../lib/definitions";
 import { COLOR_MAP_BACKGROUND, COLOR_SHOP } from "../../../lib/definitions.colors";
 import { n, round } from "../../../lib/functions";
-import { posToKey } from "../../../lib/MapGenerator";
+import { posToKey, RandomMap } from "../../../lib/MapGenerator";
 
 interface MinimapProps {
-  maps: Map<string, MapInfo>;
+  maps: Map<string, RandomMap>;
   currentMapPosition: Point;
   vision: number;
 }
@@ -62,14 +62,14 @@ export function Minimap(props: MinimapProps) {
                   <div
                     style={{
                       height: pathLength,
-                      borderRight: mapOfInterest.teleporters["up"] ? "2px solid gray" : undefined,
+                      borderRight: mapOfInterest.getTeleporter("up") ? "2px solid gray" : undefined,
                     }}
                   />
                   <div />
                   <div
                     style={{
                       width: pathLength,
-                      borderBottom: mapOfInterest.teleporters["left"] ? "2px solid gray" : undefined,
+                      borderBottom: mapOfInterest.getTeleporter("left") ? "2px solid gray" : undefined,
                     }}
                   />
                   {mapOfInterest ? (
@@ -84,7 +84,7 @@ export function Minimap(props: MinimapProps) {
                         justifyContent: "center",
                       }}
                     >
-                      {mapOfInterest.hasShop && (
+                      {mapOfInterest.getShop() && (
                         <div style={{ background: COLOR_SHOP, height: tileMapSize - 8, width: tileMapSize - 8 }} />
                       )}
                     </div>
@@ -94,14 +94,14 @@ export function Minimap(props: MinimapProps) {
                   <div
                     style={{
                       width: pathLength,
-                      borderBottom: mapOfInterest.teleporters["right"] ? "2px solid gray" : undefined,
+                      borderBottom: mapOfInterest.getTeleporter("right") ? "2px solid gray" : undefined,
                     }}
                   />
                   <div />
                   <div
                     style={{
                       height: pathLength,
-                      borderRight: mapOfInterest.teleporters["down"] ? "2px solid gray" : undefined,
+                      borderRight: mapOfInterest.getTeleporter("down") ? "2px solid gray" : undefined,
                     }}
                   />
                   <div />
