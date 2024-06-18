@@ -20,8 +20,8 @@ export interface EnemyConfig extends MovingObjectConfig {
 }
 
 export abstract class Enemy extends MovingObject {
-  private level;
   abstract name: string;
+  private level;
   private pathIndex = 0;
   private currentHp: number;
   private path: SNode[] = [];

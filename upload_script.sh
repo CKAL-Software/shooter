@@ -12,7 +12,7 @@ REPLACEMENT="$FIRST$NEW_VERSION$SECOND"
 
 sed -e "1s|.*|$REPLACEMENT|" -i ".bak" $FILE_TO_VERSION
 
-node ~/Code/TypeScript/version-uploader/uploadVersion.js tower-defense $NEW_VERSION
+node ~/Code/TypeScript/CKAL/version-uploader/uploadVersion.js tower-defense $NEW_VERSION
 
 git add .
 git commit -m "$NEW_VERSION"

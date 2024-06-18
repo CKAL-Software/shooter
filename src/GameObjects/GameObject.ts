@@ -1,3 +1,4 @@
+import { currentMap } from "../Shooter";
 import { Point } from "../lib/definitions";
 
 export interface GameObjectConfig {
@@ -11,11 +12,13 @@ export abstract class GameObject {
   protected position: Point = { x: -100, y: -100 };
   protected size: number;
   protected color: string;
+  protected mapIndex: string;
   public shouldDraw = true;
 
   constructor(config: GameObjectConfig) {
     this.size = config.size;
     this.color = config.color;
+    this.mapIndex = currentMap.getIndex();
     this.setPosition(config.position);
   }
 
@@ -26,6 +29,10 @@ export abstract class GameObject {
 
   getPosition() {
     return { x: this.position.x, y: this.position.y };
+  }
+
+  getMapIndex() {
+    return this.mapIndex;
   }
 
   getDrawPosition() {

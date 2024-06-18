@@ -39,7 +39,7 @@ export let currentMap = new RandomMap({
   rng: r,
   numStructures: 7,
 });
-maps.set(currentMap.getPositionKey(), currentMap);
+maps.set(currentMap.getIndex(), currentMap);
 export let obstacles = currentMap.getObstacles();
 export const player = new Player();
 export const enemies: Enemy[] = [];
@@ -150,14 +150,16 @@ export function Shooter() {
 
         game.clearRect(0, 0, canvas.width, canvas.height);
 
-        drawAndCleanupObjects(game, enemies);
+        const enemiesOnMap = enemies.filter((e) => e.getMapIndex() === currentMap.getIndex());
+
+        drawAndCleanupObjects(game, enemiesOnMap);
         drawAndCleanupObjects(game, projectiles);
         drawAndCleanupObjects(game, miscellaneous);
         drawAndCleanupObjects(game, numberAnimations);
         drawAndCleanupObjects(game, [player]);
 
         projectiles.forEach((obj) => obj.tick());
-        enemies.forEach((obj) => obj.tick());
+        enemiesOnMap.forEach((obj) => obj.tick());
         numberAnimations.forEach((obj) => obj.tick());
         miscellaneous.forEach((obj) => obj.tick());
         player.tick();
@@ -168,7 +170,7 @@ export function Shooter() {
           const tpSide = tileState.replace("tp-", "") as MapSide;
           const newMapPosition = {
             x: currentMap.getPosition().x + (tileState === "tp-left" ? -1 : tileState === "tp-right" ? 1 : 0),
-            y: currentMap.getPosition().y + (tileState === "tp-up" ? -1 : tileState === "tp-down" ? 1 : 0),
+            y: currentMap.getPosition().y + (tileState === "tp-down" ? -1 : tileState === "tp-up" ? 1 : 0),
           };
           const existingMap = maps.get(posToKey(newMapPosition));
           if (existingMap) {
@@ -180,7 +182,7 @@ export function Shooter() {
               rng: r,
               numStructures: 7,
             });
-            maps.set(currentMap.getPositionKey(), currentMap);
+            maps.set(currentMap.getIndex(), currentMap);
             enemiesCounter++;
             enemiesLeft = enemiesCounter;
           }

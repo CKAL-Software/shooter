@@ -1,4 +1,4 @@
-import { CANVAS_COLUMNS, CANVAS_ROWS } from "../Definitions/Maps";
+import { CANVAS_COLUMNS, CANVAS_ROWS, MAP_SIZE } from "../Definitions/Maps";
 import { GameObject } from "../GameObjects/GameObject";
 import { Point, TILE_SIZE } from "./definitions";
 import { COLOR_MAP_BACKGROUND, COLOR_SHOP } from "./definitions.colors";
@@ -212,7 +212,13 @@ export function pathToPoint(mapLayout: boolean[][], fromPositionPixels: Point, t
 
   fScore[startNode.key] = h(startNode);
 
+  let iterations = 0;
+
   while (Object.keys(openSet).length > 0) {
+    iterations++;
+    if (iterations > MAP_SIZE * MAP_SIZE) {
+      return [];
+    }
     const current = openSet.removeHead();
 
     if (current.key === goalNode.key) {

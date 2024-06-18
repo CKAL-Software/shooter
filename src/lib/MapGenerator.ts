@@ -104,22 +104,22 @@ export class RandomMap {
 
     const { x, y } = position;
 
-    const mapAbove = maps.get(posToKey({ x, y: y - 1 }));
-    const mapBelow = maps.get(posToKey({ x, y: y + 1 }));
+    const mapAbove = maps.get(posToKey({ x, y: y + 1 }));
+    const mapBelow = maps.get(posToKey({ x, y: y - 1 }));
     const mapToTheLeft = maps.get(posToKey({ x: x - 1, y }));
     const mapToTheRight = maps.get(posToKey({ x: x + 1, y }));
 
     const teleporters: Teleporter[] = [];
 
-    const tpBelow = mapAbove?.getTeleporter("down");
-    const tpAbove = mapBelow?.getTeleporter("up");
-    const tpToTheLeft = mapToTheRight?.getTeleporter("left");
-    const tpToTheRight = mapToTheLeft?.getTeleporter("right");
+    const tpAbove = mapAbove?.getTeleporter("down");
+    const tpBelow = mapBelow?.getTeleporter("up");
+    const tpToTheRight = mapToTheRight?.getTeleporter("left");
+    const tpToTheLeft = mapToTheLeft?.getTeleporter("right");
 
-    if (tpBelow) teleporters.push(tpBelow);
-    if (tpAbove) teleporters.push(tpAbove);
-    if (tpToTheLeft) teleporters.push(tpToTheLeft);
-    if (tpToTheRight) teleporters.push(tpToTheRight);
+    if (tpBelow) teleporters.push(tpBelow.getOppositeTeleporter());
+    if (tpAbove) teleporters.push(tpAbove.getOppositeTeleporter());
+    if (tpToTheLeft) teleporters.push(tpToTheLeft.getOppositeTeleporter());
+    if (tpToTheRight) teleporters.push(tpToTheRight.getOppositeTeleporter());
 
     const missingMapSides = ["up", "down", "left", "right"].filter(
       (side) => !teleporters.find((tp) => tp.getSide() === side)
@@ -172,7 +172,7 @@ export class RandomMap {
     return this.position;
   }
 
-  getPositionKey() {
+  getIndex() {
     return posToKey(this.position);
   }
 
@@ -263,13 +263,24 @@ class Teleporter {
   private startPosition: number;
   private tiles: Point[];
   private isUnlocked = false;
+  private map: RandomMap;
 
   constructor(map: RandomMap, side: MapSide, size: number, startPosition: number) {
     this.side = side;
     this.size = size;
     this.startPosition = startPosition;
     this.tiles = this.calculateOccupiedSquares();
+    this.map = map;
     map.addOccupiedSquares(this.tiles);
+  }
+
+  getOppositeTeleporter() {
+    return new Teleporter(
+      this.map,
+      this.side === "down" ? "up" : this.side === "up" ? "down" : this.side === "left" ? "right" : "left",
+      this.size,
+      this.startPosition
+    );
   }
 
   getTiles() {
